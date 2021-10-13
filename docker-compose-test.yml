@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+
+  traefik:
+    image: "traefik:v2.4"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  fastapi:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    init: true
+    container_name: fastapi
+    environment:
+      - ENVIRONMENT=test
+      - TESTING=1
+      - DATABASE_URL=postgres://postgres:postgres@database:5432/test
+      - DATABASE_TEST_URL=postgres://postgres:postgres@database:5432/test 
+    healthcheck:
+      test: "exit 0"
+    depends_on:
+      database:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi.rule=Host(`api.localhost`)"
+      - "traefik.http.routers.fastapi.entrypoints=web"
+
+
+  frontend:
+    build: 
+      context: ./frontend
+      args:
+          FRONTEND_ENV: ${FRONTEND_ENV-production}
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+  
+  database:
+    build:
+      context: ./backend/db
+      dockerfile: Dockerfile.test
+    container_name: database
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+

@@ -1,0 +1,1 @@
+docker-compose -f "docker-compose-test.yml" up -d && ( docker logs --follow web-db & ) | grep -q "PostgreSQL init process complete; ready for start up" && ( docker logs --follow web-db & ) | grep -q "database system is ready to accept connections"
