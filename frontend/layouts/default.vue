@@ -18,7 +18,25 @@
 
       <v-divider></v-divider>
 
-    <!--
+
+<template v-slot:append>
+        <div class="pa-2">
+        <v-divider></v-divider>
+      <v-list v-if="userIsAdmin">
+        <v-list-item>
+        <v-list-item-icon>
+          <v-icon>mdi-crown-outline</v-icon>
+        </v-list-item-icon>
+
+        <v-list-item-content>
+          <v-list-item-title>Administratie</v-list-item-title>
+        </v-list-item-content>
+        </v-list-item>
+
+      </v-list>
+        </div>
+      </template>
+      <!--
       <v-list
         nav
         dense
@@ -59,15 +77,10 @@
         </div>
       </v-list>
 -->
-
     </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-    >
+    <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <h3>{{title}}</h3>
+      <h3>{{ title }}</h3>
       <v-spacer />
       <!-- Right side menu when logged in -->
       <div v-if="this.$auth.loggedIn">
@@ -79,10 +92,7 @@
         </div>
         <!-- Mobile viewports -->
         <div v-if="$vuetify.breakpoint.smAndDown">
-          <v-btn
-            icon
-            @click="logout"
-          >
+          <v-btn icon @click="logout">
             <v-icon>mdi-lock</v-icon>
           </v-btn>
         </div>
@@ -95,25 +105,16 @@
           <v-btn to="/auth/login">
             <v-icon class="mr-2">mdi-lock-open</v-icon> Sign in
           </v-btn>
-          <v-btn
-            class="ml-2"
-            to="/auth/register"
-          >
+          <v-btn class="ml-2" to="/auth/register">
             <v-icon class="mr-2">mdi-account-plus-outline</v-icon>Sign up
           </v-btn>
         </div>
         <!-- Mobile viewports -->
         <div v-if="$vuetify.breakpoint.smAndDown">
-          <v-btn
-            icon
-            to="/auth/login"
-          >
+          <v-btn icon to="/auth/login">
             <v-icon>mdi-lock-open</v-icon>
           </v-btn>
-          <v-btn
-            icon
-            to="/auth/register"
-          >
+          <v-btn icon to="/auth/register">
             <v-icon>mdi-account-plus-outline</v-icon>
           </v-btn>
         </div>
@@ -123,10 +124,7 @@
       <Snackbar></Snackbar>
       <nuxt />
     </v-main>
-    <v-footer
-      :absolute="!fixed"
-      app
-    >
+    <v-footer :absolute="!fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
   </v-app>
@@ -172,8 +170,12 @@ export default {
     },
   },
   computed: {
-    navItemsWithoutSubLinks: function () {
-      return this.links.filter((link) => !link.subLinks);
+    userIsAdmin() {
+      if (this.$auth.user.roles.filter((e) => e.name === "admin").length > 0) {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 };

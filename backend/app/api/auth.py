@@ -1,13 +1,8 @@
 import os
 
 from app.config import Settings, get_fastapi_mail_config, get_settings
-from app.models.pydantic import (
-    CreateUser,
-    EmailSchema,
-    ResetPassword,
-    User_Pydantic,
-    TokenSchema,
-)
+from app.models.pydantic import (CreateUser, EmailSchema, ResetPassword,
+                                 TokenSchema, User_Pydantic)
 from app.models.tortoise import AllowedUsers, Roles, Users
 from app.services.auth import Auth
 from app.services.mail import Mailer
@@ -17,7 +12,6 @@ from fastapi_mail import ConnectionConfig
 from jose import jwt
 from starlette import status
 from starlette.responses import JSONResponse
-
 
 router = APIRouter()
 

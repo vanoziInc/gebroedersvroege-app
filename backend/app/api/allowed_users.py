@@ -18,7 +18,7 @@ from starlette import status
 router = APIRouter()
 
 
-@router.post("/", response_model=AllowedUsersResponseSchema, status_code=201)
+@router.post("/", response_model=AllowedUsersResponseSchema, status_code=201, dependencies=[Depends(RoleChecker(['admin']))])
 async def post_allowed_users(
     added_user: AllowedUsersCreateSchema,
     config: ConnectionConfig = Depends(get_fastapi_mail_config),
@@ -63,3 +63,5 @@ async def post_allowed_users(
 )
 async def get_allowed_users():
     return await AllowedUsers.all()
+
+

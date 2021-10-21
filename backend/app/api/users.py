@@ -1,17 +1,16 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from typing import List
 
 from fastapi.param_functions import Depends
 from app.services.auth import get_current_active_user, RoleChecker
-
-from app.api import crud
 from app.models.pydantic import User_Pydantic
+from app.models.tortoise import Users
 
 router = APIRouter()
 
 @router.get('/', response_model=List[User_Pydantic], dependencies=[Depends(RoleChecker(['admin']))])
 async def get_all_users():
-    users = await crud.get_all_users()
+    users = await Users.all()
     for user in users:
         await user.fetch_related("roles")
     return users

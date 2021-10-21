@@ -9,7 +9,7 @@ from app.services.auth import RoleChecker
 router = APIRouter()
 
 
-@router.post('/', response_model=User_Pydantic,  dependencies=[Depends(RoleChecker(['henk']))])
+@router.post('/', response_model=User_Pydantic,  dependencies=[Depends(RoleChecker(['admin']))])
 async def create_user_role(email:str, role:str):
     # add user roles
     user = await Users.get_or_none(email=email)
