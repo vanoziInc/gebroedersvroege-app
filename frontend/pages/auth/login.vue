@@ -44,6 +44,7 @@
 
 <script>
 export default {
+    // middleware: ['isLoggedIn'],
   auth: false,
   data: () => ({
     show: false,

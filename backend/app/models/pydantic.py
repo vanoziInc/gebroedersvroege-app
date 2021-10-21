@@ -1,10 +1,9 @@
 from typing import Any, Dict, List, Optional
 
-from app.models.tortoise import AllowedUsers, Roles, Users, Birth, Cow
+from app.models.tortoise import AllowedUsers, Roles, Users
 
 import pydantic
 import datetime
-from .enums import GenderEnum, BirthProcessEnum, BreedEnum, FirstMilkEnum, DischargeReasonEnum
 from pydantic import EmailStr
 from tortoise import Tortoise
 from tortoise.contrib.pydantic import pydantic_model_creator
@@ -60,34 +59,3 @@ class AllowedUsersCreateSchema(pydantic.BaseModel):
 AllowedUsersResponseSchema = pydantic_model_creator(
     AllowedUsers
     )
-
-# Births
-class BirthCreateSchema(pydantic.BaseModel):
-    date_of_birth : datetime.date
-    weight : float
-    first_milk : FirstMilkEnum
-    ear_number : int
-    necklace_number_mother : int
-    gender : GenderEnum
-    breed : Optional[BreedEnum]
-    birth_process : BirthProcessEnum
-    
-    # Bijzonderheden
-    twins : Optional[bool] = False
-    reverse : Optional[bool] = False
-    cesarean_section : Optional[bool] = False
-    embryo : Optional[bool] = False
-
-    remarks : Optional[str] 
-
-BirthReturnSchema = pydantic_model_creator(
-    Birth
-)
-
-CowReturnSchema = pydantic_model_creator(
-    Cow
-)
-
-class DischargeSchema(pydantic.BaseModel):
-    id:int
-    reason:DischargeReasonEnum

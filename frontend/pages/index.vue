@@ -1,30 +1,5 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <v-card>
-        <v-card-title class="headline">
-          Auth Practice
-        
-        </v-card-title>
-        <v-card-text>
-          Auh User : {{ this.$store.state.auth.user }} <br>
-          tokens : {{this.$auth.user}}
 
-
-        </v-card-text>
-        <v-card-actions>
-          <v-btn
-            color="primary"
-            @click="refresh()"
-          >
-            Refresh tokens
-          </v-btn>
-          <v-btn @click="addOne">Add 1</v-btn>
-          <v-btn @click="getUsers">Get Users</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
 </template>
 
 <script>

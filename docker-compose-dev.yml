@@ -24,7 +24,7 @@ services:
       - MAIL_FROM_NAME=${MAIL_FROM_NAME}
       - MAIL_TLS=${MAIL_TLS}
       - MAIL_SSL=${MAIL_SSL}
-      - BASE_URL=${BASE_URL}
+      - BASE_URL=${BASE_URL_FRONTEND}
     volumes:
       - ./backend:/app
     command: 

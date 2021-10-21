@@ -1,25 +1,67 @@
 version: '3.8'
 
 services:
-  web:
+
+  traefik:
+    image: "traefik:v2.5"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - BASE_URL=${BASE_URL}
+    depends_on:
+      - fastapi
+    restart:
+      always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+
+  fastapi:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - 80:80
     environment:
       - ENVIRONMENT=prod
       - TESTING=0
-      - DATABASE_URL=postgres://postgres:postgres@web-db:5432/web_prod
+      - DATABASE_URL=postgres://postgres:postgres@postgresdb:5432/prod
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM=${MAIL_FROM}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_SERVER=${MAIL_SERVER}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME}
+      - MAIL_TLS=${MAIL_TLS}
+      - MAIL_SSL=${MAIL_SSL}
+      - BASE_URL=${BASE_URL_FRONTEND}
     # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
     depends_on:
-      - web-db
+      - postgresdb
     restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi.rule=Host(`fastapi.localhost`)"
+      - "traefik.http.routers.fastapi.entrypoints=web"
 
-  web-db:
+  postgresdb:
     build:
       context: ./backend/db
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     expose:
       - 5432
     environment:
@@ -28,6 +70,8 @@ services:
     restart: always
     volumes:
       - db-data:/var/lib/postgresql/data/
+
+
 
 volumes:
   db-data:

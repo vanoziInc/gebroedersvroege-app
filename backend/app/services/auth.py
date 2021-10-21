@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime, timedelta
+from typing import List
 
 from app.config import Settings
 from app.models.pydantic import User_Pydantic
@@ -10,10 +11,6 @@ from jose import jwt
 from passlib.context import CryptContext
 from pydantic import UUID4
 from starlette import status
-
-from typing import List
-
-from app.config import Settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 settings = Settings()
