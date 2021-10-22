@@ -26,6 +26,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: "frontend"
     environment:
       - BASE_URL=${BASE_URL}
     depends_on:
@@ -42,6 +43,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
+    container_name: "fastapi"
     environment:
       - ENVIRONMENT=prod
       - TESTING=0
