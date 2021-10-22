@@ -16,5 +16,6 @@ jobs:
         script: |
           cd nuxt-fastapi-docker-base
           docker-compose -f docker-compose-prod.yml --env-file .env.prod down
+          git pull
           docker-compose -f docker-compose-prod.yml --env-file .env.prod build
           docker-compose -f docker-compose-prod.yml --env-file .env.prod up -d
