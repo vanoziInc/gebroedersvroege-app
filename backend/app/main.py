@@ -12,11 +12,11 @@ log = logging.getLogger("uvicorn")
 def create_application() -> FastAPI:
     application = FastAPI()
     # load router into application
-    application.include_router(auth.router, prefix="/auth", tags=["auth"]) 
-    application.include_router(users.router, prefix="/users", tags=["users"]) 
-    application.include_router(allowed_users.router, prefix="/allowed_users", tags=["allowed_users"])
-    application.include_router(roles.router, prefix="/roles", tags=["roles"])
-    application.include_router(user_roles.router, prefix="/user_roles", tags=["user_roles"])
+    application.include_router(auth.router, prefix="/api/auth", tags=["auth"]) 
+    application.include_router(users.router, prefix="/api/users", tags=["users"]) 
+    application.include_router(allowed_users.router, prefix="/api/allowed_users", tags=["allowed_users"])
+    application.include_router(roles.router, prefix="/api/roles", tags=["roles"])
+    application.include_router(user_roles.router, prefix="/api/user_roles", tags=["user_roles"])
 
     # set environment variables based on the environemnt set in the docker-compose file
     # if os.getenv("ENVIRONMENT") =='dev':
