@@ -10,11 +10,16 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=postmaster@example.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
-      - "80:80"
+      - "443:443"
       - "8080:8080"
     volumes:
+      - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   frontend:
@@ -29,13 +34,14 @@ services:
       always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
-      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.routers.frontend.rule=Host(`test.gebroedersvroege.nl`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
 
   fastapi:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     environment:
       - ENVIRONMENT=prod
       - TESTING=0
@@ -53,10 +59,14 @@ services:
     depends_on:
       - postgresdb
     restart: always
+    command : uvicorn app.main:app --host 0.0.0.0 --port 8004
+    expose:
+      - 8004
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`fastapi.localhost`)"
-      - "traefik.http.routers.fastapi.entrypoints=web"
+      - "traefik.http.routers.fastapi.rule=Host(`test.gebroedersvroege.nl`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.fastapi.entrypoints=websecure"
+      - "traefik.http.routers.fastapi.tls.certresolver=myresolver"
 
   postgresdb:
     build:
