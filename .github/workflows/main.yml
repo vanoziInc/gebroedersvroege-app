@@ -13,4 +13,8 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
-        script: docker container ls
+        script: |
+          cd nuxt-fastapi-docker-base
+          docker-compose -f docker-compose-prod.yml --env-file .env.prod down
+          docker-compose -f docker-compose-prod.yml --env-file .env.prod build
+          docker-compose -f docker-compose-prod.yml --env-file .env.prod up -d
