@@ -1,27 +1,18 @@
-name: Docker Compose Actions Workflow
-
-on: push
-
+name: remote ssh command
+on: [push]
 jobs:
-  test:
+
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Create network
-        run: docker network create database
-      - name: Build the stack
-        run: docker-compose -f "docker-compose-test.yml" up -d
-      # - name: Wait for postgres init process to be complete
-      #   run: ( docker logs --follow web-db & ) | grep -q "PostgreSQL init process complete; ready for start up"
-      # - name: Wait for postgres to be ready to accespt connections
-      #   run: ( docker logs --follow web-db & ) | grep -q "database system is ready to accept connections"
-      # - name: Check containers
-      #   run: docker ps
-      # - name: Show logs api container
-      #   run: docker logs web
-      # - name: Show logs db container
-      #   run: docker logs web-db
-      - name: Start tests
-        run: docker exec web python -m pytest
-      # - name: Show logs api container
-      #   run: docker logs web
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          whoami
+          ls -al
