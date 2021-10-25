@@ -12,7 +12,7 @@
     >
       <v-list-item>
         <v-list-item-content>
-          <h4>Gebr. Vroege (TEST)</h4>
+          <h4>Gebr. Vroege (Feyenoord)</h4>
         </v-list-item-content>
       </v-list-item>
 
