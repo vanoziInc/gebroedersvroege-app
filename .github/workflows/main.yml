@@ -1,12 +1,7 @@
 name: remote ssh command
-on: [push]
 jobs:
-
-  build:
-    
-
-
   test:
+    on: [push]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,6 +25,7 @@ jobs:
       #   run: docker logs web
 
   deploy:
+    on: [pull_request]
     name: deploy
     runs-on: ubuntu-latest
     steps:
