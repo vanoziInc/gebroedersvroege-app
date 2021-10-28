@@ -20,7 +20,7 @@ jobs:
       # - name: Show logs db container
       #   run: docker logs web-db
       - name: Start tests
-        run: docker exec web python -m pytest
+        run: docker exec fastapi python -m pytest
       # - name: Show logs api container
       #   run: docker logs web
 
