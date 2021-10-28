@@ -3,7 +3,34 @@ on: [push]
 jobs:
 
   build:
-    name: Build
+    
+
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create network
+        run: docker network create database
+      - name: Build the stack
+        run: docker-compose -f "docker-compose-test.yml" up -d
+      # - name: Wait for postgres init process to be complete
+      #   run: ( docker logs --follow web-db & ) | grep -q "PostgreSQL init process complete; ready for start up"
+      # - name: Wait for postgres to be ready to accespt connections
+      #   run: ( docker logs --follow web-db & ) | grep -q "database system is ready to accept connections"
+      # - name: Check containers
+      #   run: docker ps
+      # - name: Show logs api container
+      #   run: docker logs web
+      # - name: Show logs db container
+      #   run: docker logs web-db
+      - name: Start tests
+        run: docker exec web python -m pytest
+      # - name: Show logs api container
+      #   run: docker logs web
+
+  deploy:
+    name: deploy
     runs-on: ubuntu-latest
     steps:
     - name: executing remote ssh commands using password

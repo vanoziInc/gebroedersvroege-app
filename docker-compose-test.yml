@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   traefik:
-    image: "traefik:v2.4"
+    image: "traefik:v2.5"
     container_name: "traefik"
     command:
       #- "--log.level=DEBUG"
@@ -17,10 +17,22 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
+
+  frontend:
+    build: 
+      context: ./frontend
+      args:
+          FRONTEND_ENV: ${FRONTEND_ENV-TEST}
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+
   fastapi:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.test
     init: true
     container_name: fastapi
     environment:
@@ -37,18 +49,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.fastapi.rule=Host(`api.localhost`)"
       - "traefik.http.routers.fastapi.entrypoints=web"
-
-
-  frontend:
-    build: 
-      context: ./frontend
-      args:
-          FRONTEND_ENV: ${FRONTEND_ENV-production}
-    restart: always
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
-      - "traefik.http.routers.frontend.entrypoints=web"
   
   database:
     build:
