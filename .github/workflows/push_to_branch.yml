@@ -13,7 +13,7 @@ jobs:
         run: docker exec fastapi python -m pytest
       - name: setup database for frontend testing
         run: | 
-        docker postgresdb psql -c "CREATE DATABASE dev;"
+        docker exec postgresdb psql -c "CREATE DATABASE dev;"
         docker exec fastapi aerich init -t app.db.TORTOISE_ORM
         docker exec fastapi aerich init-db
         docker exec -u postgres postgresdb psql test postgres -f /sql_files/setup_testdata.sql
