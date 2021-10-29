@@ -1,11 +1,29 @@
-name: Deploy
+name: CI/CD
+
+
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create network
+        run: docker network create database
+      - name: Build the stack
+        run: docker-compose -f "docker-compose-test.yml" up -d
+      - name: Perform backend tests
+        run: docker exec fastapi python -m pytest
+      - name: Build frontend tests image
+        run: docker build -t playwright-tests ./frontend-testing/.
+      - name: Run frontend tests image
+        run: docker run playwright-tests
+
 on:
   pull_request:
     branches:
       - master
 jobs:  
   deploy:
-    name: deploy
     runs-on: ubuntu-latest
     steps:
     - name: executing remote ssh commands using password
