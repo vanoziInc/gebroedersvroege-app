@@ -8,7 +8,7 @@ jobs:
       - name: Create network
         run: docker network create database
       - name: Build the stack
-        run: docker-compose -f "docker-compose-test.yml" --env-file .env.dev up -d
+        run: docker-compose -f "docker-compose-test.yml" --env-file .env.test up -d
       - name: Perform backend tests
         run: docker exec fastapi python -m pytest
       - name: setup database for frontend testing
