@@ -9,22 +9,10 @@ jobs:
         run: docker network create database
       - name: Build the stack
         run: docker-compose -f "docker-compose-test.yml" up -d
-      # - name: Wait for postgres init process to be complete
-      #   run: ( docker logs --follow web-db & ) | grep -q "PostgreSQL init process complete; ready for start up"
-      # - name: Wait for postgres to be ready to accespt connections
-      #   run: ( docker logs --follow web-db & ) | grep -q "database system is ready to accept connections"
-      # - name: Check containers
-      #   run: docker ps
-      # - name: Show logs api container
-      #   run: docker logs web
-      # - name: Show logs db container
-      #   run: docker logs web-db
       - name: Perform backend tests
         run: docker exec fastapi python -m pytest
       - name: Build frontend tests image
         run: docker build -t playwright-tests ./frontend-testing/.
       - name: Run frontend tests image
         run: docker run playwright-tests
-      # - name: Show logs api container
-      #   run: docker logs web
 
