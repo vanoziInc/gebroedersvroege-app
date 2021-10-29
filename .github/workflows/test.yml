@@ -21,8 +21,9 @@ jobs:
       #   run: docker logs web-db
       - name: Perform backend tests
         run: docker exec fastapi python -m pytest
-      - name: Perform frontend tests
+      - name: Build frontend tests image
         run: docker build -t playwright-tests ./frontend-testing/.
+      - name: Run frontend tests image
         run: docker run playwright-tests
       # - name: Show logs api container
       #   run: docker logs web
