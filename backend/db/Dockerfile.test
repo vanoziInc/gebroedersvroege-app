@@ -4,3 +4,5 @@ FROM postgres:13-alpine
 RUN mkdir sql_files
 ADD ./sql_files/* /sql_files
 
+# add initialization shell script to the docker entrypoint
+ADD initialize_database_test.sh /docker-entrypoint-initdb.d

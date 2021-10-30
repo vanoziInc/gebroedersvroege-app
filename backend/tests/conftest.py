@@ -12,7 +12,7 @@ from app.models.tortoise import AllowedUsers, Users, Roles
 
 
 def get_settings_override():
-    return Settings(testing=1, database_url=os.environ.get("DATABASE_TEST_URL"))
+    return Settings(testing=1, database_url=os.environ.get("DATABASE_TEST_BACKEND_URL"))
 
 
 # @pytest.fixture(scope="module")
@@ -54,7 +54,7 @@ async def init_db(db_url, create_db: bool = False, schemas: bool = False) -> Non
         print("Success to generate schemas")
 
 
-async def init(db_url: str = os.environ.get("DATABASE_TEST_URL")):
+async def init(db_url: str = os.environ.get("DATABASE_TEST_BACKEND_URL")):
     await init_db(db_url, True, True)
 
 @pytest.fixture(scope="session")
