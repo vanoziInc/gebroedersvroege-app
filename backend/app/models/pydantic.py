@@ -56,6 +56,9 @@ class ResetPassword(pydantic.BaseModel):
 class AllowedUsersCreateSchema(pydantic.BaseModel):
     email: EmailStr
 
+class AllowedUsersUpdateschema(pydantic.BaseModel):
+    email: EmailStr
+
 AllowedUsersResponseSchema = pydantic_model_creator(
     AllowedUsers
     )
