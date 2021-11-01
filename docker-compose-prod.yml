@@ -96,7 +96,7 @@ services:
       - 80
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`test.gebroedersvroege.nl`) && PathPrefix(`/pgadmin`)"
+      - "traefik.http.routers.fastapi.rule=Host(`pgadmin.gebroedersvroege.nl`)"
       - "traefik.http.routers.fastapi.entrypoints=websecure"
       - "traefik.http.routers.fastapi.tls.certresolver=myresolver"
 
