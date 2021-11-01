@@ -42,7 +42,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
-        script: |
+        run: |
           cd nuxt-fastapi-docker-base
           docker-compose -f docker-compose-prod.yml --env-file .env.prod down
           git pull
