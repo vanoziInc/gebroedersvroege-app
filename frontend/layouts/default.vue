@@ -16,10 +16,14 @@
       </v-list-item>
       <v-divider></v-divider>
       <!-- Admin navigation list -->
-      <v-list>
+      <v-list v-if="userIsAdmin">
+        Admin
         <v-list-item v-if="userIsAdmin">
+                    <v-list-item-icon>
+            <v-icon>mdi-account-group</v-icon>
+          </v-list-item-icon>
           <v-list-item-content>
-            Gebruikers
+            <v-list-item-title>Gebruikers</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
