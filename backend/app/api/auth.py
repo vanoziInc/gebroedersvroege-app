@@ -35,6 +35,8 @@ async def register(
     # Create user
     try:
         user = await Users.create(
+            first_name=register_info.first_name,
+            last_name=register_info.last_name,
             email=register_info.email,
             hashed_password=Auth.get_password_hash(
                 register_info.password.get_secret_value()
@@ -45,7 +47,7 @@ async def register(
         user.confirmation = confirmation_token["jti"]
         await user.save()
         # add user roles
-        role, _ = await Roles.get_or_none(name="werknemer")
+        role, _ = await Roles.get_or_create(name="werknemer", description="User met algemene werknemers rechten")
         await user.roles.add(role)
     except:
         raise HTTPException(
@@ -86,17 +88,16 @@ async def activate_account(
             token, settings.secret_key, algorithms=settings.token_algorithm
         )
     except jwt.JWTError as e:
-
-        raise HTTPException(status_code=403, detail="Deze link is verlopen, er is een nieuwe link naar je verstuurd")
+        raise HTTPException(status_code=400, detail="Deze link is verlopen")
     # Check if scope of the token is valid
     if payload["scope"] != "registration":
         raise invalid_token_error
     user = await Users.get_or_none(email=payload["sub"])
     # Check if token belongs to user and not already been used
-    if not user or user.confirmation.hex != payload["jti"]:
+    if not user or user.confirmation is None or user.confirmation.hex != payload["jti"]:
         raise invalid_token_error
     if user.is_active:
-        raise HTTPException(status_code=403, detail="Deze gebruiker is al geactiveerd")
+        raise HTTPException(status_code=400, detail="Deze gebruiker is al geactiveerd")
     # Set confirmation UID to None and user to active
     try:
         user.confirmation = None
@@ -138,7 +139,8 @@ async def resent_activation_code(
             email=EmailSchema(
                 recipient_addresses=[user.email],
                 body={
-                    "username": user.email,
+                    "base_url": os.getenv("BASE_URL"),
+                    "fist_name": user.first_name,
                     "confirmation_token": confirmation_token["token"],
                 },
             ),

@@ -51,13 +51,13 @@ export default {
     valid: false,
     email: "",
     emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+      (v) => !!v || "E-mail adres is verplicht",
+      (v) => /.+@.+\..+/.test(v) || "Dit is geen valide e-mail adres",
     ],
     password: "",
     passwordRules: [
-      (v) => !!v || "Password is required",
-      (v) => (v && v.length >= 5) || "Password must have 5+ characters",
+      (v) => !!v || "Wachtwoord is verplicht",
+      (v) => (v && v.length >= 5) || "Wachtwoord moet minstens 5 tekens lang zijn",
     ],
   }),
 

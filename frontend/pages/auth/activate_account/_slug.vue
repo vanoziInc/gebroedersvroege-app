@@ -27,13 +27,31 @@ export default {
           token: this.token,
         });
         this.$notifier.showMessage({
-          content:
-            "Je account is geactiveerd, je kunt nu inloggen",
+          content: "Je account is geactiveerd, je kunt nu inloggen",
           color: "success",
         });
         this.$router.push("/auth/login");
       } catch (err) {
-        console.log(err.response);
+        if (err.response) {
+          if (
+            err.response.status == 400 &&
+            err.response.data.detail == "Deze link is verlopen"
+          ) {
+            this.$notifier.showMessage({
+              content: err.response.data.detail,
+              color: "error",
+            });
+            this.$router.push(
+              "/auth/activate_account/request_new_activation_link"
+            );
+          } else {
+            this.$notifier.showMessage({
+              content: err.response.data.detail,
+              color: "error",
+            });
+            this.$router.push("/auth/login");
+          }
+        }
       }
     },
   },
