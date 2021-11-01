@@ -44,7 +44,6 @@ async def post_allowed_users(
                 email=EmailSchema(
                     recipient_addresses=[allowed_user.email],
                     body={
-                        "username": allowed_user.email,
                         "base_url": os.getenv("BASE_URL"),
                         "sender": "Gebroeders Vroege",
                     },
@@ -67,16 +66,55 @@ async def post_allowed_users(
 async def get_allowed_users():
     return await AllowedUsers.all()
 
-@router.get('/{id}', response_model=AllowedUsersResponseSchema)
+@router.get('/{id}', response_model=AllowedUsersResponseSchema, dependencies=[Depends(RoleChecker(['admin']))])
 async def get_allowed_user(id: int):
-    allowd_user = await AllowedUsers.get_or_none(id=id)
-    if allowd_user is None:
+    allowed_user = await AllowedUsers.get_or_none(id=id)
+    if allowed_user is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Dit email adres komt niet voor in de lijst met toegestane email adressen"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Dit email adres komt niet voor in de lijst met toegestane gebruikers"
         )
+    else:
+        return allowed_user
 
-@router.put('/{id}', response_model=AllowedUsersResponseSchema)
-async def update_allowed_user(id :int, 
-    updated_birth: BirthCreateSchema
-):
-    allowd_user = await AllowedUsers.get_or_none(id=id)
+# Update allowed user
+@router.put('/{id}', dependencies=[Depends(RoleChecker(['admin']))])
+async def update_allowed_user(id:int, user_to_update:AllowedUsersUpdateschema, config: ConnectionConfig = Depends(get_fastapi_mail_config)):
+    allowed_user = await AllowedUsers.get_or_none(id=id)
+    if allowed_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Dit email adres komt niet voor in de lijst met toegestane gebruikers"
+        )
+    else:
+        allowed_user.email = user_to_update.email
+        await allowed_user.save()
+        # Send email
+        try:
+            await Mailer.send_invitation_message(
+                config=config,
+                email=EmailSchema(
+                    recipient_addresses=[allowed_user.email],
+                    body={
+                        "base_url": os.getenv("BASE_URL"),
+                        "sender": "Gebroeders Vroege",
+                    },
+                ),
+            )
+        except:
+            await allowed_user.delete()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Er is een overwachte fout opgetreden bij het versturen van de email",
+            )
+        return status.HTTP_200_OK
+
+# Delete allowed user
+@router.delete('/{id}', dependencies=[Depends(RoleChecker(['admin']))])
+async def delete_allowed_user(id:int):
+    allowed_user = await AllowedUsers.get_or_none(id=id)
+    if allowed_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Dit email adres komt niet voor in de lijst met toegestane gebruikers"
+        )
+    else:
+        await allowed_user.delete()
+        return status.HTTP_200_OK

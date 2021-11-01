@@ -5,24 +5,37 @@
         <v-card>
           <v-card-text>
             <v-form ref="form" v-model="valid">
+                            <v-text-field
+                v-model="firstName"
+                :rules="nameRules"
+                label="Voornaam"
+                required
+              ></v-text-field>
+                            <v-text-field
+                v-model="lastName"
+                :rules="nameRules"
+                label="Achternaam"
+                required
+              ></v-text-field>
+
               <v-text-field
                 v-model="email"
                 :rules="emailRules"
-                label="E-mail"
+                label="E-mail adres"
                 required
               ></v-text-field>
 
               <v-text-field
                 v-model="password"
                 :rules="passwordRules"
-                label="Password"
+                label="Wachtwoord"
                 required
                 :type="show ?'text': 'password'"
                 :append-icon="show ?'mdi-eye':'mdi-eye-off'"   
                 @click:append="show=!show"
               ></v-text-field>
               <v-text-field
-                label="Confirm Password"
+                label="Herhaal wachtwoord"
                 v-model="confirmPassword"
                 :rules="confirmPasswordRules.concat(passwordConfirmationRule)"
                 required
@@ -34,7 +47,7 @@
           </v-card-text>
           <v-card-actions>
             <v-btn color="primary" :disabled="!valid" @click="registerUser"
-              >Register</v-btn
+              >Registreer</v-btn
             >
           </v-card-actions>
         </v-card>
@@ -49,18 +62,24 @@ export default {
   data: () => ({
     show:false,
     valid: false,
+    firstName:"",
+    lastName:"",
     email: "",
     emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
+      (v) => !!v || "E-mail adres is verplicht",
+      (v) => /.+@.+\..+/.test(v) || "Dit is geen valide e-mail adres",
     ],
     password: "",
     passwordRules: [
-      (v) => !!v || "Password is required",
-      (v) => (v && v.length >= 5) || "Password must have 5+ characters",
+      (v) => !!v || "Wachtwoord is verplicht",
+      (v) => (v && v.length >= 5) || "Wachtwoord moet minstens 5 tekens lang zijn",
+    ],
+        nameRules: [
+      (v) => !!v || "Dit veld is verplicht",
+      (v) => (v && v.length <= 20) || "Maximaal 20 tekens",
     ],
     confirmPassword: "",
-    confirmPasswordRules: [(v) => !!v || "Password is required"],
+    confirmPasswordRules: [(v) => !!v || "Dit veld is verplicht"],
   }),
 
   methods: {
@@ -75,16 +94,17 @@ export default {
     },
     registerUser() {
       this.$store.dispatch("users/addUser", {
+        first_name: this.firstName,
+        last_name:this.lastName,
         email: this.email,
         password: this.password,
       });
-      console.log("henk")
     },
   },
   computed: {
     passwordConfirmationRule() {
       return () =>
-        this.password === this.confirmPassword || "Password must match";
+        this.password === this.confirmPassword || "Wachtwoorden moeten overeen komen";
     },
   },
 };

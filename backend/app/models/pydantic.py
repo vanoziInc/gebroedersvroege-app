@@ -16,6 +16,8 @@ Tortoise.init_models(["app.models.tortoise"], "models")
 
 # Users
 class CreateUser(pydantic.BaseModel):
+    first_name :str
+    last_name :str
     email: pydantic.EmailStr
     password: pydantic.SecretStr
 

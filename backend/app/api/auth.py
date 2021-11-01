@@ -24,13 +24,13 @@ async def register(
     # Check if user allready exists
     if await Users.get_or_none(email=register_info.email) is not None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Deze gebruiker bestaat al"
         )
     # Check if user is in allowed users table
     if await AllowedUsers.get_or_none(email=register_info.email) is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User is not allowed to register",
+            detail="Dit email adres is niet bevoegd om zich te registeren",
         )
     # Create user
     try:
@@ -45,12 +45,12 @@ async def register(
         user.confirmation = confirmation_token["jti"]
         await user.save()
         # add user roles
-        role, _ = await Roles.get_or_create(name="henk", description="test_role")
+        role, _ = await Roles.get_or_none(name="werknemer")
         await user.roles.add(role)
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Unexpected error while creating user in the database",
+            detail="Er is een onverwachte fout opgetreden bij het opslaan in de database",
         )
     try:
         await Mailer.send_welcome_message(
@@ -58,7 +58,7 @@ async def register(
             email=EmailSchema(
                 recipient_addresses=[user.email],
                 body={
-                    "username": user.email,
+                    "first_name": user.first_name,
                     "base_url": os.getenv("BASE_URL"),
                     "confirmation_token": confirmation_token["token"],
                 },
@@ -68,7 +68,7 @@ async def register(
         await user.delete()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error while sending user email",
+            detail=f"Er is een overwachte fout opgetreden bij het versturen van de email",
         )
     await user.fetch_related("roles")
     return user
@@ -79,15 +79,15 @@ async def activate_account(
     token: TokenSchema, settings: Settings = Depends(get_settings)
 ):
     token = token.token
-    invalid_token_error = HTTPException(status_code=400, detail="Invalid token")
+    invalid_token_error = HTTPException(status_code=400, detail="Deze link is ongeldig")
     # Check if token expiration date is reached
     try:
         payload = jwt.decode(
             token, settings.secret_key, algorithms=settings.token_algorithm
         )
     except jwt.JWTError as e:
-        print(e)
-        raise HTTPException(status_code=403, detail="Token has expired")
+
+        raise HTTPException(status_code=403, detail="Deze link is verlopen, er is een nieuwe link naar je verstuurd")
     # Check if scope of the token is valid
     if payload["scope"] != "registration":
         raise invalid_token_error
@@ -96,7 +96,7 @@ async def activate_account(
     if not user or user.confirmation.hex != payload["jti"]:
         raise invalid_token_error
     if user.is_active:
-        raise HTTPException(status_code=403, detail="User already activated")
+        raise HTTPException(status_code=403, detail="Deze gebruiker is al geactiveerd")
     # Set confirmation UID to None and user to active
     try:
         user.confirmation = None
@@ -106,7 +106,7 @@ async def activate_account(
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Unexpected error while modifying user in the database",
+            detail="Er is een onverwachte fout opgetreden bij het opslaan in de database",
         )
 
 
@@ -118,14 +118,14 @@ async def resent_activation_code(
     if await Users.get_or_none(email=email) is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User with this email address does not exist",
+            detail="Dit email adres is niet bekend",
         )
     user = await Users.get(email=email)
     # Check that account is not yet activated
     if user.is_active:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email address is allready activated",
+            detail="Deze gebruiker is al geactiveerd",
         )
 
     # create confirmation token and add the jti to the database user
@@ -147,7 +147,7 @@ async def resent_activation_code(
         await user.delete()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error while sending user email",
+            detail=f"Er is een overwachte fout opgetreden bij het versturen van de email",
         )
 
 
@@ -161,7 +161,7 @@ async def get_login_token(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Email en/of wachtwoord onjuist",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = Auth.get_access_token(email=user.email)
@@ -183,7 +183,7 @@ async def refresh(token:TokenSchema, settings: Settings = Depends(get_settings))
             token.refresh_token, settings.secret_key, algorithms=settings.token_algorithm
         )
     except jwt.JWTError as e:
-        raise HTTPException(status_code=403, detail="Token has expired")
+        raise HTTPException(status_code=403, detail="Refresh toke is verlopen")
     # Check if scope of the token is valid
     if payload["scope"] != "refresh":
         raise invalid_token_error
@@ -210,7 +210,7 @@ async def forgot_password(
     user = await Users.get_or_none(email=email)
     if user is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="User does not exist"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Deze gebruiker bestaat niet"
         )
     reset_password_token = Auth.get_reset_password_token(email=user.email)
     try:
@@ -219,18 +219,17 @@ async def forgot_password(
             email=EmailSchema(
                 recipient_addresses=[user.email],
                 body={
-                    "username": user.email,
+                    "first_name": user.first_name,
                     "base_url": os.getenv("BASE_URL"),
                     "reset_password_token": reset_password_token["token"],
-                    "sender" : "Gebroeders Vroege"
                 },
             ),
         )
-        return JSONResponse({"message": "Reset token has been sent"}, status_code=200)
+        return JSONResponse({"message": "Er is een link verstuurd waarmee je je wachtwoord kunt resetten"}, status_code=200)
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error while sending user email",
+            detail=f"Er is een overwachte fout opgetreden bij het versturen van de email",
         )
 
 
@@ -238,14 +237,14 @@ async def forgot_password(
 async def reset_password(
     reset_info: ResetPassword, settings: Settings = Depends(get_settings)
 ):
-    invalid_token_error = HTTPException(status_code=400, detail="Invalid token")
+    invalid_token_error = HTTPException(status_code=400, detail="Deze link is ongeldig")
     # Check if token expiration date is reached
     try:
         payload = jwt.decode(
             reset_info.token, settings.secret_key, algorithms=settings.token_algorithm
         )
     except jwt.JWTError as e:
-        raise HTTPException(status_code=403, detail="Token has expired")
+        raise HTTPException(status_code=403, detail="Deze link is verlopen")
     # Check if scope of the token is valid
     if payload["scope"] != "reset-password":
         raise invalid_token_error
@@ -260,4 +259,4 @@ async def reset_password(
     user.hashed_password = new_password_hashed
     await user.save()
     # Create a success respons
-    return JSONResponse({"message": "Password successfully reset"}, status_code=200)
+    return JSONResponse({"message": "Wachtwoord succesvol gereset"}, status_code=200)

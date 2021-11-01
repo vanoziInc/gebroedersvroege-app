@@ -9,7 +9,7 @@
               <v-text-field
                 v-model="email"
                 :rules="emailRules"
-                label="E-mail"
+                label="E-mail adres"
                 hint="Je ontvangt een email met een link om je wachtwoord te resetten"
                 required
               ></v-text-field>

@@ -47,3 +47,5 @@ jobs:
           git pull
           docker-compose -f docker-compose-prod.yml --env-file .env.prod build
           docker-compose -f docker-compose-prod.yml --env-file .env.prod up -d
+          docker exec fastapi aerich migrate
+          docker exec fastapi aerich upgrade

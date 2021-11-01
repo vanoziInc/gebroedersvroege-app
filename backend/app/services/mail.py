@@ -7,7 +7,7 @@ from app.models.pydantic import EmailSchema
 class Mailer:
     async def send_invitation_message(email: EmailSchema, config: ConnectionConfig = Depends(get_fastapi_mail_config)):
         message = MessageSchema(
-            subject="Invitation to join!",
+            subject="Uitnoding voor Gebr. Vroege app",
             # List of recipients, as many as you can pass
             recipients=email.dict().get("recipient_addresses"),
             template_body=email.dict().get("body"),
@@ -17,7 +17,7 @@ class Mailer:
 
     async def send_welcome_message(email: EmailSchema, config: ConnectionConfig = Depends(get_fastapi_mail_config)):
         message = MessageSchema(
-            subject="Welcome!!",
+            subject="Welkom!!",
             # List of recipients, as many as you can pass
             recipients=email.dict().get("recipient_addresses"),
             template_body=email.dict().get("body"),

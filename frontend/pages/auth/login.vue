@@ -9,7 +9,7 @@
                 id="login_email"
                 v-model="email"
                 :rules="emailRules"
-                label="E-mail"
+                label="E-mail adres"
                 required
               ></v-text-field>
 
@@ -88,7 +88,7 @@ export default {
         if (err.response) {
           if (err.response.status == 401) {
             this.$notifier.showMessage({
-              content: "Incorrect username or password",
+              content: err.response.data.detail,
               color: "error",
             });
           }
