@@ -93,7 +93,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: root
     expose:
-      - 80
+      - 443
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.fastapi.rule=Host(`pgadmin.gebroedersvroege.nl`)"
