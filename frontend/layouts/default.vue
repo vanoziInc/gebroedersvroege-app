@@ -15,6 +15,14 @@
         </v-list-item-content>
       </v-list-item>
       <v-divider></v-divider>
+      <!-- Admin navigation list -->
+      <v-list>
+        <v-list-item v-if="userIsAdmin">
+          <v-list-item-content>
+            Gebruikers
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
     </v-navigation-drawer>
     <!-- NAVIGATION BAR -->
     <v-app-bar :clipped-left="clipped" fixed app>
@@ -24,7 +32,6 @@
 
       <!-- RIGHT SIDE MENU WHEN LOGGED IN -->
       <div v-if="this.$auth.loggedIn">
-
         <!-- LARGER VIEWPORTS -->
         <div v-if="$vuetify.breakpoint.mdAndUp">
           <v-btn small @click="logout">
@@ -38,7 +45,6 @@
           </v-btn>
         </div>
       </div>
-
 
       <!-- RIGHT SIDE MENU WHEN NOTLOGGED IN -->
       <div v-else>
@@ -84,7 +90,7 @@ export default {
       clipped: false,
       drawer: false,
       fixed: false,
-      miniVariant: true,
+      miniVariant: false,
       right: true,
       rightDrawer: false,
       title: "Gebr. Vroege",
