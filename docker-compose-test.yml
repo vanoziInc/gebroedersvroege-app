@@ -42,9 +42,9 @@ services:
     environment:
       - ENVIRONMENT=test
       - TESTING=1
-      - DATABASE_URL=postgres://postgres:postgres@postgresdb:5432/test
-      - DATABASE_TEST_URL=postgres://postgres:postgres@postgresdb:5432/test
-      - DATABASE_TEST_BACKEND_URL=postgres://postgres:postgres@postgresdb:5432/test-backend
+      - DATABASE_URL=postgres://postgres:postgres@database:5432/test
+      - DATABASE_TEST_URL=postgres://postgres:postgres@database:5432/test
+      - DATABASE_TEST_BACKEND_URL=postgres://postgres:postgres@database:5432/test-backend
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_FROM=${MAIL_FROM}
@@ -56,7 +56,7 @@ services:
       - BASE_URL=http://api.localhost
     # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
     depends_on:
-      - postgresdb
+      - database
     restart: always
     command : uvicorn app.main:app --host 0.0.0.0 --port 8004
     expose:
@@ -67,7 +67,7 @@ services:
       - "traefik.http.routers.fastapi.entrypoints=web"
       - "traefik.http.routers.fastapi.tls.certresolver=myresolver"
 
-  postgresdb:
+  database:
     build:
       context: ./backend/db
       dockerfile: Dockerfile.test
