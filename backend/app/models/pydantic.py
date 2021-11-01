@@ -16,6 +16,8 @@ Tortoise.init_models(["app.models.tortoise"], "models")
 
 # Users
 class CreateUser(pydantic.BaseModel):
+    first_name :str
+    last_name :str
     email: pydantic.EmailStr
     password: pydantic.SecretStr
 
@@ -54,6 +56,9 @@ class ResetPassword(pydantic.BaseModel):
 
 # Allowed Users
 class AllowedUsersCreateSchema(pydantic.BaseModel):
+    email: EmailStr
+
+class AllowedUsersUpdateschema(pydantic.BaseModel):
     email: EmailStr
 
 AllowedUsersResponseSchema = pydantic_model_creator(

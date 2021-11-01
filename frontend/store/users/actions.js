@@ -17,7 +17,14 @@ export default {
           });
           this.$router.push('/auth/login')
         } catch (err) {
-          console.log(err.response);
+          if (err.response) {
+            if (err.response.status == 400) {
+              this.$notifier.showMessage({
+                content: err.response.data.detail,
+                color: "error",
+              });
+            }
+          }
         }
       },
 }

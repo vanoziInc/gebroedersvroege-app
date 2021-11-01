@@ -12,7 +12,7 @@ from passlib.context import CryptContext
 from pydantic import UUID4
 from starlette import status
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 settings = Settings()
 
 

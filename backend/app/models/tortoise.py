@@ -8,6 +8,8 @@ class Users(models.Model):
     id = fields.IntField(pk=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     last_modified_at = fields.DatetimeField(auto_now=True)
+    first_name = fields.CharField(null=True, max_length=255)
+    last_name = fields.CharField(null=True, max_length=255)
     email = fields.CharField(null=False, max_length=255)
     hashed_password = fields.CharField(null=False, max_length=255)
     is_active = fields.BooleanField(null=False, default=False)
