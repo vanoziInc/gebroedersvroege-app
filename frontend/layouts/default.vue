@@ -17,15 +17,25 @@
       <v-divider></v-divider>
       <!-- Admin navigation list -->
       <v-list v-if="userIsAdmin">
-        Admin
-        <v-list-item v-if="userIsAdmin">
-                    <v-list-item-icon>
-            <v-icon>mdi-account-group</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>Gebruikers</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        <v-list-group
+          v-for="item in items"
+          :key="item.title"
+          v-model="item.active"
+          :prepend-icon="item.action"
+          no-action
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title"></v-list-item-title>
+            </v-list-item-content>
+          </template>
+
+          <v-list-item v-for="child in item.items" :key="child.title" :to="child.route">
+            <v-list-item-content>
+              <v-list-item-title v-text="child.title"></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
     <!-- NAVIGATION BAR -->
@@ -98,6 +108,15 @@ export default {
       right: true,
       rightDrawer: false,
       title: "Gebr. Vroege",
+      // Navigation drawer items
+      items: [
+        {
+          action: "mdi-account-group-outline",
+          items: [{ title: "Gebruikers", route:"/auth/login" }],
+          title: "Admin",
+        },
+
+      ],
     };
   },
   methods: {
