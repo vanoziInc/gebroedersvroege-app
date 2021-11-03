@@ -35,10 +35,10 @@
 
       <v-list subheader two-line flat>
         <v-subheader class="subheading" v-if="general_maintenance.length == 0"
-          >You have 0 Tasks, add some</v-subheader
+          >Er zijn momenteel geen onderhoudstaken</v-subheader
         >
         <v-subheader class="subheading" v-if="general_maintenance.length == 1"
-          >Your Tasks</v-subheader
+          >De onderhoudstaken</v-subheader
         >
 
         <v-list-item-group>
