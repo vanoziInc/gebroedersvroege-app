@@ -1,7 +1,7 @@
 export default {
     async getAllowedUsers({commit}) {
         try {
-          let response = await this.$axios.get("/allowed_users");
+          let response = await this.$axios.get("/allowed_users/");
           commit("GETALLOWEDUSERS", response.data)
         } catch (err) {
           if (err.response) {
@@ -14,7 +14,7 @@ export default {
       },
       async addAllowedUser({commit}, payload) {
         try {
-          let response = await this.$axios.post("/allowed_users", payload);
+          let response = await this.$axios.post("/allowed_users/", payload);
           commit("ADDALLOWEDUSER", response.data)
           this.$notifier.showMessage({
             content: "Uitnodiging om te registreren verstuurd!",
