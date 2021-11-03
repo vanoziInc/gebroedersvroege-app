@@ -85,8 +85,10 @@
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
+
   data() {
     return {
+      title: "Uitnodigingen",
       search: "",
       dialog: false,
       dateFormat: "ddd DD/MM/YYYY",
@@ -110,6 +112,10 @@ export default {
       ],
     };
   },
+  head() {
+      return {
+        title: this.title,}
+        },
   methods: {
     ...mapActions({
       getAllowedUsers: "allowed_users/getAllowedUsers",
