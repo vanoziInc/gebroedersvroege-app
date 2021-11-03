@@ -109,9 +109,24 @@ export default {
       title: "Gebr. Vroege",
       // Navigation drawer items
       items: [
+                        {
+          action: "mdi-format-color-text",
+          items: [{title : "Onderhoud" }],
+          title: "Algemeen",
+        },
+                {
+          action: "mdi-cow",
+          items: [{title : "Kalfjes" }],
+          title: "Melkvee",
+        },
+                {
+          action: "mdi-tractor",
+          items: [{title : "Machines" }],
+          title: "Loonbedrijf",
+        },
         {
           action: "mdi-account-group-outline",
-          items: [{title : "Uitnodigingen", route:"/admin/allowed_users" } , { title: "Gebruikers", route:"/admin/allowed_users" }],
+          items: [{title : "Uitnodigingen", route:"/admin/allowed_users" }],
           title: "Admin",
         },
 
