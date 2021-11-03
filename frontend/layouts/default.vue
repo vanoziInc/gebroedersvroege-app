@@ -112,7 +112,7 @@ export default {
       items: [
         {
           action: "mdi-account-group-outline",
-          items: [{ title: "Gebruikers", route:"/auth/login" }],
+          items: [{title : "Uitnodigingen", route:"/admin/allowed_users" } , { title: "Gebruikers", route:"/admin/allowed_users" }],
           title: "Admin",
         },
 
