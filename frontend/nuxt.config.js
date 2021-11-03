@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+import nl from 'vuetify/es5/locale/nl'
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -59,6 +60,10 @@ export default {
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
+    lang: {
+      locales: { nl },
+      current : 'nl'
+    },
     customVariables: ['~/assets/variables.scss'],
     theme: {
       dark: false,
