@@ -134,7 +134,7 @@ export default {
       Items: [
                         {
           action: "mdi-format-color-text",
-          items: [{title : "Onderhoud" }],
+          items: [{title : "Onderhoud", route:"/general_maintenance" }],
           title: "Algemeen",
         },
                 {
