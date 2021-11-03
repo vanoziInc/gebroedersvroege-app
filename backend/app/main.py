@@ -2,7 +2,7 @@ import logging, os
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 
-from app.api import auth, users, allowed_users, roles, user_roles
+from app.api import auth, users, allowed_users, roles, user_roles, general_maintenance
 from app.db import init_db
 
 
@@ -17,6 +17,7 @@ def create_application() -> FastAPI:
     application.include_router(allowed_users.router, prefix="/api/allowed_users", tags=["allowed_users"])
     application.include_router(roles.router, prefix="/api/roles", tags=["roles"])
     application.include_router(user_roles.router, prefix="/api/user_roles", tags=["user_roles"])
+    application.include_router(general_maintenance.router, prefix="/api/general_maintenance", tags=["general_maintenance"])
 
     # set environment variables based on the environemnt set in the docker-compose file
     # if os.getenv("ENVIRONMENT") =='dev':

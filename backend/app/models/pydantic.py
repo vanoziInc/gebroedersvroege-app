@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-from app.models.tortoise import AllowedUsers, Roles, Users
+from app.models.tortoise import AllowedUsers, GeneralMaintenance, Roles, Users
 
 import pydantic
 import datetime
@@ -64,3 +64,14 @@ class AllowedUsersUpdateschema(pydantic.BaseModel):
 AllowedUsersResponseSchema = pydantic_model_creator(
     AllowedUsers
     )
+
+# General maintenance
+# GET
+GeneralMaintenanceResponseSchema = pydantic_model_creator(GeneralMaintenance)
+# CREATE
+class GeneralMaintenanceCreateSchema(pydantic.BaseModel):
+    description : str
+
+# UPDATE
+class GeneralMaintenanceUpdateSchema(pydantic.BaseModel):
+    description : str
