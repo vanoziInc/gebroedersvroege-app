@@ -61,6 +61,7 @@ export default {
   auth: false,
   middleware: ['isLoggedIn'],
   data: () => ({
+    title:"Registreer",
     show:false,
     valid: false,
     firstName:"",
@@ -82,6 +83,10 @@ export default {
     confirmPassword: "",
     confirmPasswordRules: [(v) => !!v || "Dit veld is verplicht"],
   }),
+    head() {
+      return {
+        title: this.title,}
+        },
 
   methods: {
     validate() {

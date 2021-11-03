@@ -85,7 +85,8 @@
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
-
+auth: true,
+  middleware: ['isAdmin'],
   data() {
     return {
       title: "Uitnodigingen",

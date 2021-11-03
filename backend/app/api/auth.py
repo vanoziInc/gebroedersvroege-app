@@ -22,22 +22,22 @@ async def register(
     config: ConnectionConfig = Depends(get_fastapi_mail_config),
 ) -> User_Pydantic:
     # Check if user allready exists
-    if await Users.get_or_none(email=register_info.email) is not None:
+    if await Users.get_or_none(email=register_info.email.lower()) is not None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Deze gebruiker bestaat al"
         )
     # Check if user is in allowed users table
-    if await AllowedUsers.get_or_none(email=register_info.email) is None:
+    if await AllowedUsers.get_or_none(email=register_info.email.lower()) is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Dit email adres is niet bevoegd om zich te registeren",
         )
-    # Create user
+    # Create user and send email if something goed wrong, delete the created user
     try:
         user = await Users.create(
             first_name=register_info.first_name,
             last_name=register_info.last_name,
-            email=register_info.email,
+            email=register_info.email.lower(),
             hashed_password=Auth.get_password_hash(
                 register_info.password.get_secret_value()
             ),
@@ -49,12 +49,6 @@ async def register(
         # add user roles
         role, _ = await Roles.get_or_create(name="werknemer", description="User met algemene werknemers rechten")
         await user.roles.add(role)
-    except:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Er is een onverwachte fout opgetreden bij het opslaan in de database",
-        )
-    try:
         await Mailer.send_welcome_message(
             config=config,
             email=EmailSchema(
@@ -66,12 +60,17 @@ async def register(
                 },
             ),
         )
+        # remove user from allowed users table
+        allowed_user = await AllowedUsers.get_or_none(email=register_info.email.lower())
+        await allowed_user.delete()
     except:
-        await user.delete()
+        if user:
+            await user.delete()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Er is een overwachte fout opgetreden bij het versturen van de email",
+            detail=f"Er is een overwachte fout opgetreden, neem contact op met de beheerder",
         )
+
     await user.fetch_related("roles")
     return user
 
@@ -213,6 +212,11 @@ async def forgot_password(
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Deze gebruiker bestaat niet"
+        )
+    # kijken of de gebruiker actief is
+    if user.is_active is False:
+                raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Deze gebruiker is nog niet actief"
         )
     reset_password_token = Auth.get_reset_password_token(email=user.email)
     try:

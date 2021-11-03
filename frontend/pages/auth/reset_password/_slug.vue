@@ -8,14 +8,14 @@
               <v-text-field
                 v-model="password"
                 :rules="passwordRules"
-                label="Password"
+                label="Wachtwoord"
                 required
                 :type="show ? 'text' : 'password'"
                 :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="show = !show"
               ></v-text-field>
               <v-text-field
-                label="Confirm Password"
+                label="Herhaal wachtwoord"
                 v-model="confirmPassword"
                 :rules="confirmPasswordRules.concat(passwordConfirmationRule)"
                 required
@@ -27,7 +27,7 @@
           </v-card-text>
           <v-card-actions>
             <v-btn color="primary" :disabled="!valid" @click="resetPassword"
-              >Reset Password</v-btn
+              >Verstuur</v-btn
             >
           </v-card-actions>
         </v-card>
@@ -40,6 +40,7 @@
 export default {
   auth: false,
   data: () => ({
+    title:"Reset wachtwoord",
     token: "",
     show: false,
     valid: false,
@@ -51,6 +52,10 @@ export default {
     confirmPassword: "",
     confirmPasswordRules: [(v) => !!v || "Password is required"],
   }),
+    head() {
+      return {
+        title: this.title,}
+        },
   methods: {
     async resetPassword() {
       try {

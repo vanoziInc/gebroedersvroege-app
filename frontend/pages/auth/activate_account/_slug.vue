@@ -18,8 +18,13 @@
 export default {
   auth: false,
   data: () => ({
+    title: "Activeer account",
     token: "",
   }),
+    head() {
+      return {
+        title: this.title,}
+        },
   methods: {
     async activateAccount() {
       try {

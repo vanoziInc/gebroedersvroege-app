@@ -47,6 +47,7 @@ export default {
   middleware: ['isLoggedIn'],
   auth: false,
   data: () => ({
+    title:"Login",
     show: false,
     valid: false,
     email: "",
@@ -60,7 +61,10 @@ export default {
       (v) => (v && v.length >= 5) || "Wachtwoord moet minstens 5 tekens lang zijn",
     ],
   }),
-
+  head() {
+      return {
+        title: this.title,}
+        },
   methods: {
     validate() {
       this.$refs.form.validate();

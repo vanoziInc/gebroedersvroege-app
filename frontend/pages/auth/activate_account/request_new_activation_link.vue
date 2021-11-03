@@ -1,9 +1,9 @@
 <template>
-    <v-container>
+  <v-container>
     <v-row class="justify-center">
       <v-col cols="lg-7 sm-6">
         <v-card>
-            <v-card-title>Nieuwe activatie link aanvragen</v-card-title>
+          <v-card-title>Nieuwe activatie link aanvragen</v-card-title>
           <v-card-text>
             <v-form id="request_new_activation_link" ref="form" v-model="valid">
               <v-text-field
@@ -16,10 +16,7 @@
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn
-              color="primary"
-              :disabled="!valid"
-              @click="requestLink"
+            <v-btn color="primary" :disabled="!valid" @click="requestLink"
               >VERSTUUR</v-btn
             >
           </v-card-actions>
@@ -31,40 +28,46 @@
 
 <script>
 export default {
-      auth: false,
- data: () => ({
-         valid: false,
-             email: "",
+  auth: false,
+  data: () => ({
+    title:"Aanvraag activatielink",
+    valid: false,
+    email: "",
     emailRules: [
       (v) => !!v || "E-mail adres is verplicht",
       (v) => /.+@.+\..+/.test(v) || "Dit is geen valide e-mail adres",
     ],
- }),
- methods:{
+  }),
+  head() {
+    return {
+      title: this.title,
+    };
+  },
+  methods: {
     async requestLink() {
-
       // Login API call
       try {
-        let response = await this.$axios.get("/auth/resent_activation_token/" + this.email);
+        let response = await this.$axios.get(
+          "/auth/resent_activation_token/" + this.email
+        );
         this.$notifier.showMessage({
-          content: "Er is een email onderweg met een link om je account te activeren",
+          content:
+            "Er is een email onderweg met een link om je account te activeren",
           color: "success",
         });
         this.$router.push("/auth/login");
       } catch (err) {
         if (err.response) {
-            this.$notifier.showMessage({
-              content: err.response.data.detail,
-              color: "error",
-            });
+          this.$notifier.showMessage({
+            content: err.response.data.detail,
+            color: "error",
+          });
         }
       }
     },
- }
-
-}
+  },
+};
 </script>
 
 <style>
-
 </style>
