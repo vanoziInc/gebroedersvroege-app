@@ -4,7 +4,9 @@ export default function ({ store, redirect }) {
         if (element['name'] == 'admin') {
             return true;
         }
+else {
+return redirect('/');
+}
     }
-    );
-    return redirect('/')
+    
 }
