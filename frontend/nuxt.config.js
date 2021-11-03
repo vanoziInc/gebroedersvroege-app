@@ -4,7 +4,7 @@ import nl from 'vuetify/es5/locale/nl'
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - nuxt-fastapi-template',
+    titleTemplate: '%s - Gebroeders Vroege',
     title: 'nuxt-fastapi-template',
     htmlAttrs: {
       lang: 'en'

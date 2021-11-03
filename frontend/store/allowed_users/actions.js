@@ -29,4 +29,21 @@ export default {
           }
         }
       },
+      async deleteAllowedUser({commit}, id) {
+        try {
+          let response = await this.$axios.delete("/allowed_users/" + id);
+          commit("DELETEALLOWEDUSER", response.data)
+          this.$notifier.showMessage({
+            content: "Uitnodiging ingetrokken!",
+            color: "success",
+          });
+        } catch (err) {
+          if (err.response) {
+              this.$notifier.showMessage({
+                content: err.response.data.detail,
+                color: "error",
+              });
+          }
+        }
+      },
 }

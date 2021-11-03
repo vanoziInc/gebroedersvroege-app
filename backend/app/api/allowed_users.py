@@ -117,4 +117,4 @@ async def delete_allowed_user(id:int):
         )
     else:
         await allowed_user.delete()
-        return status.HTTP_200_OK
+        return allowed_user

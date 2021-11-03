@@ -59,6 +59,7 @@
 <script>
 export default {
   auth: false,
+  middleware: ['isLoggedIn'],
   data: () => ({
     show:false,
     valid: false,
