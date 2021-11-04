@@ -143,5 +143,4 @@ class RoleChecker:
         for role in user.roles:
             if role.name in self.allowed_roles:
                 return True
-            else:
-                raise HTTPException(status_code=403, detail="Operation not permitted")
+        raise HTTPException(status_code=403, detail="Operation not permitted")
