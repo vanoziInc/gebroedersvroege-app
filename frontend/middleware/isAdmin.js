@@ -1,12 +1,8 @@
 export default function ({ store, redirect }) {
-    const roles = store.state.auth.user.roles
-    roles.forEach(element => {
-        if (element['name'] == 'admin') {
-            return true;
-        }
-else {
-return redirect('/');
-}
+    if (store.state.auth.user.roles.filter((e) => e.name === "admin").length > 0) {
+      return true;
+    } else {
+        return redirect('/');
     }
-    
-}
+  }
+
