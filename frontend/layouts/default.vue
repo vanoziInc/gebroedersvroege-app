@@ -34,9 +34,10 @@
             v-for="child in item.items"
             :key="child.title"
             :to="child.route"
+            exact
           >
             <v-list-item-content>
-              <v-list-item-title v-text="child.title"></v-list-item-title>
+              <v-list-item-subtitle v-text="child.title"></v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
@@ -61,9 +62,10 @@
             v-for="child in item.items"
             :key="child.title"
             :to="child.route"
+            exact
           >
             <v-list-item-content>
-              <v-list-item-title v-text="child.title"></v-list-item-title>
+              <v-list-item-subtitle v-text="child.title"></v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
@@ -147,7 +149,7 @@ export default {
         },
                 {
           action: "mdi-account-clock-outline",
-          items: [{ title: "Invoeren", route: "/working_hours" }],
+          items: [{ title: "Invoeren", route: "/working_hours/" }, { title: "Overzicht", route: "/working_hours/overview" }],
           title: "Uren",
         },
         {

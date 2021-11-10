@@ -1,28 +1,23 @@
 // https://codepen.io/Jayesh_v/pen/wvgjMva
 
 <template>
-  <div id="app">
-    <v-app id="inspire">
-      <v-card
-        class="mx-auto mt-10"
-        min-width="600"
-        outlined
-      >
-        <v-card-title>Inline Editor</v-card-title>
+  <v-container>
+    <v-card >
+      <v-card-title class="mb-4"> <span><h5 class="font-weight-medium">
+Uren overzicht week {{ computedSelectedWeek }}
+      </h5>
+        
+        </span> </v-card-title>
+      <v-card-text>
         <v-data-table
           :headers="headers"
           :items="datesOfCurrentWeek"
-          class="elevation-1"
           fixed-header
-          height="500px"
           hide-default-footer
         >
           <v-divider inset></v-divider>
           <template v-slot:top>
-            <v-toolbar
-              flat
-              color="white"
-            >
+            <v-toolbar flat>
               <div>
                 <!-- TODO Week nummer maannummer-->
                 <v-menu
@@ -36,7 +31,7 @@
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                       v-model="computedDateFormattedMomentjs"
-                      label="Picker without buttons"
+                      label="Kies een datum"
                       prepend-icon="mdi-calendar"
                       readonly
                       v-bind="attrs"
@@ -51,11 +46,6 @@
                 </v-menu>
               </div>
               <v-spacer></v-spacer>
-              <div>
-                <v-btn icon @click="substractWeek"><v-icon>mdi-chevron-left</v-icon></v-btn>
-                <b>{{computedSelectedWeek}}</b>
-                <v-btn icon @click="addWeek"><v-icon>mdi-chevron-right</v-icon></v-btn>
-              </div>
             </v-toolbar>
           </template>
           <template v-slot:[`item.name`]="{ item }">
@@ -66,7 +56,7 @@
               single-line
               v-if="item.id === editedItem.id"
             ></v-text-field>
-            <span v-else>{{item.name}}</span>
+            <span v-else>{{ item.name }}</span>
           </template>
           <template v-slot:[`item.calories`]="{ item }">
             <v-text-field
@@ -76,50 +66,42 @@
               single-line
               v-if="item.id === editedItem.id"
             ></v-text-field>
-            <span v-else>{{item.calories}}</span>
+            <span v-else>{{ item.calories }}</span>
           </template>
           <template v-slot:[`item.actions`]="{ item }">
             <div v-if="item.id === editedItem.id">
-              <v-icon
-                color="red"
-                class="mr-3"
-                @click="close"
-              >
+              <v-icon color="red" class="mr-3" @click="close">
                 mdi-window-close
               </v-icon>
-              <v-icon
-                color="green"
-                @click="save"
-              >
-                mdi-content-save
-              </v-icon>
+              <v-icon color="green" @click="save"> mdi-content-save </v-icon>
             </div>
             <div v-else>
-              <v-icon
-                color="green"
-                class="mr-3"
-                @click="editItem(item)"
-              >
+              <v-icon color="green" class="mr-3" @click="editItem(item)">
                 mdi-pencil
               </v-icon>
-              <v-icon
-                color="red"
-                @click="deleteItem(item)"
-              >
+              <v-icon color="red" @click="deleteItem(item)">
                 mdi-delete
               </v-icon>
             </div>
           </template>
           <template v-slot:no-data>
-            <v-btn
-              color="primary"
-              @click="initialize"
-            >Reset</v-btn>
+            <v-btn color="primary" @click="initialize">Reset</v-btn>
           </template>
         </v-data-table>
-      </v-card>
-    </v-app>
-  </div>
+      </v-card-text>
+      <v-card-actions>
+        <div>
+          <v-btn icon @click="substractWeek"
+            ><v-icon>mdi-chevron-left</v-icon></v-btn
+          >
+          <b>{{ computedSelectedWeek }}</b>
+          <v-btn icon @click="addWeek"
+            ><v-icon>mdi-chevron-right</v-icon></v-btn
+          >
+        </div>
+      </v-card-actions>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
@@ -134,7 +116,23 @@ export default {
         text: "Datum",
         value: "datum",
         sortable: false,
-      }],
+      },
+            {
+        text: "Uren",
+        value: "datum",
+        sortable: false,
+      },
+            {
+        text: "Omschrijving",
+        value: "datum",
+        sortable: false,
+      },
+                  {
+        text: "Acties",
+        value: "datum",
+        sortable: false,
+      },
+    ],
     desserts: [],
     editedIndex: -1,
     editedItem: {
@@ -148,7 +146,7 @@ export default {
       calories: 0,
     },
   }),
-  methods : {
+  methods: {
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedItem = Object.assign({}, item);
@@ -177,15 +175,13 @@ export default {
       }
       this.close();
     },
-      substractWeek() {
-        this.date = moment(this.date).subtract(7, 'days').format("YYYY-MM-DD")
+    substractWeek() {
+      this.date = moment(this.date).subtract(7, "days").format("YYYY-MM-DD");
+    },
+    addWeek() {
+      this.date = moment(this.date).add(7, "days").format("YYYY-MM-DD");
+    },
   },
-        addWeek() {
-        this.date = moment(this.date).add(7, 'days').format("YYYY-MM-DD")
-  },
-  },
-
-
 
   computed: {
     computedDateFormattedMomentjs() {
@@ -209,10 +205,10 @@ export default {
         dates = [];
 
       while (now.isBefore(this.computedLastDayCurrentWeek)) {
-        dates.push({"datum":  now.lang("nl").format("dd, DD-MM")});
+        dates.push({ datum: now.lang("nl").format("dd, DD-MM") });
         now.add(1, "days");
       }
-      return dates
+      return dates;
     },
   },
 };
