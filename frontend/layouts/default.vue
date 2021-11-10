@@ -11,7 +11,7 @@
     >
       <v-list-item>
         <v-list-item-content>
-          <h4>brokeback sander</h4>
+          <h4>Gebr. Vroege</h4>
         </v-list-item-content>
       </v-list-item>
       <v-divider></v-divider>
@@ -63,8 +63,8 @@
     </v-navigation-drawer>
     <!-- NAVIGATION BAR -->
     <v-app-bar :clipped-left="clipped" fixed app>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <h3>{{ title }}</h3>
+      <v-app-bar-nav-icon  @click.stop="drawer = !drawer" />
+      <h3 >{{ title }}</h3>
       <v-spacer />
 
       <!-- RIGHT SIDE MENU WHEN LOGGED IN -->

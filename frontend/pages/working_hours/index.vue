@@ -23,7 +23,7 @@
               flat
               color="white"
             >
-              <div class="d-flex w-100">
+              <div>
                 <!-- TODO Week nummer maannummer-->
                 <v-menu
                   v-model="menu2"
@@ -49,8 +49,12 @@
                     locale="nl"
                   ></v-date-picker>
                 </v-menu>
-                <v-spacer></v-spacer>
-                {{ computedSelectedWeek }} {{computedSelectedWeekdays}}
+              </div>
+              <v-spacer></v-spacer>
+              <div>
+                <v-btn icon @click="substractWeek"><v-icon>mdi-chevron-left</v-icon></v-btn>
+                <b>{{computedSelectedWeek}}</b>
+                <v-btn icon @click="addWeek"><v-icon>mdi-chevron-right</v-icon></v-btn>
               </div>
             </v-toolbar>
           </template>
@@ -122,9 +126,7 @@
 import moment from "moment";
 export default {
   data: () => ({
-    date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-      .toISOString()
-      .substr(0, 10),
+    date: moment().format("YYYY-MM-DD"),
     menu2: false,
     search: "",
     headers: [
@@ -175,7 +177,16 @@ export default {
       }
       this.close();
     },
+      substractWeek() {
+        this.date = moment(this.date).subtract(7, 'days').format("YYYY-MM-DD")
   },
+        addWeek() {
+        this.date = moment(this.date).add(7, 'days').format("YYYY-MM-DD")
+  },
+  },
+
+
+
   computed: {
     computedDateFormattedMomentjs() {
       return this.date
@@ -186,19 +197,19 @@ export default {
       return this.date ? moment(this.date).week() : "";
     },
     computedFirstDayCurrentWeek() {
-      return moment(this.date).startOf("week");
+      return moment(this.date).startOf("isoweek");
     },
     computedLastDayCurrentWeek() {
       return moment(this.computedFirstDayCurrentWeek)
         .add(7, "days")
-        .startOf("week");
+        .startOf("isoweek");
     },
     datesOfCurrentWeek() {
       var now = this.computedFirstDayCurrentWeek.clone(),
         dates = [];
 
       while (now.isBefore(this.computedLastDayCurrentWeek)) {
-        dates.push({"datum":  now.format("M/D/YYYY")});
+        dates.push({"datum":  now.lang("nl").format("dd, DD-MM")});
         now.add(1, "days");
       }
       return dates
