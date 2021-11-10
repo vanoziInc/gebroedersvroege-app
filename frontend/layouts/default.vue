@@ -30,7 +30,11 @@
             </v-list-item-content>
           </template>
 
-          <v-list-item v-for="child in item.items" :key="child.title" :to="child.route">
+          <v-list-item
+            v-for="child in item.items"
+            :key="child.title"
+            :to="child.route"
+          >
             <v-list-item-content>
               <v-list-item-title v-text="child.title"></v-list-item-title>
             </v-list-item-content>
@@ -53,7 +57,11 @@
             </v-list-item-content>
           </template>
 
-          <v-list-item v-for="child in item.items" :key="child.title" :to="child.route">
+          <v-list-item
+            v-for="child in item.items"
+            :key="child.title"
+            :to="child.route"
+          >
             <v-list-item-content>
               <v-list-item-title v-text="child.title"></v-list-item-title>
             </v-list-item-content>
@@ -63,8 +71,8 @@
     </v-navigation-drawer>
     <!-- NAVIGATION BAR -->
     <v-app-bar :clipped-left="clipped" fixed app>
-      <v-app-bar-nav-icon  @click.stop="drawer = !drawer" />
-      <h3 >{{ title }}</h3>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <h3>{{ title }}</h3>
       <v-spacer />
 
       <!-- RIGHT SIDE MENU WHEN LOGGED IN -->
@@ -132,29 +140,34 @@ export default {
       title: "Gebr. Vroege",
       // Navigation drawer items
       Items: [
-                        {
+        {
           action: "mdi-format-color-text",
-          items: [{title : "Onderhoud", route:"/general_maintenance" }],
+          items: [{ title: "Onderhoud", route: "/general_maintenance" }],
           title: "Algemeen",
         },
                 {
+          action: "mdi-account-clock-outline",
+          items: [{ title: "Invoeren", route: "/working_hours" }],
+          title: "Uren",
+        },
+        {
           action: "mdi-cow",
-          items: [{title : "Kalfjes" }],
+          items: [{ title: "Kalfjes" }],
           title: "Melkvee",
         },
-                {
+        {
           action: "mdi-tractor",
-          items: [{title : "Machines" }],
+          items: [{ title: "Machines" }],
           title: "Loonbedrijf",
         },
       ],
-      adminItems :[
-                {
+      adminItems: [
+        {
           action: "mdi-account-group-outline",
-          items: [{title : "Uitnodigingen", route:"/admin/allowed_users" }],
+          items: [{ title: "Uitnodigingen", route: "/admin/allowed_users" }],
           title: "Admin",
         },
-      ]
+      ],
     };
   },
   methods: {
