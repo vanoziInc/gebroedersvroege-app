@@ -103,7 +103,7 @@ export default {
       payload: {
         description: "",
       },
-      today: moment().lang("nl").format("ddd DD/MM/YYYY"),
+      today: moment().format("ddd DD/MM/YYYY"),
       title: "Algemeen onderhoud",
     };
   },

@@ -106,7 +106,7 @@ auth: true,
           text: "Uitgenodigd op",
           value: "created_at",
           formatter: (x) =>
-            x ? moment(x).lang("nl").format(this.dateFormat) : null,
+            x ? moment(x).locale('nl').format(this.dateFormat) : null,
         },
         { text: "Email", value: "email" },
         { text: "Acties", value: "actions", sortable: false },

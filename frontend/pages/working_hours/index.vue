@@ -2,16 +2,18 @@
 
 <template>
   <v-container>
-    <v-card >
-      <v-card-title class="mb-4"> <span><h5 class="font-weight-medium">
-Uren overzicht week {{ computedSelectedWeek }}
-      </h5>
-        
-        </span> </v-card-title>
-      <v-card-text>
+    <v-card>
+      <v-card-title class="ml-4">
+        <span><h4 class="font-weight-light">Uren overzicht</h4> </span>
+      </v-card-title>
+      <v-card-subtitle class="ml-4">
+        Week {{ computedSelectedWeek }}
+        {{ computedSelectedYear }}
+      </v-card-subtitle>
+      <v-card-text class="mt-2">
         <v-data-table
           :headers="headers"
-          :items="datesOfCurrentWeek"
+          :items="workingHoursOfCurrentWeek"
           fixed-header
           hide-default-footer
         >
@@ -48,26 +50,29 @@ Uren overzicht week {{ computedSelectedWeek }}
               <v-spacer></v-spacer>
             </v-toolbar>
           </template>
-          <template v-slot:[`item.name`]="{ item }">
+          <!-- Column Hours template -->
+          <template v-slot:[`item.hours`]="{ item }">
             <v-text-field
-              v-model="editedItem.name"
+              v-model="editedItem.hours"
               :hide-details="true"
               dense
               single-line
               v-if="item.id === editedItem.id"
             ></v-text-field>
-            <span v-else>{{ item.name }}</span>
+            <span v-else>{{ item.hours }}</span>
           </template>
-          <template v-slot:[`item.calories`]="{ item }">
+          <!-- Column description template -->
+          <template v-slot:[`item.description`]="{ item }">
             <v-text-field
-              v-model="editedItem.calories"
+              v-model="editedItem.description"
               :hide-details="true"
               dense
               single-line
               v-if="item.id === editedItem.id"
             ></v-text-field>
-            <span v-else>{{ item.calories }}</span>
+            <span v-else>{{ item.description }}</span>
           </template>
+          <!-- Actions Column -->
           <template v-slot:[`item.actions`]="{ item }">
             <div v-if="item.id === editedItem.id">
               <v-icon color="red" class="mr-3" @click="close">
@@ -84,6 +89,7 @@ Uren overzicht week {{ computedSelectedWeek }}
               </v-icon>
             </div>
           </template>
+
           <template v-slot:no-data>
             <v-btn color="primary" @click="initialize">Reset</v-btn>
           </template>
@@ -105,10 +111,11 @@ Uren overzicht week {{ computedSelectedWeek }}
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
   data: () => ({
-    date: moment().format("YYYY-MM-DD"),
+    date: moment().locale('nl').format("YYYY-MM-DD"),
     menu2: false,
     search: "",
     headers: [
@@ -117,45 +124,49 @@ export default {
         value: "datum",
         sortable: false,
       },
-            {
+      {
         text: "Uren",
-        value: "datum",
+        value: "hours",
         sortable: false,
       },
-            {
+      {
         text: "Omschrijving",
-        value: "datum",
+        value: "description",
         sortable: false,
       },
-                  {
+      {
         text: "Acties",
-        value: "datum",
+        value: "actions",
         sortable: false,
       },
     ],
     desserts: [],
     editedIndex: -1,
-    editedItem: {
-      id: 0,
-      name: "",
-      calories: 0,
+    defaultItem : {
+      id: -1,
+      date: null,
+      hours: null,
+      description: null,
     },
-    defaultItem: {
-      id: 0,
-      name: "New Item",
-      calories: 0,
+    editedItem: {
+      id: -1,
+      date: null,
+      hours: null,
+      description: null,
     },
   }),
   methods: {
     editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
+      console.log(item);
+      this.editedIndex = this.workingHoursOfCurrentWeek.indexOf(item);
+      console.log(this.editedIndex);
       this.editedItem = Object.assign({}, item);
     },
 
     deleteItem(item) {
-      const index = this.desserts.indexOf(item);
+      const index = this.workingHoursOfCurrentWeek.indexOf(item);
       confirm("Are you sure you want to delete this item?") &&
-        this.desserts.splice(index, 1);
+        this.workingHoursOfCurrentWeek.splice(index, 1);
     },
 
     close() {
@@ -184,13 +195,22 @@ export default {
   },
 
   computed: {
+    // Getters from the store
+    // mix the getters into computed with object spread operator
+    ...mapGetters({
+      working_hours: "working_hours/get_all_working_hours",
+    }),
+
     computedDateFormattedMomentjs() {
       return this.date
-        ? moment(this.date).lang("nl").format("dd, D MMMM YYYY")
+        ? moment(this.date).locale('nl').format("dd, D MMMM YYYY")
         : "";
     },
     computedSelectedWeek() {
-      return this.date ? moment(this.date).week() : "";
+      return this.date ? moment(this.date).isoWeek() : "";
+    },
+    computedSelectedYear() {
+      return this.date ? moment(this.date).isoWeekYear() : "";
     },
     computedFirstDayCurrentWeek() {
       return moment(this.date).startOf("isoweek");
@@ -200,12 +220,24 @@ export default {
         .add(7, "days")
         .startOf("isoweek");
     },
-    datesOfCurrentWeek() {
+    workingHoursOfCurrentWeek() {
       var now = this.computedFirstDayCurrentWeek.clone(),
         dates = [];
 
       while (now.isBefore(this.computedLastDayCurrentWeek)) {
-        dates.push({ datum: now.lang("nl").format("dd, DD-MM") });
+        var working_hours_day = this.working_hours.find(
+          (x) => x.date === now.locale('nl').format("DD-MM-YYYY")
+        );
+
+        dates.push({
+          id: working_hours_day !== undefined ? working_hours_day.id : Math.floor(Math.random() * 99999999) + 10000000,
+          datum: now.locale('nl').format("dd, DD-MM"),
+          hours: working_hours_day !== undefined ? working_hours_day.hours : "",
+          description:
+            working_hours_day !== undefined
+              ? working_hours_day.description
+              : "",
+        });
         now.add(1, "days");
       }
       return dates;
