@@ -17,37 +17,52 @@
           fixed-header
           hide-default-footer
         >
-          <v-divider inset></v-divider>
           <template v-slot:top>
             <v-toolbar flat>
-              <div>
-                <!-- TODO Week nummer maannummer-->
-                <v-menu
-                  v-model="menu2"
-                  :close-on-content-click="false"
-                  :nudge-right="40"
-                  transition="scale-transition"
-                  offset-y
-                  min-width="auto"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="computedDateFormattedMomentjs"
-                      label="Kies een datum"
-                      prepend-icon="mdi-calendar"
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="date"
-                    @input="menu2 = false"
-                    locale="nl"
-                  ></v-date-picker>
-                </v-menu>
-              </div>
-              <v-spacer></v-spacer>
+              <!-- TODO Week nummer maannummer-->
+              <v-menu
+                v-model="menu2"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                transition="scale-transition"
+                offset-y
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="computedDateFormattedMomentjs"
+                    label="Kies een datum"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="date"
+                  @input="menu2 = false"
+                  locale="nl"
+                ></v-date-picker>
+              </v-menu>
+            </v-toolbar>
+            <v-toolbar flat>
+              <!-- maand aanpassen -->
+              <v-btn icon @click="substractMonth">
+                <v-icon>mdi-chevron-double-left</v-icon>
+              </v-btn>
+              <b>{{ computedSelectedMonth }}</b>
+              <v-btn icon @click="addMonth"
+                ><v-icon>mdi-chevron-double-right</v-icon></v-btn
+              >
+              <!-- week aanpassen -->
+              <v-btn icon @click="substractWeek">
+                <v-icon>mdi-chevron-left</v-icon>
+              </v-btn>
+              <b>{{ computedSelectedWeek }}</b>
+              <v-btn icon @click="addWeek"
+                ><v-icon>mdi-chevron-right</v-icon></v-btn
+              >
+              <v-btn icon><v-icon>mdi-cloud-upload-outline</v-icon></v-btn>
             </v-toolbar>
           </template>
           <!-- Column Hours template -->
@@ -95,17 +110,7 @@
           </template>
         </v-data-table>
       </v-card-text>
-      <v-card-actions>
-        <div>
-          <v-btn icon @click="substractWeek"
-            ><v-icon>mdi-chevron-left</v-icon></v-btn
-          >
-          <b>{{ computedSelectedWeek }}</b>
-          <v-btn icon @click="addWeek"
-            ><v-icon>mdi-chevron-right</v-icon></v-btn
-          >
-        </div>
-      </v-card-actions>
+      <v-card-actions> </v-card-actions>
     </v-card>
   </v-container>
 </template>
@@ -115,7 +120,7 @@ import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
   data: () => ({
-    date: moment().locale('nl').format("YYYY-MM-DD"),
+    date: moment().locale("nl").format("YYYY-MM-DD"),
     menu2: false,
     search: "",
     headers: [
@@ -142,7 +147,7 @@ export default {
     ],
     desserts: [],
     editedIndex: -1,
-    defaultItem : {
+    defaultItem: {
       id: -1,
       date: null,
       hours: null,
@@ -192,6 +197,12 @@ export default {
     addWeek() {
       this.date = moment(this.date).add(7, "days").format("YYYY-MM-DD");
     },
+    substractMonth() {
+      this.date = moment(this.date).subtract(1, "months").format("YYYY-MM-DD");
+    },
+    addMonth() {
+      this.date = moment(this.date).add(1, "months").format("YYYY-MM-DD");
+    },
   },
 
   computed: {
@@ -203,7 +214,7 @@ export default {
 
     computedDateFormattedMomentjs() {
       return this.date
-        ? moment(this.date).locale('nl').format("dd, D MMMM YYYY")
+        ? moment(this.date).locale("nl").format("dd, D MMMM YYYY")
         : "";
     },
     computedSelectedWeek() {
@@ -211,6 +222,9 @@ export default {
     },
     computedSelectedYear() {
       return this.date ? moment(this.date).isoWeekYear() : "";
+    },
+    computedSelectedMonth() {
+      return this.date ? moment(this.date).locale("nl").format("MMM") : "";
     },
     computedFirstDayCurrentWeek() {
       return moment(this.date).startOf("isoweek");
@@ -226,12 +240,15 @@ export default {
 
       while (now.isBefore(this.computedLastDayCurrentWeek)) {
         var working_hours_day = this.working_hours.find(
-          (x) => x.date === now.locale('nl').format("DD-MM-YYYY")
+          (x) => x.date === now.locale("nl").format("DD-MM-YYYY")
         );
 
         dates.push({
-          id: working_hours_day !== undefined ? working_hours_day.id : Math.floor(Math.random() * 99999999) + 10000000,
-          datum: now.locale('nl').format("dd, DD-MM"),
+          id:
+            working_hours_day !== undefined
+              ? working_hours_day.id
+              : Math.floor(Math.random() * 99999999) + 10000000,
+          datum: now.locale("nl").format("dd, DD-MM"),
           hours: working_hours_day !== undefined ? working_hours_day.hours : "",
           description:
             working_hours_day !== undefined
