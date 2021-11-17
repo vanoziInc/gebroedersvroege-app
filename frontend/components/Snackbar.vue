@@ -1,7 +1,26 @@
 <template>
-  <v-alert v-model="show" dismissible outlined text :color="color">{{
+  <v-snackbar
+    v-model="show"
+    dismissible
+    outlined
+    top
+    text
+    :color="color"
+  >{{
     message
-  }}</v-alert>
+  }}
+    <template v-slot:action="{ attrs }">
+      <v-btn
+        icon
+        v-bind="attrs"
+        @click="show = false"
+      >
+        <v-icon :color="color">
+          mdi-close-circle-outline
+        </v-icon>
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 
 <script>
