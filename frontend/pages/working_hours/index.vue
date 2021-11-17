@@ -2,9 +2,12 @@
 
 <template>
   <v-container>
+            <ConfirmDlg ref="confirm" />
     <v-card>
       <v-card-title class="ml-4">
-        <span><h4 class="font-weight-light">Uren overzicht</h4> </span>
+        <span>
+          <h4 class="font-weight-light">Uren overzicht</h4>
+        </span>
       </v-card-title>
       <v-card-subtitle class="ml-4">
         Week {{ computedSelectedWeek }}
@@ -47,34 +50,65 @@
             </v-toolbar>
             <v-toolbar flat>
               <!-- maand aanpassen -->
-              <v-btn icon @click="substractMonth">
+              <v-btn
+                icon
+                @click="substractMonth"
+              >
                 <v-icon>mdi-chevron-double-left</v-icon>
               </v-btn>
               <b>{{ computedSelectedMonth }}</b>
-              <v-btn icon @click="addMonth"
-                ><v-icon>mdi-chevron-double-right</v-icon></v-btn
+              <v-btn
+                icon
+                @click="addMonth"
               >
+                <v-icon>mdi-chevron-double-right</v-icon>
+              </v-btn>
               <!-- week aanpassen -->
-              <v-btn icon @click="substractWeek">
+              <v-btn
+                icon
+                @click="substractWeek"
+              >
                 <v-icon>mdi-chevron-left</v-icon>
               </v-btn>
               <b>{{ computedSelectedWeek }}</b>
-              <v-btn icon @click="addWeek"
-                ><v-icon>mdi-chevron-right</v-icon></v-btn
+              <v-btn
+                icon
+                @click="addWeek"
               >
-              <v-btn icon><v-icon>mdi-cloud-upload-outline</v-icon></v-btn>
+                <v-icon>mdi-chevron-right</v-icon>
+              </v-btn>
+              <v-btn icon>
+                <v-icon>mdi-cloud-upload-outline</v-icon>
+              </v-btn>
             </v-toolbar>
+          </template>
+          <!-- This template looks for headers with formatters and executes them -->
+          <template
+            v-for="header in headers.filter((header) =>
+              header.hasOwnProperty('formatter')
+            )"
+            v-slot:[`item.${header.value}`]="{ header, value }"
+          >
+            {{ header.formatter(value) }}
           </template>
           <!-- Column Hours template -->
           <template v-slot:[`item.hours`]="{ item }">
-            <v-text-field
-              v-model="editedItem.hours"
-              :hide-details="true"
-              dense
-              single-line
-              v-if="item.id === editedItem.id"
-            ></v-text-field>
-            <span v-else>{{ item.hours }}</span>
+            <v-form
+              id="hours_form"
+              ref="form"
+              v-model="valid"
+            >
+              <v-text-field
+                :rules="[rules.required, rules.integer]"
+                v-model="editedItem.hours"
+                :hide-details="true"
+                dense
+                single-line
+                v-if="item.id === editedItem.id"
+              ></v-text-field>
+
+              <span v-else>{{ item.hours }}</span>
+            </v-form>
           </template>
           <!-- Column description template -->
           <template v-slot:[`item.description`]="{ item }">
@@ -90,23 +124,42 @@
           <!-- Actions Column -->
           <template v-slot:[`item.actions`]="{ item }">
             <div v-if="item.id === editedItem.id">
-              <v-icon color="red" class="mr-3" @click="close">
+              <v-icon
+                color="red"
+                class="mr-3"
+                @click="close"
+              >
                 mdi-window-close
               </v-icon>
-              <v-icon color="green" @click="save"> mdi-content-save </v-icon>
+              <v-icon
+                color="green"
+                @click="save"
+                :disabled="!valid"
+              > mdi-content-save </v-icon>
             </div>
             <div v-else>
-              <v-icon color="green" class="mr-3" @click="editItem(item)">
+              <v-icon
+                color="green"
+                class="mr-3"
+                @click="editItem(item)"
+              >
                 mdi-pencil
               </v-icon>
-              <v-icon color="red" @click="deleteItem(item)">
+              <v-icon
+                v-if="item.hours !== ''"
+                color="red"
+                @click="delRecord(item)"
+              >
                 mdi-delete
               </v-icon>
             </div>
           </template>
 
           <template v-slot:no-data>
-            <v-btn color="primary" @click="initialize">Reset</v-btn>
+            <v-btn
+              color="primary"
+              @click="initialize"
+            >Reset</v-btn>
           </template>
         </v-data-table>
       </v-card-text>
@@ -116,6 +169,7 @@
 </template>
 
 <script>
+import ConfirmDlg from "~/components/ConfirmDlg.vue"
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
@@ -123,11 +177,17 @@ export default {
     date: moment().locale("nl").format("YYYY-MM-DD"),
     menu2: false,
     search: "",
+    valid: false,
+    rules: {
+      required: (value) => !!value || "Verplicht.",
+      integer: (value) => isNaN(value) == false || "Moet cijfer zijn",
+    },
     headers: [
       {
         text: "Datum",
         value: "date",
         sortable: false,
+        formatter: (x) => (x ? moment(x).locale("nl").format("ddd DD/MM") : null),
       },
       {
         text: "Uren",
@@ -155,9 +215,6 @@ export default {
     },
     editedItem: {
       id: -1,
-      date: null,
-      hours: null,
-      description: null,
     },
   }),
   methods: {
@@ -190,7 +247,7 @@ export default {
       if (this.editedIndex > -1) {
         this.editedItem.user_id = this.$auth.user.id;
         console.log(this.editedItem);
-        this.addOrUpdateWorkingHoursForUser(this.editedItem)
+        this.addOrUpdateWorkingHoursForUser(this.editedItem);
         // Object.assign(this.desserts[this.editedIndex], this.editedItem);
       }
       this.close();
@@ -206,6 +263,20 @@ export default {
     },
     addMonth() {
       this.date = moment(this.date).add(1, "months").format("YYYY-MM-DD");
+    },
+    // Confirmation dialog methods
+    async delRecord(item) {
+      if (
+        await this.$refs.confirm.open(
+          "Bevestig",
+          "Weet je zeker dat je de uren wilt verwijderen?"
+        )
+      ) {
+        this.deleteWorkingHoursForUser(item.id);
+      }
+    },
+    deleteRecord() {
+      console.log("Record deleted.");
     },
   },
 
@@ -264,7 +335,7 @@ export default {
       return dates;
     },
   },
-    created() {
+  created() {
     this.getAllWorkingHoursForUser(this.$auth.user.id);
   },
 };

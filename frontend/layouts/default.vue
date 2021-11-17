@@ -72,7 +72,11 @@
       </v-list>
     </v-navigation-drawer>
     <!-- NAVIGATION BAR -->
-    <v-app-bar :clipped-left="clipped" fixed app>
+    <v-app-bar
+      :clipped-left="clipped"
+      fixed
+      app
+    >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <h3>{{ title }}</h3>
       <v-spacer />
@@ -81,13 +85,19 @@
       <div v-if="this.$auth.loggedIn">
         <!-- LARGER VIEWPORTS -->
         <div v-if="$vuetify.breakpoint.mdAndUp">
-          <v-btn small @click="logout">
+          <v-btn
+            small
+            @click="logout"
+          >
             <v-icon class="mr-2">mdi-lock</v-icon>UITLOGGEN
           </v-btn>
         </div>
         <!-- SMALLER VIEWPORTS -->
         <div v-if="$vuetify.breakpoint.smAndDown">
-          <v-btn icon @click="logout">
+          <v-btn
+            icon
+            @click="logout"
+          >
             <v-icon>mdi-lock</v-icon>
           </v-btn>
         </div>
@@ -97,19 +107,32 @@
       <div v-else>
         <!-- LARGER VIEWPORTS -->
         <div v-if="$vuetify.breakpoint.mdAndUp">
-          <v-btn small to="/auth/login">
+          <v-btn
+            small
+            to="/auth/login"
+          >
             <v-icon class="mr-2">mdi-lock-open</v-icon>INLOGGEN
           </v-btn>
-          <v-btn small class="ml-2" to="/auth/register">
+          <v-btn
+            small
+            class="ml-2"
+            to="/auth/register"
+          >
             <v-icon class="mr-2">mdi-account-plus-outline</v-icon>REGISTREREN
           </v-btn>
         </div>
         <!-- SMALLER VIEWPORTS -->
         <div v-if="$vuetify.breakpoint.smAndDown">
-          <v-btn icon to="/auth/login">
+          <v-btn
+            icon
+            to="/auth/login"
+          >
             <v-icon>mdi-lock-open</v-icon>
           </v-btn>
-          <v-btn icon to="/auth/register">
+          <v-btn
+            icon
+            to="/auth/register"
+          >
             <v-icon>mdi-account-plus-outline</v-icon>
           </v-btn>
         </div>
@@ -118,16 +141,22 @@
 
     <!-- APPLICATIE MAIN WINDOW -->
     <v-main>
+      <!-- Confirmation Dialog -->
+
       <Snackbar></Snackbar>
       <nuxt />
     </v-main>
-    <v-footer :absolute="!fixed" app>
+    <v-footer
+      :absolute="!fixed"
+      app
+    >
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
   </v-app>
 </template>
 
 <script>
+
 import Snackbar from "~/components/Snackbar.vue";
 
 export default {
@@ -148,9 +177,12 @@ export default {
           items: [{ title: "Onderhoud", route: "/general_maintenance" }],
           title: "Algemeen",
         },
-                {
+        {
           action: "mdi-account-clock-outline",
-          items: [{ title: "Invoeren", route: "/working_hours/" }, { title: "Overzicht", route: "/working_hours/overview" }],
+          items: [
+            { title: "Invoeren", route: "/working_hours/" },
+            { title: "Overzicht", route: "/working_hours/overview" },
+          ],
           title: "Uren",
         },
         {
