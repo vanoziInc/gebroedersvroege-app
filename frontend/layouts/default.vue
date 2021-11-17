@@ -172,29 +172,29 @@ export default {
       title: "Gebr. Vroege",
       // Navigation drawer items
       Items: [
-        {
-          action: "mdi-format-color-text",
-          items: [{ title: "Onderhoud", route: "/general_maintenance" }],
-          title: "Algemeen",
-        },
+        // {
+        //   action: "mdi-format-color-text",
+        //   items: [{ title: "Onderhoud", route: "/general_maintenance" }],
+        //   title: "Algemeen",
+        // },
         {
           action: "mdi-account-clock-outline",
           items: [
             { title: "Invoeren", route: "/working_hours/" },
-            { title: "Overzicht", route: "/working_hours/overview" },
+            // { title: "Overzicht", route: "/working_hours/overview" },
           ],
           title: "Uren",
         },
-        {
-          action: "mdi-cow",
-          items: [{ title: "Kalfjes" }],
-          title: "Melkvee",
-        },
-        {
-          action: "mdi-tractor",
-          items: [{ title: "Machines" }],
-          title: "Loonbedrijf",
-        },
+        // {
+        //   action: "mdi-cow",
+        //   items: [{ title: "Kalfjes" }],
+        //   title: "Melkvee",
+        // },
+        // {
+        //   action: "mdi-tractor",
+        //   items: [{ title: "Machines" }],
+        //   title: "Loonbedrijf",
+        // },
       ],
       adminItems: [
         {
