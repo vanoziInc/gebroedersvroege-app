@@ -2,7 +2,7 @@
 
 <template>
   <v-container>
-            <ConfirmDlg ref="confirm" />
+    <ConfirmDlg ref="confirm" />
     <v-card>
       <v-card-title class="ml-4">
         <span>
@@ -34,7 +34,7 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
                     v-model="computedDateFormattedMomentjs"
-                    label="Kies een datum"
+                    label="Ga naar week op basis van datum"
                     prepend-icon="mdi-calendar"
                     readonly
                     v-bind="attrs"
@@ -78,8 +78,9 @@
                 <v-icon>mdi-chevron-right</v-icon>
               </v-btn>
               <v-btn icon>
-                <v-icon>mdi-cloud-upload-outline</v-icon>
+                <v-icon>mdi-content-save-check-outline</v-icon>
               </v-btn>
+              <span class="body-1">Indienen</span>
             </v-toolbar>
           </template>
           <!-- This template looks for headers with formatters and executes them -->
@@ -139,6 +140,7 @@
             </div>
             <div v-else>
               <v-icon
+                v-if="computedEditDate(item.date)"
                 color="green"
                 class="mr-3"
                 @click="editItem(item)"
@@ -169,7 +171,7 @@
 </template>
 
 <script>
-import ConfirmDlg from "~/components/ConfirmDlg.vue"
+import ConfirmDlg from "~/components/ConfirmDlg.vue";
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
@@ -177,7 +179,7 @@ export default {
     date: moment().locale("nl").format("YYYY-MM-DD"),
     menu2: false,
     search: "",
-    title : "Uren invoeren",
+    title: "Uren invoeren",
     valid: false,
     rules: {
       required: (value) => !!value || "Verplicht.",
@@ -188,7 +190,8 @@ export default {
         text: "Datum",
         value: "date",
         sortable: false,
-        formatter: (x) => (x ? moment(x).locale("nl").format("ddd DD/MM") : null),
+        formatter: (x) =>
+          x ? moment(x).locale("nl").format("ddd DD/MM") : null,
       },
       {
         text: "Uren",
@@ -218,16 +221,24 @@ export default {
       id: -1,
     },
   }),
-      head() {
-      return {
-        title: this.title,}
-        },
+  head() {
+    return {
+      title: this.title,
+    };
+  },
   methods: {
     ...mapActions({
       getAllWorkingHoursForUser: "working_hours/getAllWorkingHours",
       addOrUpdateWorkingHoursForUser: "working_hours/addOrUpdateWorkingHours",
       deleteWorkingHoursForUser: "working_hours/deleteWorkingHours",
     }),
+    computedEditDate(date) {
+      if (moment(date) < moment()) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     editItem(item) {
       this.editedIndex = this.workingHoursOfCurrentWeek.indexOf(item);
       this.editedItem = Object.assign({}, item);

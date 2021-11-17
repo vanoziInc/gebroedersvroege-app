@@ -92,7 +92,7 @@ class WorkingHoursUpdateSchema(pydantic.BaseModel):
     id : Optional[int]
     user_id : Optional[int]
     date: Optional[datetime.date]
-    hours: Optional[int]
+    hours: Optional[float]
     description : Optional[str]
     submitted: Optional[bool] = False
 

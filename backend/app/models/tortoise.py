@@ -64,7 +64,7 @@ class WorkingHours(models.Model):
     last_modified_at = fields.DatetimeField(auto_now=True)
     last_modified_by = fields.CharField(null=True, max_length=255)
     date = fields.DateField(null=True)
-    hours = fields.IntField(null=True)
+    hours = fields.FloatField(null=True)
     description = fields.TextField(null=True)
     submitted = fields.BooleanField(null=False, default=False)
     # Foreign key
