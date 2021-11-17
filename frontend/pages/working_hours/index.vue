@@ -2,7 +2,7 @@
 
 <template>
   <v-container>
-    {{weekSubmitted}}
+    {{this.$store.state.working_hours}}
     <ConfirmDlg ref="confirm" />
     <v-card>
       <v-card-title class="ml-4">
@@ -86,10 +86,12 @@
                 <v-btn
                   icon
                   @click="submitWeek()"
+                  color="green"
+                  small
                 >
-                  <v-icon>mdi-content-save-check-outline</v-icon>
+                  <v-icon color="green">mdi-content-save-outline</v-icon>
                 </v-btn>
-                <span class="body-1">Indienen</span>
+                <!-- <span class="body-1">Indienen</span> -->
               </div>
             </v-toolbar>
           </template>
@@ -133,7 +135,7 @@
             <span v-else>{{ item.description }}</span>
           </template>
           <!-- Actions Column -->
-          <template v-slot:[`item.actions`]="{ item }">
+          <template v-if="!weekSubmitted" v-slot:[`item.actions`]="{ item }">
             <div v-if="item.id === editedItem.id">
               <v-icon
                 color="red"
@@ -351,13 +353,15 @@ export default {
           id:
             working_hours_day !== undefined
               ? working_hours_day.id
-              : Math.floor(Math.random() * 99999999) + 10000000,
+              : Math.floor(Math.random() * 99999999) + 1,
           date: now.locale("nl").format("YYYY-MM-DD"),
           hours: working_hours_day !== undefined ? working_hours_day.hours : "",
           description:
             working_hours_day !== undefined
               ? working_hours_day.description
               : "",
+          submitted :
+            working_hours_day !== undefined ? working_hours_day.submitted : null
         });
         now.add(1, "days");
       }
@@ -365,13 +369,34 @@ export default {
     },
     // all days submitted or not
     weekSubmitted() {
+      var submittedItems = []
+      var unSubmittedItems = []
+      var undefinedItems = []
+      // there is an item not submitted yet
       for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
         let item = this.workingHoursOfCurrentWeek[i];
-        if (item.hours !== "") {
-          if (item.sumitted == false) return false;
+        if ( item.submitted == false) {
+          unSubmittedItems.push(item);
+        }
+        else if ( item.submitted == null) {
+          undefinedItems.push(item)
+        }
+        else if ( item.submitted ==true) {
+          submittedItems.push(item)
         }
       }
-      return true;
+      console.log(submittedItems)
+       console.log(unSubmittedItems)
+        console.log(undefinedItems)
+      if (unSubmittedItems.length > 1) {
+        return false
+      }
+      else if (undefinedItems.length == 7 ) {
+        return false
+      }
+      else {
+        return true
+      }
     },
   },
   created() {
