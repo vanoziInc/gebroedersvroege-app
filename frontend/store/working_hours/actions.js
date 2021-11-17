@@ -33,10 +33,19 @@ export default {
         try {
           let response = await this.$axios.put("/working_hours/", payload);
           commit("ADDORUPDATEWORKINGHOURS", response.data)
-          this.$notifier.showMessage({
-            content: "Uren aangepast",
-            color: "success",
-          });
+          if (response.data.submitted == true) {
+            this.$notifier.showMessage({
+              content: "Uren ingediend",
+              color: "success",
+            });
+          }
+          else {
+            this.$notifier.showMessage({
+              content: "Uren aangepast",
+              color: "success",
+            });
+          }
+
         } catch (err) {
           if (err.response) {
               this.$notifier.showMessage({

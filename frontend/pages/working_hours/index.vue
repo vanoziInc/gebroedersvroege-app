@@ -2,6 +2,7 @@
 
 <template>
   <v-container>
+    {{weekSubmitted}}
     <ConfirmDlg ref="confirm" />
     <v-card>
       <v-card-title class="ml-4">
@@ -77,10 +78,19 @@
               >
                 <v-icon>mdi-chevron-right</v-icon>
               </v-btn>
-              <v-btn icon>
-                <v-icon>mdi-content-save-check-outline</v-icon>
-              </v-btn>
-              <span class="body-1">Indienen</span>
+              <div v-if="weekSubmitted">
+                <v-icon color="red">mdi-content-save-off-outline</v-icon>
+                <!-- <span class="body-1">Al ingediend</span> -->
+              </div>
+              <div v-else>
+                <v-btn
+                  icon
+                  @click="submitWeek()"
+                >
+                  <v-icon>mdi-content-save-check-outline</v-icon>
+                </v-btn>
+                <span class="body-1">Indienen</span>
+              </div>
             </v-toolbar>
           </template>
           <!-- This template looks for headers with formatters and executes them -->
@@ -254,15 +264,9 @@ export default {
         this.editedIndex = -1;
       }, 300);
     },
-    addNew() {
-      const addObj = Object.assign({}, this.defaultItem);
-      addObj.id = this.desserts.length + 1;
-      this.desserts.unshift(addObj);
-    },
     save() {
       if (this.editedIndex > -1) {
         this.editedItem.user_id = this.$auth.user.id;
-        console.log(this.editedItem);
         this.addOrUpdateWorkingHoursForUser(this.editedItem);
         // Object.assign(this.desserts[this.editedIndex], this.editedItem);
       }
@@ -280,6 +284,18 @@ export default {
     addMonth() {
       this.date = moment(this.date).add(1, "months").format("YYYY-MM-DD");
     },
+    // Method to submid all items in the week
+    submitWeek() {
+      for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
+        let item = this.workingHoursOfCurrentWeek[i];
+        console.log(item);
+        if (item.hours !== "") {
+          item.user_id = this.$auth.user.id;
+          item.submitted = true;
+          this.addOrUpdateWorkingHoursForUser(item);
+        }
+      }
+    },
     // Confirmation dialog methods
     async delRecord(item) {
       if (
@@ -290,9 +306,6 @@ export default {
       ) {
         this.deleteWorkingHoursForUser(item.id);
       }
-    },
-    deleteRecord() {
-      console.log("Record deleted.");
     },
   },
 
@@ -349,6 +362,16 @@ export default {
         now.add(1, "days");
       }
       return dates;
+    },
+    // all days submitted or not
+    weekSubmitted() {
+      for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
+        let item = this.workingHoursOfCurrentWeek[i];
+        if (item.hours !== "") {
+          if (item.sumitted == false) return false;
+        }
+      }
+      return true;
     },
   },
   created() {

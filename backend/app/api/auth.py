@@ -157,7 +157,7 @@ async def get_login_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
 ):
     user = await Auth.authenticate_user(
-        email=form_data.username, password=form_data.password
+        email=form_data.username.lower(), password=form_data.password
     )
     if not user:
         raise HTTPException(
