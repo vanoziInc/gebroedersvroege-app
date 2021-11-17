@@ -177,6 +177,7 @@ export default {
     date: moment().locale("nl").format("YYYY-MM-DD"),
     menu2: false,
     search: "",
+    title : "Uren invoeren",
     valid: false,
     rules: {
       required: (value) => !!value || "Verplicht.",
@@ -217,6 +218,10 @@ export default {
       id: -1,
     },
   }),
+      head() {
+      return {
+        title: this.title,}
+        },
   methods: {
     ...mapActions({
       getAllWorkingHoursForUser: "working_hours/getAllWorkingHours",
