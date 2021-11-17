@@ -126,7 +126,7 @@ export default {
     headers: [
       {
         text: "Datum",
-        value: "datum",
+        value: "date",
         sortable: false,
       },
       {
@@ -161,19 +161,20 @@ export default {
     },
   }),
   methods: {
+    ...mapActions({
+      getAllWorkingHoursForUser: "working_hours/getAllWorkingHours",
+      addOrUpdateWorkingHoursForUser: "working_hours/addOrUpdateWorkingHours",
+      deleteWorkingHoursForUser: "working_hours/deleteWorkingHours",
+    }),
     editItem(item) {
-      console.log(item);
       this.editedIndex = this.workingHoursOfCurrentWeek.indexOf(item);
-      console.log(this.editedIndex);
       this.editedItem = Object.assign({}, item);
     },
-
     deleteItem(item) {
       const index = this.workingHoursOfCurrentWeek.indexOf(item);
       confirm("Are you sure you want to delete this item?") &&
-        this.workingHoursOfCurrentWeek.splice(index, 1);
+        this.deleteWorkingHoursForUser(item.id);
     },
-
     close() {
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
@@ -187,7 +188,10 @@ export default {
     },
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
+        this.editedItem.user_id = this.$auth.user.id;
+        console.log(this.editedItem);
+        this.addOrUpdateWorkingHoursForUser(this.editedItem)
+        // Object.assign(this.desserts[this.editedIndex], this.editedItem);
       }
       this.close();
     },
@@ -240,7 +244,7 @@ export default {
 
       while (now.isBefore(this.computedLastDayCurrentWeek)) {
         var working_hours_day = this.working_hours.find(
-          (x) => x.date === now.locale("nl").format("DD-MM-YYYY")
+          (x) => x.date === now.locale("nl").format("YYYY-MM-DD")
         );
 
         dates.push({
@@ -248,7 +252,7 @@ export default {
             working_hours_day !== undefined
               ? working_hours_day.id
               : Math.floor(Math.random() * 99999999) + 10000000,
-          datum: now.locale("nl").format("dd, DD-MM"),
+          date: now.locale("nl").format("YYYY-MM-DD"),
           hours: working_hours_day !== undefined ? working_hours_day.hours : "",
           description:
             working_hours_day !== undefined
@@ -259,6 +263,9 @@ export default {
       }
       return dates;
     },
+  },
+    created() {
+    this.getAllWorkingHoursForUser(this.$auth.user.id);
   },
 };
 </script>

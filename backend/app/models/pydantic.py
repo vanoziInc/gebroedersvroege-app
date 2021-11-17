@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-from app.models.tortoise import AllowedUsers, GeneralMaintenance, Roles, Users
+from app.models.tortoise import AllowedUsers, GeneralMaintenance, Roles, Users, WorkingHours
 
 import pydantic
 import datetime
@@ -25,7 +25,7 @@ class CreateUser(pydantic.BaseModel):
 User_Pydantic = pydantic_model_creator(
     Users,
     name="User",
-    exclude=("hashed_password", "confirmation"),
+    exclude=("hashed_password", "confirmation", "working_hours"),
 )
 
 # Roles
@@ -75,3 +75,27 @@ class GeneralMaintenanceCreateSchema(pydantic.BaseModel):
 # UPDATE
 class GeneralMaintenanceUpdateSchema(pydantic.BaseModel):
     description : str
+
+# Working Hours
+# GET
+WorkingHoursResponseSchema = pydantic_model_creator(WorkingHours, exclude=['user'])
+    
+# CREATE
+class WorkingHoursCreateSchema(pydantic.BaseModel):
+    user_id : int
+    date: datetime.date
+    hours: int
+    description : str
+
+# UPDATE
+class WorkingHoursUpdateSchema(pydantic.BaseModel):
+    id : Optional[int]
+    user_id : Optional[int]
+    date: Optional[datetime.date]
+    hours: Optional[int]
+    description : Optional[str]
+    submitted: Optional[bool] = False
+
+# UPDATE
+class WorkingHoursSubmitSchema(pydantic.BaseModel):
+    ids : List[int]

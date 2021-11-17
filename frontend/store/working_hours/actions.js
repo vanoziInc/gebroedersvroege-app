@@ -1,8 +1,8 @@
 export default {
-    async getAllowedUsers({commit}) {
+    async getAllWorkingHours({commit}, user_id) {
         try {
-          let response = await this.$axios.get("/allowed_users/");
-          commit("GETALLOWEDUSERS", response.data)
+          let response = await this.$axios.get("/working_hours/all_for_user/" + user_id);
+          commit("GETWORKINGHOURS", response.data)
         } catch (err) {
           if (err.response) {
               this.$notifier.showMessage({
@@ -12,12 +12,12 @@ export default {
             }
         }
       },
-      async addAllowedUser({commit}, payload) {
+      async addWorkingHours({commit}, payload) {
         try {
-          let response = await this.$axios.post("/allowed_users/", payload);
-          commit("ADDALLOWEDUSER", response.data)
+          let response = await this.$axios.post("/working_hours/", payload);
+          commit("ADDWORKINGHOURS", response.data)
           this.$notifier.showMessage({
-            content: "Uitnodiging om te registreren verstuurd!",
+            content: "Uren succesvol toegevoegd!",
             color: "success",
           });
         } catch (err) {
@@ -29,12 +29,29 @@ export default {
           }
         }
       },
-      async deleteAllowedUser({commit}, id) {
+      async addOrUpdateWorkingHours({commit},payload) {
         try {
-          let response = await this.$axios.delete("/allowed_users/" + id);
-          commit("DELETEALLOWEDUSER", response.data)
+          let response = await this.$axios.put("/working_hours/", payload);
+          commit("ADDORUPDATEWORKINGHOURS", response.data)
           this.$notifier.showMessage({
-            content: "Uitnodiging ingetrokken!",
+            content: "Uren aangepast",
+            color: "success",
+          });
+        } catch (err) {
+          if (err.response) {
+              this.$notifier.showMessage({
+                content: err.response.data.detail,
+                color: "error",
+              });
+          }
+        }
+      },
+      async deleteWorkingHours({commit}, id) {
+        try {
+          let response = await this.$axios.delete("/working_hours/" + id);
+          commit("DELETEWORKINGHOURS", id)
+          this.$notifier.showMessage({
+            content: response.data.detail,
             color: "success",
           });
         } catch (err) {

@@ -1,15 +1,29 @@
 export default {
-    GETALLOWEDUSERS(state, payload) {
-        state.allAllowedUsers = payload
+    GETWORKINGHOURS(state, payload) {
+        state.working_hours = payload
     },
-    ADDALLOWEDUSER(state, payload) {
-        state.allAllowedUsers.push(
+    ADDWORKINGHOURS(state, payload) {
+        state.working_hours.push(
             payload
         )
     },
-    DELETEALLOWEDUSER(state, payload) {
-        var index = state.allAllowedUsers.findIndex(allowedUser => allowedUser.id == payload.id);
-        state.allAllowedUsers.splice(index, 1);
-        console.log(state.allAllowedUsers)
+
+    ADDORUPDATEWORKINGHOURS: (state, payload) => {
+        const working_hours_item = state.working_hours.find(p => p.id === payload.id)
+        if (working_hours_item == null) {
+            state.working_hours.push(
+                payload
+            )
+        }
+        else {
+            working_hours_item.hours = payload.hours
+            working_hours_item.submitted = payload.submitted
+            working_hours_item.description = payload.description
+        }
+    },
+
+    DELETEWORKINGHOURS(state, id) {
+        var index = state.working_hours.findIndex(item => item.id == id);
+        state.working_hours.splice(index, 1);
     }
 }

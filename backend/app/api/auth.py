@@ -102,7 +102,7 @@ async def activate_account(
         user.confirmation = None
         user.is_active = True
         await user.save()
-        return JSONResponse({"message": "Account activated"})
+        return JSONResponse({"detail": "Account geactivieerd"})
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -265,4 +265,4 @@ async def reset_password(
     user.hashed_password = new_password_hashed
     await user.save()
     # Create a success respons
-    return JSONResponse({"message": "Wachtwoord succesvol gereset"}, status_code=200)
+    return JSONResponse({"detail": "Wachtwoord succesvol gereset"}, status_code=200)

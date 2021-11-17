@@ -10,9 +10,9 @@ router = APIRouter()
 
 @router.get('/', response_model=List[User_Pydantic], dependencies=[Depends(RoleChecker(['admin']))])
 async def get_all_users():
-    users = await Users.all()
-    for user in users:
-        await user.fetch_related("roles")
+    users = await Users.all().prefetch_related('roles')
+    # for user in users:
+    #     await user.fetch_related("roles")
     return users
 
 @router.get('/me', response_model=User_Pydantic)

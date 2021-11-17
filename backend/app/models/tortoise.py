@@ -56,3 +56,22 @@ class GeneralMaintenance(models.Model):
     
     class Meta:
         table='general_maintenance'
+
+class WorkingHours(models.Model):
+    id = fields.IntField(pk=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    created_by = fields.CharField(null=False, max_length=255)
+    last_modified_at = fields.DatetimeField(auto_now=True)
+    last_modified_by = fields.CharField(null=True, max_length=255)
+    date = fields.DateField(null=True)
+    hours = fields.IntField(null=True)
+    description = fields.TextField(null=True)
+    submitted = fields.BooleanField(null=False, default=False)
+    # Foreign key
+    user = fields.ForeignKeyField('models.Users', related_name='working_hours')
+
+    def __str__(self):
+        return self.description
+    
+    class Meta:
+        table='working_hours'
