@@ -4,15 +4,11 @@
   <v-container>
     <ConfirmDlg ref="confirm" />
     <v-card>
+
       <v-card-title class="ml-4">
-        <span>
-          <h4 class="font-weight-light">Uren overzicht</h4>
-        </span>
-      </v-card-title>
-      <v-card-subtitle class="ml-4">
         Week {{ computedSelectedWeek }}
         {{ computedSelectedYear }}
-      </v-card-subtitle>
+      </v-card-title>
       <v-card-text class="mt-2">
         <v-data-table
           :headers="headers"
