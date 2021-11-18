@@ -67,7 +67,12 @@
               <v-btn icon @click="addWeek" v-if="nextWeekAllowed">
                 <v-icon>mdi-chevron-right</v-icon>
               </v-btn>
+
+            </v-toolbar>
+            <v-toolbar flat>
               <!-- Indien functionality -->
+              <div class="body 1">Totaal uren: {{totalHoursCurrentWeek}}</div>
+              <v-spacer></v-spacer>
               <div v-if="weekSubmitted" class="ml-3">
                 <v-btn icon color="red" small>
                   <v-icon>mdi-content-save-off-outline</v-icon>
@@ -385,6 +390,14 @@ export default {
         return false
       }
     },
+    totalHoursCurrentWeek() {
+      var total = 0
+      for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
+        var item = this.workingHoursOfCurrentWeek[i];
+        total = total + item.hours
+      }
+      return total
+    }
   },
   created() {
     this.getAllWorkingHoursForUser(this.$auth.user.id);
