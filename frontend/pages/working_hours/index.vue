@@ -2,7 +2,6 @@
 
 <template>
   <v-container>
-    {{this.$store.state.working_hours}}
     <ConfirmDlg ref="confirm" />
     <v-card>
       <v-card-title class="ml-4">
@@ -46,49 +45,36 @@
                   v-model="date"
                   @input="menu2 = false"
                   locale="nl"
+                  :max="today"
                 ></v-date-picker>
               </v-menu>
             </v-toolbar>
             <v-toolbar flat>
+
               <!-- maand aanpassen -->
-              <v-btn
-                icon
-                @click="substractMonth"
-              >
+              <v-btn icon @click="substractMonth">
                 <v-icon>mdi-chevron-double-left</v-icon>
               </v-btn>
               <b>{{ computedSelectedMonth }}</b>
-              <v-btn
-                icon
-                @click="addMonth"
-              >
+              <v-btn icon @click="addMonth" v-if="nextMonthAllowed">
                 <v-icon>mdi-chevron-double-right</v-icon>
               </v-btn>
               <!-- week aanpassen -->
-              <v-btn
-                icon
-                @click="substractWeek"
-              >
+              <v-btn icon @click="substractWeek">
                 <v-icon>mdi-chevron-left</v-icon>
               </v-btn>
               <b>{{ computedSelectedWeek }}</b>
-              <v-btn
-                icon
-                @click="addWeek"
-              >
+              <v-btn icon @click="addWeek" v-if="nextWeekAllowed">
                 <v-icon>mdi-chevron-right</v-icon>
               </v-btn>
-              <div v-if="weekSubmitted">
-                <v-icon color="red">mdi-content-save-off-outline</v-icon>
-                <!-- <span class="body-1">Al ingediend</span> -->
+              <!-- Indien functionality -->
+              <div v-if="weekSubmitted" class="ml-3">
+                <v-btn icon color="red" small>
+                  <v-icon>mdi-content-save-off-outline</v-icon>
+                </v-btn>
               </div>
               <div v-else>
-                <v-btn
-                  icon
-                  @click="submitWeek()"
-                  color="green"
-                  small
-                >
+                <v-btn icon @click="submitWeek()" color="green" small>
                   <v-icon color="green">mdi-content-save-outline</v-icon>
                 </v-btn>
                 <!-- <span class="body-1">Indienen</span> -->
@@ -106,11 +92,7 @@
           </template>
           <!-- Column Hours template -->
           <template v-slot:[`item.hours`]="{ item }">
-            <v-form
-              id="hours_form"
-              ref="form"
-              v-model="valid"
-            >
+            <v-form id="hours_form" ref="form" v-model="valid">
               <v-text-field
                 :rules="[rules.required, rules.integer]"
                 v-model="editedItem.hours"
@@ -137,18 +119,12 @@
           <!-- Actions Column -->
           <template v-if="!weekSubmitted" v-slot:[`item.actions`]="{ item }">
             <div v-if="item.id === editedItem.id">
-              <v-icon
-                color="red"
-                class="mr-3"
-                @click="close"
-              >
+              <v-icon color="red" class="mr-3" @click="close">
                 mdi-window-close
               </v-icon>
-              <v-icon
-                color="green"
-                @click="save"
-                :disabled="!valid"
-              > mdi-content-save </v-icon>
+              <v-icon color="green" @click="save" :disabled="!valid">
+                mdi-content-save
+              </v-icon>
             </div>
             <div v-else>
               <v-icon
@@ -160,7 +136,7 @@
                 mdi-pencil
               </v-icon>
               <v-icon
-                v-if="item.hours !== ''"
+                v-if="item.submitted !== null"
                 color="red"
                 @click="delRecord(item)"
               >
@@ -170,10 +146,7 @@
           </template>
 
           <template v-slot:no-data>
-            <v-btn
-              color="primary"
-              @click="initialize"
-            >Reset</v-btn>
+            <v-btn color="primary" @click="initialize">Reset</v-btn>
           </template>
         </v-data-table>
       </v-card-text>
@@ -188,6 +161,7 @@ import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
   data: () => ({
+    today : moment().format("YYYY-MM-DD"),
     date: moment().locale("nl").format("YYYY-MM-DD"),
     menu2: false,
     search: "",
@@ -254,6 +228,7 @@ export default {
     editItem(item) {
       this.editedIndex = this.workingHoursOfCurrentWeek.indexOf(item);
       this.editedItem = Object.assign({}, item);
+      this.editedItem.submitted = false;
     },
     deleteItem(item) {
       const index = this.workingHoursOfCurrentWeek.indexOf(item);
@@ -355,13 +330,15 @@ export default {
               ? working_hours_day.id
               : Math.floor(Math.random() * 99999999) + 1,
           date: now.locale("nl").format("YYYY-MM-DD"),
-          hours: working_hours_day !== undefined ? working_hours_day.hours : "",
+          hours: working_hours_day !== undefined ? working_hours_day.hours : 0,
           description:
             working_hours_day !== undefined
               ? working_hours_day.description
               : "",
-          submitted :
-            working_hours_day !== undefined ? working_hours_day.submitted : null
+          submitted:
+            working_hours_day !== undefined
+              ? working_hours_day.submitted
+              : null,
         });
         now.add(1, "days");
       }
@@ -369,33 +346,43 @@ export default {
     },
     // all days submitted or not
     weekSubmitted() {
-      var submittedItems = []
-      var unSubmittedItems = []
-      var undefinedItems = []
+      var submittedItems = [];
+      var unSubmittedItems = [];
+      var undefinedItems = [];
       // there is an item not submitted yet
       for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
         let item = this.workingHoursOfCurrentWeek[i];
-        if ( item.submitted == false) {
+        if (item.submitted == false) {
           unSubmittedItems.push(item);
-        }
-        else if ( item.submitted == null) {
-          undefinedItems.push(item)
-        }
-        else if ( item.submitted ==true) {
-          submittedItems.push(item)
+        } else if (item.submitted == null) {
+          undefinedItems.push(item);
+        } else if (item.submitted == true) {
+          submittedItems.push(item);
         }
       }
-      console.log(submittedItems)
-       console.log(unSubmittedItems)
-        console.log(undefinedItems)
-      if (unSubmittedItems.length > 1) {
+      console.log(submittedItems);
+      console.log(unSubmittedItems);
+      console.log(undefinedItems);
+      if (unSubmittedItems.length > 0) {
+        return false;
+      } else if (undefinedItems.length == 7) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    nextWeekAllowed() {
+      if (this.computedSelectedWeek + 1 < moment().isoWeek() + 1) {
+        return true;
+      } else {
         return false
       }
-      else if (undefinedItems.length == 7 ) {
+    },
+    nextMonthAllowed() {
+      if (moment(this.date).month() + 1 < moment().month() + 1) {
+        return true;
+      } else {
         return false
-      }
-      else {
-        return true
       }
     },
   },
