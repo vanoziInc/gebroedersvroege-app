@@ -4,7 +4,6 @@
   <v-container>
     <ConfirmDlg ref="confirm" />
     <v-card>
-
       <v-card-title class="ml-4">
         Week {{ computedSelectedWeek }}
         {{ computedSelectedYear }}
@@ -46,7 +45,6 @@
               </v-menu>
             </v-toolbar>
             <v-toolbar flat>
-
               <!-- maand aanpassen -->
               <v-btn icon @click="substractMonth">
                 <v-icon>mdi-chevron-double-left</v-icon>
@@ -63,22 +61,37 @@
               <v-btn icon @click="addWeek" v-if="nextWeekAllowed">
                 <v-icon>mdi-chevron-right</v-icon>
               </v-btn>
-
             </v-toolbar>
             <v-toolbar flat>
               <!-- Indien functionality -->
-              <div class="body 1">Totaal uren: {{totalHoursCurrentWeek}}</div>
+              <div class="body 1">Totaal uren: {{ totalHoursCurrentWeek }}</div>
               <v-spacer></v-spacer>
-              <div v-if="weekSubmitted" class="ml-3">
-                <v-btn icon color="red" small>
-                  <v-icon>mdi-content-save-off-outline</v-icon>
-                </v-btn>
-              </div>
-              <div v-else>
-                <v-btn icon @click="submitWeek()" color="green" small>
+              <div class="text-center d-flex align-center justify-space-around">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon small v-bind="attrs" v-on="on" dark color="primary"
+                      >mdi-help-circle-outline</v-icon
+                    >
+                  </template>
+                  <span>Alleen ingediende uren zijn zichtbaar voor de administratie.</span>
+                </v-tooltip>
+
+                <v-btn
+                class="ml-9 mr-2"
+                  v-if="weekSubmitted"
+                  disabled
+                  icon
+                  @click="submitWeek()"
+                  color="green"
+                  small
+                >
                   <v-icon color="green">mdi-content-save-outline</v-icon>
+                  Indienen
                 </v-btn>
-                <!-- <span class="body-1">Indienen</span> -->
+                <v-btn class="ml-9 mr-2" v-else icon @click="submitWeek()" color="green" small>
+                  <v-icon color="green">mdi-content-save-outline</v-icon>
+                  Indienen
+                </v-btn>
               </div>
             </v-toolbar>
           </template>
@@ -162,7 +175,7 @@ import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
   data: () => ({
-    today : moment().format("YYYY-MM-DD"),
+    today: moment().format("YYYY-MM-DD"),
     date: moment().locale("nl").format("YYYY-MM-DD"),
     menu2: false,
     search: "",
@@ -376,24 +389,24 @@ export default {
       if (this.computedSelectedWeek + 1 < moment().isoWeek() + 1) {
         return true;
       } else {
-        return false
+        return false;
       }
     },
     nextMonthAllowed() {
       if (moment(this.date).month() + 1 < moment().month() + 1) {
         return true;
       } else {
-        return false
+        return false;
       }
     },
     totalHoursCurrentWeek() {
-      var total = 0
+      var total = 0;
       for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
         var item = this.workingHoursOfCurrentWeek[i];
-        total = total + item.hours
+        total = total + item.hours;
       }
-      return total
-    }
+      return total;
+    },
   },
   created() {
     this.getAllWorkingHoursForUser(this.$auth.user.id);
