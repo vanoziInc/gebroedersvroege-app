@@ -64,7 +64,7 @@
             </v-toolbar>
             <v-toolbar flat>
               <!-- Indien functionality -->
-              <div class="body 1">Totaal uren: {{ totalHoursCurrentWeek }}</div>
+              <b class="body 1">Totaal: {{ totalHoursCurrentWeek }}</b>
               <v-spacer></v-spacer>
               <div class="text-center d-flex align-center justify-space-around">
                 <v-tooltip bottom>
@@ -191,7 +191,7 @@ export default {
         value: "date",
         sortable: false,
         formatter: (x) =>
-          x ? moment(x).locale("nl").format("ddd DD/MM") : null,
+          x ? moment(x).locale("nl").format("dddd DD MMMM") : null,
       },
       {
         text: "Uren",
@@ -309,7 +309,7 @@ export default {
 
     computedDateFormattedMomentjs() {
       return this.date
-        ? moment(this.date).locale("nl").format("dd, D MMMM YYYY")
+        ? moment(this.date).locale("nl").format("dd, MMMM YYYY")
         : "";
     },
     computedSelectedWeek() {
