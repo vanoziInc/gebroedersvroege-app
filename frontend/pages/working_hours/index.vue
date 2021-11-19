@@ -14,6 +14,7 @@
           :items="workingHoursOfCurrentWeek"
           fixed-header
           hide-default-footer
+          @click:row="editItem"
         >
           <template v-slot:top>
             <v-toolbar flat>
@@ -73,11 +74,14 @@
                       >mdi-help-circle-outline</v-icon
                     >
                   </template>
-                  <span>Alleen ingediende uren zijn zichtbaar voor de administratie.</span>
+                  <span
+                    >Alleen ingediende uren zijn zichtbaar voor de
+                    administratie.</span
+                  >
                 </v-tooltip>
 
                 <v-btn
-                class="ml-9 mr-2"
+                  class="ml-9 mr-2"
                   v-if="weekSubmitted"
                   disabled
                   icon
@@ -88,7 +92,14 @@
                   <v-icon color="green">mdi-content-save-outline</v-icon>
                   Indienen
                 </v-btn>
-                <v-btn class="ml-9 mr-2" v-else icon @click="submitWeek()" color="green" small>
+                <v-btn
+                  class="ml-9 mr-2"
+                  v-else
+                  icon
+                  @click="submitWeek()"
+                  color="green"
+                  small
+                >
                   <v-icon color="green">mdi-content-save-outline</v-icon>
                   Indienen
                 </v-btn>
@@ -240,6 +251,11 @@ export default {
       }
     },
     editItem(item) {
+      for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
+        if (this.workingHoursOfCurrentWeek[i].submitted == true) {
+          return false;
+        }
+      }
       this.editedIndex = this.workingHoursOfCurrentWeek.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.editedItem.submitted = false;
