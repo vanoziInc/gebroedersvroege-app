@@ -1,4 +1,6 @@
-<template></template>
+<template>
+Hoi cass
+</template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
