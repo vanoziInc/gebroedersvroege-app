@@ -180,6 +180,7 @@ export default {
         {
           action: "mdi-account-clock-outline",
           items: [
+            { title: "Overzicht", route: "/working_hours/overview" },
             { title: "Invoeren", route: "/working_hours/" },
             // { title: "Overzicht", route: "/working_hours/overview" },
           ],

@@ -81,7 +81,6 @@
                 </v-tooltip>
 
                 <v-btn
-                  class="ml-9 mr-2"
                   v-if="weekSubmitted"
                   disabled
                   icon
@@ -292,7 +291,14 @@ export default {
       this.date = moment(this.date).add(1, "months").format("YYYY-MM-DD");
     },
     // Method to submid all items in the week
-    submitWeek() {
+    async submitWeek() {
+      if (
+        await this.$refs.confirm.open(
+          "Bevestig",
+          "Weet je zeker dat je de uren voor deze week wilt indienen?"
+        )
+      ) 
+
       for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
         let item = this.workingHoursOfCurrentWeek[i];
         console.log(item);
@@ -325,7 +331,7 @@ export default {
 
     computedDateFormattedMomentjs() {
       return this.date
-        ? moment(this.date).locale("nl").format("dd, MMMM YYYY")
+        ? moment(this.date).locale("nl").format("dd, D MMMM YYYY")
         : "";
     },
     computedSelectedWeek() {
