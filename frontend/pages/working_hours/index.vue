@@ -3,180 +3,162 @@
 <template>
   <v-container>
     <ConfirmDlg ref="confirm" />
-    <v-card>
-      <v-card-title class="ml-4">
-        Week {{ computedSelectedWeek }}
-        {{ computedSelectedYear }}
-      </v-card-title>
-      <v-card-text class="mt-2">
-        <v-data-table
-          :headers="headers"
-          :items="workingHoursOfCurrentWeek"
-          fixed-header
-          hide-default-footer
-          @click:row="editItem"
-        >
-          <template v-slot:top>
-            <v-toolbar flat>
-              <!-- TODO Week nummer maannummer-->
-              <v-menu
-                v-model="menu2"
-                :close-on-content-click="false"
-                :nudge-right="40"
-                transition="scale-transition"
-                offset-y
-                min-width="auto"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="computedDateFormattedMomentjs"
-                    label="Ga naar week op basis van datum"
-                    prepend-icon="mdi-calendar"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="date"
-                  @input="menu2 = false"
-                  locale="nl"
-                  :max="today"
-                ></v-date-picker>
-              </v-menu>
-            </v-toolbar>
-            <v-toolbar flat>
-              <!-- maand aanpassen -->
-              <v-btn icon @click="substractMonth">
-                <v-icon>mdi-chevron-double-left</v-icon>
-              </v-btn>
-              <b>{{ computedSelectedMonth }}</b>
-              <v-btn icon @click="addMonth" v-if="nextMonthAllowed">
-                <v-icon>mdi-chevron-double-right</v-icon>
-              </v-btn>
-              <!-- week aanpassen -->
-              <v-btn icon @click="substractWeek">
-                <v-icon>mdi-chevron-left</v-icon>
-              </v-btn>
-              <b>{{ computedSelectedWeek }}</b>
-              <v-btn icon @click="addWeek" v-if="nextWeekAllowed">
-                <v-icon>mdi-chevron-right</v-icon>
-              </v-btn>
-            </v-toolbar>
-            <v-toolbar flat>
-              <!-- Indien functionality -->
-              <b class="body 1">Totaal: {{ totalHoursCurrentWeek }}</b>
-              <v-spacer></v-spacer>
-              <div class="text-center d-flex align-center justify-space-around">
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-icon small v-bind="attrs" v-on="on" dark color="primary"
-                      >mdi-help-circle-outline</v-icon
-                    >
-                  </template>
-                  <span
-                    >Alleen ingediende uren zijn zichtbaar voor de
-                    administratie.</span
-                  >
-                </v-tooltip>
 
-                <v-btn
-                  class="ml-9 mr-2"
-                  v-if="weekSubmitted"
-                  disabled
-                  icon
-                  @click="submitWeek()"
-                  color="green"
-                  small
+    <v-data-table
+      :headers="headers"
+      :items="workingHoursOfCurrentWeek"
+      fixed-header
+      hide-default-footer
+      @click:row="editItem"
+      dense
+    >
+      <template v-slot:top>
+        <v-toolbar flat>
+          <v-btn-toggle tile dense v-model="toggle_year">
+            <v-btn @click="substractYear">
+              <v-icon>mdi-chevron-triple-left</v-icon>
+            </v-btn>
+            <v-btn>
+              {{ computedSelectedYear }}
+            </v-btn>
+            <v-btn @click="addYear" v-if="nextYearAllowed">
+              <v-icon>mdi-chevron-triple-right</v-icon>
+            </v-btn>
+          </v-btn-toggle>
+          <v-btn-toggle tile dense class="ml-2" v-model="toggle_month">
+            <v-btn @click="substractMonth">
+              <v-icon>mdi-chevron-double-left</v-icon>
+            </v-btn>
+            <v-btn>
+              {{ computedSelectedMonth }}
+            </v-btn>
+            <v-btn @click="addMonth" v-if="nextMonthAllowed">
+              <v-icon>mdi-chevron-double-right</v-icon>
+            </v-btn>
+          </v-btn-toggle>
+          <v-btn-toggle tile dense class="ml-2" v-model="toggle_week">
+            <v-btn @click="substractWeek">
+              <v-icon>mdi-chevron-left</v-icon>
+            </v-btn>
+            <v-btn>
+              {{ computedSelectedWeek }}
+            </v-btn>
+            <v-btn @click="addWeek" v-if="nextWeekAllowed">
+              <v-icon>mdi-chevron-right</v-icon>
+            </v-btn>
+          </v-btn-toggle>
+        </v-toolbar>
+        <v-toolbar flat>
+          <!-- Indien functionality -->
+          <p class="body-2">Totaal uren: {{ totalHoursCurrentWeek }}</p>
+          <v-spacer></v-spacer>
+          <div class="text-center d-flex align-center justify-space-around">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon small v-bind="attrs" v-on="on" dark color="primary"
+                  >mdi-help-circle-outline</v-icon
                 >
-                  <v-icon color="green">mdi-content-save-outline</v-icon>
-                  Indienen
-                </v-btn>
-                <v-btn
-                  class="ml-9 mr-2"
-                  v-else
-                  icon
-                  @click="submitWeek()"
-                  color="green"
-                  small
-                >
-                  <v-icon color="green">mdi-content-save-outline</v-icon>
-                  Indienen
-                </v-btn>
-              </div>
-            </v-toolbar>
-          </template>
-          <!-- This template looks for headers with formatters and executes them -->
-          <template
-            v-for="header in headers.filter((header) =>
-              header.hasOwnProperty('formatter')
-            )"
-            v-slot:[`item.${header.value}`]="{ header, value }"
+              </template>
+              <span
+                >Alleen ingediende uren zijn zichtbaar voor de
+                administratie.</span
+              >
+            </v-tooltip>
+
+            <v-btn
+              class="ml-9 mr-2"
+              v-if="weekSubmitted"
+              disabled
+              icon
+              @click="submitWeek()"
+              color="green"
+              small
+            >
+              <v-icon color="green">mdi-content-save-outline</v-icon>
+              Indienen
+            </v-btn>
+            <v-btn
+              class="ml-9 mr-2"
+              v-else
+              icon
+              @click="submitWeek()"
+              color="green"
+              small
+            >
+              <v-icon color="green">mdi-content-save-outline</v-icon>
+              Indienen
+            </v-btn>
+          </div>
+        </v-toolbar>
+      </template>
+      <!-- This template looks for headers with formatters and executes them -->
+      <template
+        v-for="header in headers.filter((header) =>
+          header.hasOwnProperty('formatter')
+        )"
+        v-slot:[`item.${header.value}`]="{ header, value }"
+      >
+        {{ header.formatter(value) }}
+      </template>
+      <!-- Column Hours template -->
+      <template v-slot:[`item.hours`]="{ item }">
+        <v-form id="hours_form" ref="form" v-model="valid">
+          <v-text-field
+            :rules="[rules.required, rules.integer]"
+            v-model="editedItem.hours"
+            :hide-details="true"
+            dense
+            single-line
+            v-if="item.id === editedItem.id"
+          ></v-text-field>
+
+          <span v-else>{{ item.hours }}</span>
+        </v-form>
+      </template>
+      <!-- Column description template -->
+      <template v-slot:[`item.description`]="{ item }">
+        <v-text-field
+          v-model="editedItem.description"
+          :hide-details="true"
+          dense
+          single-line
+          v-if="item.id === editedItem.id"
+        ></v-text-field>
+        <span v-else>{{ item.description }}</span>
+      </template>
+      <!-- Actions Column -->
+      <template v-if="!weekSubmitted" v-slot:[`item.actions`]="{ item }">
+        <div v-if="item.id === editedItem.id">
+          <v-icon color="red" class="mr-3" @click="close">
+            mdi-window-close
+          </v-icon>
+          <v-icon color="green" @click="save" :disabled="!valid">
+            mdi-content-save
+          </v-icon>
+        </div>
+        <div v-else>
+          <v-icon
+            v-if="computedEditDate(item.date)"
+            color="green"
+            class="mr-3"
+            @click="editItem(item)"
           >
-            {{ header.formatter(value) }}
-          </template>
-          <!-- Column Hours template -->
-          <template v-slot:[`item.hours`]="{ item }">
-            <v-form id="hours_form" ref="form" v-model="valid">
-              <v-text-field
-                :rules="[rules.required, rules.integer]"
-                v-model="editedItem.hours"
-                :hide-details="true"
-                dense
-                single-line
-                v-if="item.id === editedItem.id"
-              ></v-text-field>
+            mdi-pencil
+          </v-icon>
+          <v-icon
+            v-if="item.submitted !== null"
+            color="red"
+            @click="delRecord(item)"
+          >
+            mdi-delete
+          </v-icon>
+        </div>
+      </template>
 
-              <span v-else>{{ item.hours }}</span>
-            </v-form>
-          </template>
-          <!-- Column description template -->
-          <template v-slot:[`item.description`]="{ item }">
-            <v-text-field
-              v-model="editedItem.description"
-              :hide-details="true"
-              dense
-              single-line
-              v-if="item.id === editedItem.id"
-            ></v-text-field>
-            <span v-else>{{ item.description }}</span>
-          </template>
-          <!-- Actions Column -->
-          <template v-if="!weekSubmitted" v-slot:[`item.actions`]="{ item }">
-            <div v-if="item.id === editedItem.id">
-              <v-icon color="red" class="mr-3" @click="close">
-                mdi-window-close
-              </v-icon>
-              <v-icon color="green" @click="save" :disabled="!valid">
-                mdi-content-save
-              </v-icon>
-            </div>
-            <div v-else>
-              <v-icon
-                v-if="computedEditDate(item.date)"
-                color="green"
-                class="mr-3"
-                @click="editItem(item)"
-              >
-                mdi-pencil
-              </v-icon>
-              <v-icon
-                v-if="item.submitted !== null"
-                color="red"
-                @click="delRecord(item)"
-              >
-                mdi-delete
-              </v-icon>
-            </div>
-          </template>
-
-          <template v-slot:no-data>
-            <v-btn color="primary" @click="initialize">Reset</v-btn>
-          </template>
-        </v-data-table>
-      </v-card-text>
-      <v-card-actions> </v-card-actions>
-    </v-card>
+      <template v-slot:no-data>
+        <v-btn color="primary" @click="initialize">Reset</v-btn>
+      </template>
+    </v-data-table>
   </v-container>
 </template>
 
@@ -186,6 +168,9 @@ import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
   data: () => ({
+    toggle_year: null,
+    toggle_month: null,
+    toggle_week:null,
     today: moment().format("YYYY-MM-DD"),
     date: moment().locale("nl").format("YYYY-MM-DD"),
     menu2: false,
@@ -291,6 +276,12 @@ export default {
     addMonth() {
       this.date = moment(this.date).add(1, "months").format("YYYY-MM-DD");
     },
+    substractYear() {
+      this.date = moment(this.date).subtract(1, "years").format("YYYY-MM-DD");
+    },
+    addYear() {
+      this.date = moment(this.date).add(1, "years").format("YYYY-MM-DD");
+    },
     // Method to submid all items in the week
     async submitWeek() {
       if (
@@ -301,7 +292,6 @@ export default {
       )
         for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
           let item = this.workingHoursOfCurrentWeek[i];
-          console.log(item);
           if (item.hours !== "") {
             item.user_id = this.$auth.user.id;
             item.submitted = true;
@@ -396,9 +386,6 @@ export default {
           submittedItems.push(item);
         }
       }
-      console.log(submittedItems);
-      console.log(unSubmittedItems);
-      console.log(undefinedItems);
       if (unSubmittedItems.length > 0) {
         return false;
       } else if (undefinedItems.length == 7) {
@@ -414,8 +401,16 @@ export default {
         return false;
       }
     },
+
     nextMonthAllowed() {
       if (moment(this.date).month() + 1 < moment().month() + 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    nextYearAllowed() {
+      if (moment(this.date).year() + 1 < moment().year() + 1) {
         return true;
       } else {
         return false;
