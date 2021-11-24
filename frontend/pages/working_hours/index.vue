@@ -81,6 +81,7 @@
                 </v-tooltip>
 
                 <v-btn
+                  class="ml-9 mr-2"
                   v-if="weekSubmitted"
                   disabled
                   icon
@@ -297,17 +298,16 @@ export default {
           "Bevestig",
           "Weet je zeker dat je de uren voor deze week wilt indienen?"
         )
-      ) 
-
-      for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
-        let item = this.workingHoursOfCurrentWeek[i];
-        console.log(item);
-        if (item.hours !== "") {
-          item.user_id = this.$auth.user.id;
-          item.submitted = true;
-          this.addOrUpdateWorkingHoursForUser(item);
+      )
+        for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
+          let item = this.workingHoursOfCurrentWeek[i];
+          console.log(item);
+          if (item.hours !== "") {
+            item.user_id = this.$auth.user.id;
+            item.submitted = true;
+            this.addOrUpdateWorkingHoursForUser(item);
+          }
         }
-      }
     },
     // Confirmation dialog methods
     async delRecord(item) {

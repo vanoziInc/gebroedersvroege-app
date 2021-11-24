@@ -1,25 +1,32 @@
 <template>
   <v-container>
-    <v-card>
-      <v-card-text>
-        <!-- maand aanpassen -->
-        <v-btn icon @click="substractMonth">
-          <v-icon>mdi-chevron-double-left</v-icon>
-        </v-btn>
-        <b>{{ computedSelectedMonth }} - {{ computedSelectedYear }}</b>
-        <v-btn icon @click="addMonth">
-          <v-icon>mdi-chevron-double-right</v-icon>
-        </v-btn>
-        <v-data-table
-          :headers="headers"
-          :items="workingHoursInSelectedMonth"
-          :items-per-page="31"
-          :sort-by="['date']"
-          :sort-desc="[true]"
-          hide-default-footer
-        ></v-data-table>
-      </v-card-text>
-    </v-card>
+  <v-toolbar flat>
+              <!-- maand aanpassen -->
+              <v-btn icon @click="substractYear">
+                <v-icon>mdi-chevron-triple-left</v-icon>
+              </v-btn>
+              <b>{{ computedSelectedYear }}</b>
+              <v-btn icon @click="addYear" v-if="nextYearAllowed">
+                <v-icon>mdi-chevron-triple-right</v-icon>
+              </v-btn>
+
+            </v-toolbar>
+    <v-simple-table dense>
+      <template v-slot:default>
+        <thead>
+          <tr>
+            <th class="text-left">Maand</th>
+            <th class="text-left">Totaal uren</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in workingHoursPerMonthInSelectedYear" :key="item.month">
+            <td>{{ item.month }}</td>
+            <td>{{ item.sum }}</td>
+          </tr>
+        </tbody>
+      </template>
+    </v-simple-table>
   </v-container>
 </template>
 
@@ -53,13 +60,21 @@ export default {
     ...mapActions({
       getAllWorkingHoursForUser: "working_hours/getAllWorkingHours",
     }),
-    substractMonth() {
+    substractYear() {
       this.today = moment(this.today)
-        .subtract(1, "months")
+        .subtract(1, "years")
         .format("YYYY-MM-DD");
     },
-    addMonth() {
-      this.today = moment(this.today).add(1, "months").format("YYYY-MM-DD");
+    addYear() {
+      this.today = moment(this.today).add(1, "years").format("YYYY-MM-DD");
+    },
+
+    getArraySum(a) {
+      var total = 0;
+      for (var i in a) {
+        total += a[i].hours;
+      }
+      return total;
     },
   },
   computed: {
@@ -75,7 +90,7 @@ export default {
       return moment(this.today).endOf("month").format("YYYY-MM-DD");
     },
     computedSelectedYear() {
-      return this.today ? moment(this.date).isoWeekYear() : "";
+      return this.today ? moment(this.today).isoWeekYear() : "";
     },
     computedSelectedMonth() {
       return this.today ? moment(this.today).locale("nl").format("MMM") : "";
@@ -96,6 +111,33 @@ export default {
       );
       return filteredHours;
     },
+    workingHoursPerMonthInSelectedYear() {
+      var hourSumsForYear = [];
+      for (let i = 0; i < 12; i++) {
+        var beginningOfMonth = moment(
+          String(this.computedSelectedYear) + "-" + String(i) + "-01"
+        ).startOf("month");
+        var endOfMonth = moment(
+          String(this.computedSelectedYear) + "-" + String(i) + "-01"
+        ).endOf("month");
+        var hoursMonth = this.working_hours.filter(
+          (item) =>
+            moment(item.date) >= beginningOfMonth &&
+            moment(item.date) <= endOfMonth
+        );
+        var total = this.getArraySum(hoursMonth);
+        hourSumsForYear.push({'month': moment().month(i).locale("nl").format("MMMM"), 'sum':total})
+        
+      }
+      return hourSumsForYear
+    },
+        nextYearAllowed() {
+      if (moment(this.today).year() + 1 < moment().year() + 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   created() {
     this.getAllWorkingHoursForUser(this.$auth.user.id);
@@ -105,3 +147,4 @@ export default {
 
 <style>
 </style>
+
