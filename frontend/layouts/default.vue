@@ -6,7 +6,6 @@
       v-model="drawer"
       :clipped="clipped"
       fixed
-      width="25%"
       app
     >
       <v-list-item>
