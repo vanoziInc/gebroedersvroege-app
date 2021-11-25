@@ -1,7 +1,7 @@
 export default {
     async getUsers({commit}) {
         try {
-          let response = await this.$axios.get("/users");
+          let response = await this.$axios.get("/users/");
           commit("GETUSERS", response.data)
         } catch (err) {
           console.log(err.response);
