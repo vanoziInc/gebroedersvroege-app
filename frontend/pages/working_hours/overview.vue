@@ -115,10 +115,10 @@ export default {
       var hourSumsForYear = [];
       for (let i = 0; i < 12; i++) {
         var beginningOfMonth = moment(
-          String(this.computedSelectedYear) + "-" + String(i) + "-01"
+          String(this.computedSelectedYear) + "-" + String(i+1) + "-01"
         ).startOf("month");
         var endOfMonth = moment(
-          String(this.computedSelectedYear) + "-" + String(i) + "-01"
+          String(this.computedSelectedYear) + "-" + String(i+1) + "-01"
         ).endOf("month");
         var hoursMonth = this.working_hours.filter(
           (item) =>
