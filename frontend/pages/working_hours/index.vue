@@ -13,82 +13,56 @@
       dense
     >
       <template v-slot:top>
-        <v-toolbar flat>
-          <v-btn-toggle tile dense v-model="toggle_year">
-            <v-btn @click="substractYear">
-              <v-icon>mdi-chevron-triple-left</v-icon>
-            </v-btn>
-            <v-btn>
-              {{ computedSelectedYear }}
-            </v-btn>
-            <v-btn @click="addYear" v-if="nextYearAllowed">
-              <v-icon>mdi-chevron-triple-right</v-icon>
-            </v-btn>
-          </v-btn-toggle>
-          <v-btn-toggle tile dense class="ml-2" v-model="toggle_month">
-            <v-btn @click="substractMonth">
-              <v-icon>mdi-chevron-double-left</v-icon>
-            </v-btn>
-            <v-btn>
-              {{ computedSelectedMonth }}
-            </v-btn>
-            <v-btn @click="addMonth" v-if="nextMonthAllowed">
-              <v-icon>mdi-chevron-double-right</v-icon>
-            </v-btn>
-          </v-btn-toggle>
-          <v-btn-toggle tile dense class="ml-2" v-model="toggle_week">
-            <v-btn @click="substractWeek">
-              <v-icon>mdi-chevron-left</v-icon>
-            </v-btn>
-            <v-btn>
-              {{ computedSelectedWeek }}
-            </v-btn>
-            <v-btn @click="addWeek" v-if="nextWeekAllowed">
-              <v-icon>mdi-chevron-right</v-icon>
-            </v-btn>
-          </v-btn-toggle>
-        </v-toolbar>
+        <v-card
+          class="d-flex justify-space-between mb-6"
+          flat
+          tile
+        >
+          <v-card class="pa-2" flat tile>
+            <v-btn-toggle tile dense v-model="toggle_year">
+              <v-icon @click="substractYear">mdi-chevron-triple-left</v-icon>
+
+              <div class="mx-1">{{ computedSelectedYear }}</div>
+              <v-icon @click="addYear" v-if="nextYearAllowed"
+                >mdi-chevron-triple-right</v-icon
+              >
+            </v-btn-toggle>
+          </v-card>
+                    <v-card class="pa-2" flat tile>
+            <v-btn-toggle class="mx-5" tile dense v-model="toggle_month">
+              <v-icon @click="substractMonth">mdi-chevron-double-left</v-icon>
+
+              <div class="mx-1">{{ computedSelectedMonth }}</div>
+
+              <v-icon @click="addMonth" v-if="nextMonthAllowed"
+                >mdi-chevron-double-right</v-icon
+              >
+            </v-btn-toggle>
+          </v-card>
+                    <v-card class="pa-2" flat tile>
+            <v-btn-toggle tile dense v-model="toggle_week">
+              <v-icon @click="substractWeek">mdi-chevron-left</v-icon>
+              <div class="mx-1">{{ computedSelectedWeek }}</div>
+
+              <v-icon v-if="nextWeekAllowed" @click="addWeek"
+                >mdi-chevron-right</v-icon
+              >
+            </v-btn-toggle>
+          </v-card>
+        </v-card>
+    
         <v-toolbar flat>
           <!-- Indien functionality -->
-          <p class="body-2">Totaal uren: {{ totalHoursCurrentWeek }}</p>
+          <div class="body-2">Totaal uren: {{ totalHoursCurrentWeek }}</div>
           <v-spacer></v-spacer>
-          <div class="text-center d-flex align-center justify-space-around">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-icon small v-bind="attrs" v-on="on" dark color="primary"
-                  >mdi-help-circle-outline</v-icon
-                >
-              </template>
-              <span
-                >Alleen ingediende uren zijn zichtbaar voor de
-                administratie.</span
-              >
-            </v-tooltip>
-
-            <v-btn
-              class="ml-9 mr-2"
-              v-if="weekSubmitted"
-              disabled
-              icon
-              @click="submitWeek()"
-              color="green"
-              small
-            >
-              <v-icon color="green">mdi-content-save-outline</v-icon>
-              Indienen
-            </v-btn>
-            <v-btn
-              class="ml-9 mr-2"
-              v-else
-              icon
-              @click="submitWeek()"
-              color="green"
-              small
-            >
-              <v-icon color="green">mdi-content-save-outline</v-icon>
-              Indienen
-            </v-btn>
-          </div>
+          <v-btn v-if="weekSubmitted" outlined color="grey" small>
+            <v-icon class="mr-2" color="gre">mdi-content-save-outline</v-icon>
+            Indienen
+          </v-btn>
+          <v-btn v-else outlined @click="submitWeek()" color="green" small>
+            <v-icon class="mr-2" color="green">mdi-content-save-outline</v-icon>
+            Indienen
+          </v-btn>
         </v-toolbar>
       </template>
       <!-- This template looks for headers with formatters and executes them -->
@@ -170,7 +144,7 @@ export default {
   data: () => ({
     toggle_year: null,
     toggle_month: null,
-    toggle_week:null,
+    toggle_week: null,
     today: moment().format("YYYY-MM-DD"),
     date: moment().locale("nl").format("YYYY-MM-DD"),
     menu2: false,
@@ -240,6 +214,9 @@ export default {
         if (this.workingHoursOfCurrentWeek[i].submitted == true) {
           return false;
         }
+      if (moment(item.date) > moment()) {
+        return false;
+      }
       }
       this.editedIndex = this.workingHoursOfCurrentWeek.indexOf(item);
       this.editedItem = Object.assign({}, item);

@@ -1,7 +1,7 @@
 <template>
   <v-container>
   <v-toolbar flat>
-              <!-- maand aanpassen -->
+              <!-- jaar aanpassen -->
               <v-btn icon @click="substractYear">
                 <v-icon>mdi-chevron-triple-left</v-icon>
               </v-btn>
