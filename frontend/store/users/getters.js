@@ -2,14 +2,16 @@ import state from "../allowed_users/state";
 
 export default {
     Users: state => state.allUsers,
-    nonAdminUsers: state => {
+    Werknemers: state => {
+        var werknemers = []
         for (const x of state.allUsers)
         {
-            console.log(x)
-            const roles = Array.from(x, x => x.roles)
-            const role_names = Array.from(roles, x => x.name)
-            console.log(roles)
+            const role_names = Array.from(x.roles, x => x.name)
+            if (role_names.includes('werknemer')) {
+                werknemers.push(x)
+            }
         }
+        return werknemers
     }
 
 }

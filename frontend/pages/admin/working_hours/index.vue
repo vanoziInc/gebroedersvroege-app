@@ -1,13 +1,29 @@
 <template>
   <v-container>
-      {{nonAdminUsers}}
-    <v-data-table
-      :headers="headers"
-      :items="users"
-      hide-default-footer
-    >
-    <template v-slot:[`item.full_name`]="{ item }">{{ item.first_name }} {{ item.last_name }}</template>
-    </v-data-table></v-container
+    <v-simple-table dense>
+    <template v-slot:default>
+      <thead>
+        <tr>
+          <th class="text-left">
+            Naam
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="item in werknemers"
+          :key="item.name"
+        >
+          <td><span><a v-bind:href="'/admin/working_hours/user/'+ item.id">
+          {{ item.first_name }} {{ item.last_name }}
+          </a>
+            
+            </span></td>
+        </tr>
+      </tbody>
+    </template>
+  </v-simple-table>
+    </v-container
   >
 </template>
 
@@ -33,8 +49,10 @@ export default {
     // mix the getters into computed with object spread operator
     ...mapGetters({
       users: "users/Users",
-      nonAdminUsers: 'users/nonAdminUsers'
+      // users met rol werknemer
+      werknemers: 'users/Werknemers'
     }),
+    
   },
   created() {
     this.getAllUsers();

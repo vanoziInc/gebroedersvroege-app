@@ -1,16 +1,15 @@
 <template>
   <v-container>
-  <v-toolbar flat>
-              <!-- jaar aanpassen -->
-              <v-btn icon @click="substractYear">
-                <v-icon>mdi-chevron-triple-left</v-icon>
-              </v-btn>
-              <b>{{ computedSelectedYear }}</b>
-              <v-btn icon @click="addYear" v-if="nextYearAllowed">
-                <v-icon>mdi-chevron-triple-right</v-icon>
-              </v-btn>
-
-            </v-toolbar>
+    <v-toolbar flat>
+      <!-- jaar aanpassen -->
+      <v-btn icon @click="substractYear">
+        <v-icon>mdi-chevron-triple-left</v-icon>
+      </v-btn>
+      <b>{{ computedSelectedYear }}</b>
+      <v-btn icon @click="addYear" v-if="nextYearAllowed">
+        <v-icon>mdi-chevron-triple-right</v-icon>
+      </v-btn>
+    </v-toolbar>
     <v-simple-table dense>
       <template v-slot:default>
         <thead>
@@ -20,7 +19,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in workingHoursPerMonthInSelectedYear" :key="item.month">
+          <tr
+            v-for="item in workingHoursPerMonthInSelectedYear"
+            :key="item.month"
+          >
             <td>{{ item.month }}</td>
             <td>{{ item.sum }}</td>
           </tr>
@@ -61,9 +63,7 @@ export default {
       getAllWorkingHoursForUser: "working_hours/getAllWorkingHours",
     }),
     substractYear() {
-      this.today = moment(this.today)
-        .subtract(1, "years")
-        .format("YYYY-MM-DD");
+      this.today = moment(this.today).subtract(1, "years").format("YYYY-MM-DD");
     },
     addYear() {
       this.today = moment(this.today).add(1, "years").format("YYYY-MM-DD");
@@ -115,10 +115,10 @@ export default {
       var hourSumsForYear = [];
       for (let i = 0; i < 12; i++) {
         var beginningOfMonth = moment(
-          String(this.computedSelectedYear) + "-" + String(i+1) + "-01"
+          String(this.computedSelectedYear) + "-" + String(i + 1) + "-01"
         ).startOf("month");
         var endOfMonth = moment(
-          String(this.computedSelectedYear) + "-" + String(i+1) + "-01"
+          String(this.computedSelectedYear) + "-" + String(i + 1) + "-01"
         ).endOf("month");
         var hoursMonth = this.working_hours.filter(
           (item) =>
@@ -126,12 +126,14 @@ export default {
             moment(item.date) <= endOfMonth
         );
         var total = this.getArraySum(hoursMonth);
-        hourSumsForYear.push({'month': moment().month(i).locale("nl").format("MMMM"), 'sum':total})
-        
+        hourSumsForYear.push({
+          month: moment().month(i).locale("nl").format("MMMM"),
+          sum: total,
+        });
       }
-      return hourSumsForYear
+      return hourSumsForYear;
     },
-        nextYearAllowed() {
+    nextYearAllowed() {
       if (moment(this.today).year() + 1 < moment().year() + 1) {
         return true;
       } else {

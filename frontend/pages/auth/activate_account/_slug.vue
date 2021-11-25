@@ -21,10 +21,11 @@ export default {
     title: "Activeer account",
     token: "",
   }),
-    head() {
-      return {
-        title: this.title,}
-        },
+  head() {
+    return {
+      title: this.title,
+    };
+  },
   methods: {
     async activateAccount() {
       try {

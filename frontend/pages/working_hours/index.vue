@@ -13,36 +13,32 @@
       dense
     >
       <template v-slot:top>
-        <v-card
-          class="d-flex justify-space-between mb-6"
-          flat
-          tile
-        >
+        <v-card class="d-flex justify-center" flat tile>
           <v-card class="pa-2" flat tile>
-            <v-btn-toggle tile dense v-model="toggle_year">
+            <v-btn-toggle tile v-model="toggle_year">
               <v-icon @click="substractYear">mdi-chevron-triple-left</v-icon>
 
-              <div class="mx-1">{{ computedSelectedYear }}</div>
+              <b class="mx-2">{{ computedSelectedYear }}</b>
               <v-icon @click="addYear" v-if="nextYearAllowed"
                 >mdi-chevron-triple-right</v-icon
               >
             </v-btn-toggle>
           </v-card>
-                    <v-card class="pa-2" flat tile>
-            <v-btn-toggle class="mx-5" tile dense v-model="toggle_month">
+          <v-card class="pa-2" flat tile>
+            <v-btn-toggle tile v-model="toggle_month">
               <v-icon @click="substractMonth">mdi-chevron-double-left</v-icon>
 
-              <div class="mx-1">{{ computedSelectedMonth }}</div>
+              <b class="mx-2">{{ computedSelectedMonth }}</b>
 
               <v-icon @click="addMonth" v-if="nextMonthAllowed"
                 >mdi-chevron-double-right</v-icon
               >
             </v-btn-toggle>
           </v-card>
-                    <v-card class="pa-2" flat tile>
-            <v-btn-toggle tile dense v-model="toggle_week">
+          <v-card class="pa-2" flat tile>
+            <v-btn-toggle tile v-model="toggle_week">
               <v-icon @click="substractWeek">mdi-chevron-left</v-icon>
-              <div class="mx-1">{{ computedSelectedWeek }}</div>
+              <b class="mx-2">{{ computedSelectedWeek }}</b>
 
               <v-icon v-if="nextWeekAllowed" @click="addWeek"
                 >mdi-chevron-right</v-icon
@@ -50,10 +46,10 @@
             </v-btn-toggle>
           </v-card>
         </v-card>
-    
+
         <v-toolbar flat>
           <!-- Indien functionality -->
-          <div class="body-2">Totaal uren: {{ totalHoursCurrentWeek }}</div>
+          <div class="h6">Totaal uren: {{ totalHoursCurrentWeek }}</div>
           <v-spacer></v-spacer>
           <v-btn v-if="weekSubmitted" outlined color="grey" small>
             <v-icon class="mr-2" color="gre">mdi-content-save-outline</v-icon>
@@ -214,9 +210,9 @@ export default {
         if (this.workingHoursOfCurrentWeek[i].submitted == true) {
           return false;
         }
-      if (moment(item.date) > moment()) {
-        return false;
-      }
+        if (moment(item.date) > moment()) {
+          return false;
+        }
       }
       this.editedIndex = this.workingHoursOfCurrentWeek.indexOf(item);
       this.editedItem = Object.assign({}, item);

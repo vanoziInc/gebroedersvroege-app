@@ -4,9 +4,9 @@
     <v-navigation-drawer
       v-if="this.$auth.loggedIn"
       v-model="drawer"
-      :mini-variant="miniVariant"
       :clipped="clipped"
       fixed
+      width="25%"
       app
     >
       <v-list-item>
