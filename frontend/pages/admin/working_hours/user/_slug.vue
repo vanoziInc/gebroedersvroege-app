@@ -51,7 +51,7 @@
               <v-icon>mdi-chevron-triple-right</v-icon>
             </v-btn>
           </v-toolbar>
-          <v-simple-table width="500px" dense>
+          <!-- <v-simple-table width="500px" dense>
             <template v-slot:default>
               <thead>
                 <tr>
@@ -69,14 +69,36 @@
                   <td>{{ item.week_number }}</td>
                   <td>{{ item.start_of_week }} / {{ item.end_of_week }}</td>
                   <td>{{ item.total_hours }}</td>
-                  <td v-if="item.submitted"><v-icon color="green">
-                    mdi-hand-okay</v-icon></td>
-                                      <td v-else><v-icon color="red">
-                    mdi-skull-crossbones-outline</v-icon></td>
+                  <td v-if="item.submitted">
+                    <v-icon color="green"> mdi-hand-okay</v-icon>
+                  </td>
+                  <td v-else>
+                    <v-icon color="red"> mdi-skull-crossbones-outline</v-icon>
+                  </td>
                 </tr>
               </tbody>
             </template>
-          </v-simple-table>
+          </v-simple-table> -->
+          <v-data-table
+          dense
+            :headers="headers"
+            :items="workingHoursPerWeekInSelectedYear"
+                :sort-by="['end_of_week']"
+                :sort-desc="[true]"
+            :items-per-page="10"
+          >
+            <template #item.date_range="{ item }"
+              >{{ item.start_of_week }} / {{ item.end_of_week }}</template
+            >
+            <template #item.submitted="{ item }"
+              ><v-icon color="green" v-if="item.submitted">
+                mdi-hand-okay</v-icon
+              >
+              <v-icon color="red" v-else>
+                mdi-skull-crossbones-outline</v-icon
+              ></template
+            >
+          </v-data-table>
         </v-container>
       </v-tab-item>
     </v-tabs>
@@ -92,20 +114,28 @@ export default {
     today: moment().format("YYYY-MM-DD"),
     headers: [
       {
-        text: "Datum",
-        value: "date",
-        sortable: false,
-        formatter: (x) =>
-          x ? moment(x).locale("nl").format("dddd DD MMMM") : null,
-      },
-      {
-        text: "Uren",
-        value: "hours",
+        text: "Week",
+        value: "week_number",
         sortable: false,
       },
       {
-        text: "Omschrijving",
-        value: "description",
+        text: "Van",
+        value: "start_of_week",
+        sortable: false,
+      },
+            {
+        text: "Tot",
+        value: "end_of_week",
+        sortable: false,
+      },
+      {
+        text: "Totaal uren",
+        value: "total_hours",
+        sortable: false,
+      },
+      {
+        text: "Ingediend?",
+        value: "submitted",
         sortable: false,
       },
     ],
@@ -195,7 +225,12 @@ export default {
     workingHoursPerWeekInSelectedYear() {
       var hourSumsForYear = [];
       var date = moment(String(this.computedSelectedYear)).startOf("year");
-      while (date <= moment(String(this.computedSelectedYear)).endOf("year")) {
+      if (this.computedSelectedYear == moment().year()) {
+        var endDate = moment().endOf("isoweek")
+      }
+      else { var endDate = moment(String(this.computedSelectedYear)).endOf("year")}
+      
+      while (date <= endDate) {
         var beginningOfWeek = moment(date)
           .startOf("isoweek")
           .format(this.dateformat);
@@ -225,8 +260,9 @@ export default {
           submitted: weekIsSubmitted,
         });
         date = date.add(7, "days");
+         
       }
-      return hourSumsForYear;
+     return hourSumsForYear;
     },
   },
 

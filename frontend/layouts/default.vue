@@ -1,12 +1,14 @@
 <template>
   <v-app dark>
     <!-- NAVIGATION DRAWER -->
+    
     <v-navigation-drawer
       v-if="this.$auth.loggedIn"
       v-model="drawer"
       :clipped="clipped"
       fixed
       app
+      :width="325"
     >
       <v-list-item>
         <v-list-item-content>
