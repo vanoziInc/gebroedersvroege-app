@@ -56,6 +56,7 @@
             </v-card-text>
           </v-card>
         </div>
+        {{workingHoursPerWeekInSelectedYear}}
       </v-tab-item>
     </v-tabs>
   </v-container>
@@ -171,6 +172,7 @@ export default {
   created() {
     this.resetAll();
     this.getAllUsers();
+    console.log(this.werknemers)
     for (const user of this.werknemers) {
       this.addWorkingHoursToAllUsersState(user);
     }
