@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-tabs centered>
-      <v-tab href="#hours_per_user">Per medewerker</v-tab>
+      <v-tab href="#not_submitted">Openstaade weken</v-tab>
       <v-tab-item value="hours_per_user">
         <v-simple-table dense>
           <template v-slot:default>
@@ -24,7 +24,7 @@
           </template>
         </v-simple-table>
       </v-tab-item>
-      <v-tab href="#not_submitted">Nog niet ingediend</v-tab>
+      <v-tab href="#hours_per_user">Overzicht per medewerker</v-tab>
       <v-tab-item value="not_submitted">
         <!-- Overzicht alle werknemers -->
         <v-toolbar flat>

@@ -4,7 +4,7 @@
     <!-- overzicht uren -->
     <!-- administratie indienen en vrijgeven -->
     <v-tabs centered>
-      <v-tab href="#overview">Maand overzicht</v-tab>
+      <v-tab href="#openstaand">Week overzicht</v-tab>
       <v-tab-item value="overview">
         <v-container>
           <v-toolbar flat>
@@ -38,7 +38,7 @@
           </v-simple-table>
         </v-container>
       </v-tab-item>
-      <v-tab href="#openstaand">Openstaand</v-tab>
+      <v-tab href="#overview">Maand overzicht</v-tab>
       <v-tab-item value="openstaand">
         <v-container>
           <v-toolbar flat>
