@@ -3,14 +3,16 @@
 <template>
   <v-container>
     <ConfirmDlg ref="confirm" />
+    <EditHoursDlg ref="edit" @save2="save2($event)" />
 
     <v-data-table
       :headers="headers"
       :items="workingHoursOfCurrentWeek"
       fixed-header
       hide-default-footer
-      @click:row="editItem"
+      @click:row="openEditDialog"
       dense
+      :item-class="itemRowBackground"
     >
       <template v-slot:top>
         <v-card class="d-flex justify-center" flat tile>
@@ -70,70 +72,13 @@
       >
         {{ header.formatter(value) }}
       </template>
-      <!-- Column Hours template -->
-      <template v-slot:[`item.hours`]="{ item }">
-        <v-form id="hours_form" ref="form" v-model="valid">
-          <v-text-field
-            :rules="[rules.required, rules.integer]"
-            v-model="editedItem.hours"
-            :hide-details="true"
-            dense
-            single-line
-            v-if="item.id === editedItem.id"
-          ></v-text-field>
-
-          <span v-else>{{ item.hours }}</span>
-        </v-form>
-      </template>
-      <!-- Column description template -->
-      <template v-slot:[`item.description`]="{ item }">
-        <v-text-field
-          v-model="editedItem.description"
-          :hide-details="true"
-          dense
-          single-line
-          v-if="item.id === editedItem.id"
-        ></v-text-field>
-        <span v-else>{{ item.description }}</span>
-      </template>
-      <!-- Actions Column -->
-      <template v-if="!weekSubmitted" v-slot:[`item.actions`]="{ item }">
-        <div v-if="item.id === editedItem.id">
-          <v-icon color="red" class="mr-3" @click="close">
-            mdi-window-close
-          </v-icon>
-          <v-icon color="green" @click="save" :disabled="!valid">
-            mdi-content-save
-          </v-icon>
-        </div>
-        <div v-else>
-          <v-icon
-            v-if="computedEditDate(item.date)"
-            color="green"
-            class="mr-3"
-            @click="editItem(item)"
-          >
-            mdi-pencil
-          </v-icon>
-          <v-icon
-            v-if="item.submitted !== null"
-            color="red"
-            @click="delRecord(item)"
-          >
-            mdi-delete
-          </v-icon>
-        </div>
-      </template>
-
-      <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize">Reset</v-btn>
-      </template>
     </v-data-table>
   </v-container>
 </template>
 
 <script>
 import ConfirmDlg from "~/components/ConfirmDlg.vue";
+import EditHoursDlg from "~/components/EditHoursDlg.vue";
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
@@ -169,11 +114,11 @@ export default {
         value: "description",
         sortable: false,
       },
-      {
-        text: "Acties",
-        value: "actions",
-        sortable: false,
-      },
+      // {
+      //   text: "Acties",
+      //   value: "actions",
+      //   sortable: false,
+      // },
     ],
     desserts: [],
     editedIndex: -1,
@@ -237,6 +182,14 @@ export default {
       }
       this.close();
     },
+    save2(editedItem) {
+      if (this.editedIndex > -1) {
+        editedItem.user_id = this.$auth.user.id;
+        this.addOrUpdateWorkingHoursForUser(editedItem);
+        // Object.assign(this.desserts[this.editedIndex], this.editedItem);
+      }
+      this.close();
+    },
     substractWeek() {
       this.date = moment(this.date).subtract(7, "days").format("YYYY-MM-DD");
     },
@@ -281,6 +234,28 @@ export default {
         )
       ) {
         this.deleteWorkingHoursForUser(item.id);
+      }
+    },
+    async openEditDialog(item) {
+      for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
+        if (this.workingHoursOfCurrentWeek[i].submitted == true) {
+          return false;
+        }
+        if (moment(item.date) > moment()) {
+          return false;
+        }
+      }
+      this.editedIndex = this.workingHoursOfCurrentWeek.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.editedItem.submitted = false;
+      if (await this.$refs.edit.open("Uren aanpassen", this.editedItem)) {
+      }
+    },
+    itemRowBackground(item) {
+      if (moment(item.date) < moment()) {
+        return "white";
+      } else {
+        return "blue-grey lighten-5";
       }
     },
   },
@@ -403,3 +378,12 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.white {
+  background-color: white;
+}
+.grey {
+  background-color: yellow;
+}
+</style>
