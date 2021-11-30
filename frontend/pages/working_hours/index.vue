@@ -3,7 +3,7 @@
 <template>
   <v-container>
     <ConfirmDlg ref="confirm" />
-    <EditHoursDlg ref="edit" @save2="save2($event)" />
+    <EditHoursDlg ref="edit" @save="save($event)" />
 
     <v-data-table
       :headers="headers"
@@ -14,6 +14,7 @@
       dense
       :item-class="itemRowBackground"
     >
+      <!-- Datum pickers -->
       <template v-slot:top>
         <v-card class="d-flex justify-center" flat tile>
           <v-card class="pa-2" flat tile>
@@ -114,13 +115,7 @@ export default {
         value: "description",
         sortable: false,
       },
-      // {
-      //   text: "Acties",
-      //   value: "actions",
-      //   sortable: false,
-      // },
     ],
-    desserts: [],
     editedIndex: -1,
     defaultItem: {
       id: -1,
@@ -143,46 +138,13 @@ export default {
       addOrUpdateWorkingHoursForUser: "working_hours/addOrUpdateWorkingHours",
       deleteWorkingHoursForUser: "working_hours/deleteWorkingHours",
     }),
-    computedEditDate(date) {
-      if (moment(date) < moment()) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    editItem(item) {
-      for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
-        if (this.workingHoursOfCurrentWeek[i].submitted == true) {
-          return false;
-        }
-        if (moment(item.date) > moment()) {
-          return false;
-        }
-      }
-      this.editedIndex = this.workingHoursOfCurrentWeek.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.editedItem.submitted = false;
-    },
-    deleteItem(item) {
-      const index = this.workingHoursOfCurrentWeek.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.deleteWorkingHoursForUser(item.id);
-    },
     close() {
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       }, 300);
     },
-    save() {
-      if (this.editedIndex > -1) {
-        this.editedItem.user_id = this.$auth.user.id;
-        this.addOrUpdateWorkingHoursForUser(this.editedItem);
-        // Object.assign(this.desserts[this.editedIndex], this.editedItem);
-      }
-      this.close();
-    },
-    save2(editedItem) {
+    save(editedItem) {
       if (this.editedIndex > -1) {
         editedItem.user_id = this.$auth.user.id;
         this.addOrUpdateWorkingHoursForUser(editedItem);
@@ -225,17 +187,6 @@ export default {
           }
         }
     },
-    // Confirmation dialog methods
-    async delRecord(item) {
-      if (
-        await this.$refs.confirm.open(
-          "Bevestig",
-          "Weet je zeker dat je de uren wilt verwijderen?"
-        )
-      ) {
-        this.deleteWorkingHoursForUser(item.id);
-      }
-    },
     async openEditDialog(item) {
       for (let i = 0; i < this.workingHoursOfCurrentWeek.length; i++) {
         if (this.workingHoursOfCurrentWeek[i].submitted == true) {
@@ -252,7 +203,10 @@ export default {
       }
     },
     itemRowBackground(item) {
-      if (moment(item.date) < moment()) {
+      if(item.submitted == true) {
+        return "blue-grey lighten-5";
+      }
+      else if (moment(item.date) < moment()) {
         return "white";
       } else {
         return "blue-grey lighten-5";

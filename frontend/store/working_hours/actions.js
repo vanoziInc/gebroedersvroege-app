@@ -12,6 +12,20 @@ export default {
             }
         }
       },
+      async addWorkingHoursToAllUsersState({commit}, user) {
+        try {
+          let response = await this.$axios.get("/working_hours/all_for_user/" + user.id);
+          const payload = response.data
+          commit("GETWORKINGHOURSALLUSERS", { user, payload })
+        } catch (err) {
+          if (err.response) {
+              this.$notifier.showMessage({
+                content: err.response.data,
+                color: "error",
+              });
+            }
+        }
+      },
       async addWorkingHours({commit}, payload) {
         try {
           let response = await this.$axios.post("/working_hours/", payload);
@@ -72,4 +86,7 @@ export default {
           }
         }
       },
+      resetStateAllUsersAllWorkingHours({commit}) {
+        commit("RESETALLWORKINGHOURSALLUSERS")
+      }
 }

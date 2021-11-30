@@ -2,6 +2,9 @@ export default {
     GETWORKINGHOURS(state, payload) {
         state.working_hours = payload
     },
+    GETWORKINGHOURSALLUSERS(state, {user, payload}) {
+        state.working_hours_all_users.push({user :user, working_hours:payload })
+    },
     ADDWORKINGHOURS(state, payload) {
         state.working_hours.push(
             payload
@@ -25,5 +28,8 @@ export default {
     DELETEWORKINGHOURS(state, id) {
         var index = state.working_hours.findIndex(item => item.id == id);
         state.working_hours.splice(index, 1);
+    },
+    RESETALLWORKINGHOURSALLUSERS(state) {
+        state.working_hours_all_users = []
     }
 }

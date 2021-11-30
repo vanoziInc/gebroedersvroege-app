@@ -83,7 +83,7 @@
       },
       agree() {
         // Emit een event met als data editItem om zo de uren op te slaan
-        this.$emit('save2', this.editedItem)
+        this.$emit('save', this.editedItem)
         this.resolve(true);
         this.dialog = false;
       },

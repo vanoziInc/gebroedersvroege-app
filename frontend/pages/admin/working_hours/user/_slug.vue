@@ -51,34 +51,7 @@
               <v-icon>mdi-chevron-triple-right</v-icon>
             </v-btn>
           </v-toolbar>
-          <!-- <v-simple-table width="500px" dense>
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th width="100px" class="text-left">Week</th>
-                  <th width="200px" class="text-left">Van/Tot</th>
-                  <th width="100px" class="text-left">Totaal uren</th>
-                  <th width="100px" class="text-left">Ingediend</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="item in workingHoursPerWeekInSelectedYear"
-                  :key="item.week_number"
-                >
-                  <td>{{ item.week_number }}</td>
-                  <td>{{ item.start_of_week }} / {{ item.end_of_week }}</td>
-                  <td>{{ item.total_hours }}</td>
-                  <td v-if="item.submitted">
-                    <v-icon color="green"> mdi-hand-okay</v-icon>
-                  </td>
-                  <td v-else>
-                    <v-icon color="red"> mdi-skull-crossbones-outline</v-icon>
-                  </td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table> -->
+
           <v-data-table
           dense
             :headers="headers"
