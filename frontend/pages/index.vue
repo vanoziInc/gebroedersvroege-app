@@ -1,57 +1,10 @@
 <template>
   <v-container>
     <v-row>
-      <v-col>
-        <v-card
-          elevation="2"
-          outlined
-          shaped
-        >
-          <v-card-subtitle>
-            Openstaande weken
-          </v-card-subtitle>
-          <v-card-text>
-            
-          </v-card-text>
-          <v-card-actions>
-
-          </v-card-actions>
-        </v-card>
-      </v-col>
-      <v-col>
-        <v-card
-          elevation="2"
-          outlined
-          shaped
-        >
-          <v-card-subtitle>
-            Uren deze maand
-          </v-card-subtitle>
-          <v-card-text>
-
-          </v-card-text>
-          <v-card-actions>
-
-          </v-card-actions>
-        </v-card>
-      </v-col>
-      <v-col>
-        <v-card
-          elevation="2"
-          outlined
-          shaped
-        >
-          <v-card-subtitle>
-            Uren dit jaar
-          </v-card-subtitle>
-          <v-card-text>
-
-          </v-card-text>
-          <v-card-actions>
-
-          </v-card-actions>
-        </v-card>
-      </v-col>
+      <v-container>
+      <v-btn x-large>Invoeren</v-btn>
+      <v-btn x-large>Overzicht</v-btn>
+      </v-container>
     </v-row>
 
   </v-container>
