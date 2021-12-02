@@ -105,8 +105,10 @@
         <!-- LARGER VIEWPORTS -->
         <div v-if="$vuetify.breakpoint.mdAndUp">
           <v-btn
-            small
+
             @click="logout"
+            color="primary"
+            outlined
           >
             <v-icon class="mr-2">mdi-lock</v-icon>UITLOGGEN
           </v-btn>
@@ -127,13 +129,15 @@
         <!-- LARGER VIEWPORTS -->
         <div v-if="$vuetify.breakpoint.mdAndUp">
           <v-btn
-            small
+                        color="primary"
+            outlined
             to="/auth/login"
           >
             <v-icon class="mr-2">mdi-lock-open</v-icon>INLOGGEN
           </v-btn>
           <v-btn
-            small
+                        color="primary"
+            outlined
             class="ml-2"
             to="/auth/register"
           >
@@ -187,7 +191,7 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: "Gebr. Vroege",
+      title: "Superleuk App",
       // Navigation drawer items
       Items: [
         // {
