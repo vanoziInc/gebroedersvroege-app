@@ -37,8 +37,25 @@
             <v-icon>mdi-chevron-triple-right</v-icon>
           </v-btn>
         </v-toolbar>
+        <div
+          v-for="(item, index) in weeks_not_submitted"
+          :key="item.week"
+        >
+          <v-card class="mb-2">
+            <v-card-text>
+              <p class="text-h6 text--primary">
+                Weeknummer: {{ item.week }}
+              </p>
+              <div>Van: {{ item.week_start }}</div>
+              <div>Tot: {{ item.week_end }}</div>
+              <br />
+              <div class="text--primary">
+                Nog niet ingediend: {{ item.not_submitted }}
+              </div>
+            </v-card-text>
+          </v-card>
+        </div>
 
-{{weeks_not_submitted}}
       </v-tab-item>
     </v-tabs>
   </v-container>
