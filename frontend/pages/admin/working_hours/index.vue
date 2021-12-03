@@ -38,24 +38,7 @@
           </v-btn>
         </v-toolbar>
 
-        <div
-          v-for="(item, index) in workingHoursPerWeekInSelectedYear"
-          :key="item.week_number"
-        >
-          <v-card class="mb-2">
-            <v-card-text>
-              <p class="text-h6 text--primary">
-                Weeknummer: {{ item.week_number }}
-              </p>
-              <div>Van: {{ item.start_of_week }}</div>
-              <div>Tot: {{ item.end_of_week }}</div>
-              <br />
-              <div class="text--primary">
-                Nog niet ingediend: {{ item.not_submitted }}
-              </div>
-            </v-card-text>
-          </v-card>
-        </div>
+{{weeks_not_submitted}}
       </v-tab-item>
     </v-tabs>
   </v-container>
@@ -68,6 +51,9 @@ export default {
   data: () => ({
     dateformat: "YYYY-MM-DD",
     today: moment().format("YYYY-MM-DD"),
+    from_date: moment().subtract(4, "weeks").format("YYYY-MM-DD"),
+    to_date: moment().subtract().format("YYYY-MM-DD"),
+    weeks_not_submitted: null,
     headers_ingediend: [
       {
         text: "Week",
@@ -105,6 +91,23 @@ export default {
         "working_hours/addWorkingHoursToAllUsersState",
       resetAll: "working_hours/resetStateAllUsersAllWorkingHours",
     }),
+    async notSubmittedWeeks() {
+      // Login API call
+      try {
+        let response = await await this.$axios.get(
+          "/working_hours/admin/weeks_not_submitted",
+          { params: { from_date: this.from_date, to_date: this.to_date } }
+        );
+        this.weeks_not_submitted = response.data.reverse();
+      } catch (err) {
+        if (err.response) {
+          this.$notifier.showMessage({
+            content: err.response.data.detail,
+            color: "error",
+          });
+        }
+      }
+    },
   },
   computed: {
     workingHoursPerWeekInSelectedYear() {
@@ -169,11 +172,7 @@ export default {
     },
   },
   created() {
-    this.resetAll();
-    this.getAllUsers();
-    for (const user of this.werknemers) {
-      this.addWorkingHoursToAllUsersState(user);
-    }
+    this.notSubmittedWeeks()
   },
 };
 </script>

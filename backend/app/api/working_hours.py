@@ -1,4 +1,5 @@
 import datetime
+from tortoise.functions import Min
 
 from pydantic.typing import NoneType
 from isoweek import Week
@@ -180,9 +181,9 @@ async def get_weeks_not_submitted(from_date:datetime.date, to_date:datetime.date
         week_end = Week(item[0], item[1]).sunday()
         not_submitted = []
         for werknemer in werknemers:
-            henk = await werknemer.working_hours.filter(date=week_start)
-            not_submitted.append(werknemer) if henk == [] else False
-            for i in henk:
+            working_hours_item = await werknemer.working_hours.filter(date=week_start)
+            not_submitted.append(werknemer) if working_hours_item == [] and werknemer.created_at.date()<week_start else False
+            for i in working_hours_item:
                 not_submitted.append(werknemer) if i.submitted == False else False
         not_submitted_list.append({'year':year, 'week':week_number, 'week_start':datetime.date.strftime(week_start, '%Y-%m-%d'), 'week_end':datetime.date.strftime(week_end, '%Y-%m-%d'), 'not_submitted':not_submitted})
     return not_submitted_list
