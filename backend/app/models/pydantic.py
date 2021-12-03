@@ -99,3 +99,11 @@ class WorkingHoursUpdateSchema(pydantic.BaseModel):
 # UPDATE
 class WorkingHoursSubmitSchema(pydantic.BaseModel):
     ids : List[int]
+
+# ADMIN WORKING HOURS
+class WeeksNotSubmittedAllUsersResponseSchema(pydantic.BaseModel):
+    year :int
+    week : int
+    week_start : datetime.date
+    week_end : datetime.date
+    not_submitted : List[User_Pydantic]

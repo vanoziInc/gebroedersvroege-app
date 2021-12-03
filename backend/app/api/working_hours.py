@@ -1,18 +1,23 @@
+import datetime
+
+from pydantic.typing import NoneType
+from isoweek import Week
 import os
 from typing import List
 
-from app.models.pydantic import (
-    WorkingHoursResponseSchema,
-    WorkingHoursCreateSchema,
-    WorkingHoursUpdateSchema,
-    WorkingHoursSubmitSchema
-)
-from app.models.tortoise import WorkingHours, Users
+from app.helpers.date_functions import daterange
+from app.models.pydantic import (WeeksNotSubmittedAllUsersResponseSchema,
+                                 WorkingHoursCreateSchema,
+                                 WorkingHoursResponseSchema,
+                                 WorkingHoursSubmitSchema,
+                                 WorkingHoursUpdateSchema)
+from app.models.tortoise import Users, WorkingHours
 from app.services.auth import RoleChecker, get_current_active_user
 from fastapi import APIRouter, HTTPException
 from fastapi.param_functions import Depends
 from starlette import status
 from starlette.responses import JSONResponse
+from starlette.routing import request_response
 
 router = APIRouter()
 
@@ -141,4 +146,45 @@ async def delete_working_hours_item(id: int):
         await working_hours_item.delete()
         # Create a success respons
         return JSONResponse({"detail": "Uren succesvol verwijderd"}, status_code=200)
+
+
+# admin routes
+# Get weeks not submitted for all users in timerange
+@router.get(
+    "/admin/weeks_not_submitted",
+    response_model=List[WeeksNotSubmittedAllUsersResponseSchema],
+    dependencies=[Depends(RoleChecker(['admin']))]
+)
+async def get_weeks_not_submitted(from_date:datetime.date, to_date:datetime.date
+):
+
+    # Create a list of week numbers for the date range
+    week_numbers_from_date_range = list(dict.fromkeys([( x.isocalendar()[0], x.isocalendar()[1]) for x in daterange(from_date, to_date)]))
+    for item in week_numbers_from_date_range:
+        weekday_start = Week(item[0], item[1]).monday()
+
+    # create a list of users with role werknemer
+    werknemers = []
+    users = await Users.all().filter(is_active=True)
+    for user in users:
+        await user.fetch_related('roles', 'working_hours')
+        for role in user.roles:
+            if role.name == 'werknemer':
+                werknemers.append(user)
+    # loop over weeks and collect data
+    not_submitted_list = []
+    for item in week_numbers_from_date_range:
+        year = item[0]
+        week_number = item[1]
+        week_start = Week(item[0], item[1]).monday()
+        week_end = Week(item[0], item[1]).sunday()
+        not_submitted = []
+        for werknemer in werknemers:
+            henk = await werknemer.working_hours.filter(date=week_start)
+            not_submitted.append(werknemer) if henk == [] else False
+            for i in henk:
+                not_submitted.append(werknemer) if i.submitted == False else False
+        not_submitted_list.append({'year':year, 'week':week_number, 'week_start':datetime.date.strftime(week_start, '%Y-%m-%d'), 'week_end':datetime.date.strftime(week_end, '%Y-%m-%d'), 'not_submitted':not_submitted})
+    return not_submitted_list
+                
 
