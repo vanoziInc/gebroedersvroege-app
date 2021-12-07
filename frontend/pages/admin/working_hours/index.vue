@@ -11,10 +11,12 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in werknemers" :key="item.name">
+              <tr
+                v-for="item in werknemers"
+                :key="item.name"
+              >
                 <td>
-                  <span
-                    ><a v-bind:href="'/admin/working_hours/user/' + item.id">
+                  <span><a v-bind:href="'/admin/working_hours/user/' + item.id">
                       {{ item.first_name }} {{ item.last_name }}
                     </a>
                   </span>
@@ -26,18 +28,75 @@
       </v-tab-item>
       <v-tab href="#hours_per_user">Overzicht per medewerker</v-tab>
       <v-tab-item value="not_submitted">
+        <v-container>
+          <v-row>
+            <v-col
+              cols="4"
+              class="justify-left"
+            >
+              <v-dialog
+                ref="dialog"
+                v-model="modal"
+                :return-value.sync="date"
+                persistent
+                width="290px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    label="Selecteer data"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                    v-model="dateRangeText"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  locale="nl-nl"
+                  v-model="dates"
+                  range
+                >
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="modal = false"
+                  >
+                    Annuleer
+                  </v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="modal=false; notSubmittedWeeks()"
+                  >
+                    OK
+                  </v-btn>
+                </v-date-picker>
+              </v-dialog>
+
+            </v-col>
+          </v-row>
+
+          <v-expansion-panels focusable>
+            <v-expansion-panel
+              v-for="(item,i) in weeks_not_submitted"
+              :key="i"
+            >
+              <v-expansion-panel-header class="subtitle-1">Week {{item.week}}:&nbsp;<span class="subtitle-2 font-weight-light font-italic"> ({{item.week_start}} - {{item.week_end}})</span></v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <ul class="mt-2">
+                  <li
+                    v-for="(item, i) in item.not_submitted"
+                    :key="i"
+                  >{{item.email}}</li>
+                </ul>
+                </v-data-table>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-container>
         <!-- Overzicht alle werknemers -->
-        <v-toolbar flat>
-          <!-- jaar aanpassen -->
-          <v-btn icon @click="substractYear">
-            <v-icon>mdi-chevron-triple-left</v-icon>
-          </v-btn>
-          <b>{{ computedSelectedYear }}</b>
-          <v-btn icon @click="addYear" v-if="nextYearAllowed">
-            <v-icon>mdi-chevron-triple-right</v-icon>
-          </v-btn>
-        </v-toolbar>
-        <div
+        <!-- <div
           v-for="(item, index) in weeks_not_submitted"
           :key="item.week"
         >
@@ -54,7 +113,7 @@
               </div>
             </v-card-text>
           </v-card>
-        </div>
+        </div> -->
 
       </v-tab-item>
     </v-tabs>
@@ -66,30 +125,20 @@ import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
   data: () => ({
+    modal: false,
     dateformat: "YYYY-MM-DD",
     today: moment().format("YYYY-MM-DD"),
     from_date: moment().subtract(4, "weeks").format("YYYY-MM-DD"),
     to_date: moment().subtract().format("YYYY-MM-DD"),
+    dates: [
+      moment().subtract(4, "weeks").format("YYYY-MM-DD"),
+      moment().subtract().format("YYYY-MM-DD"),
+    ],
     weeks_not_submitted: null,
     headers_ingediend: [
       {
-        text: "Week",
-        value: "week_number",
-        sortable: false,
-      },
-      {
-        text: "Van",
-        value: "start_of_week",
-        sortable: false,
-      },
-      {
-        text: "Tot",
-        value: "end_of_week",
-        sortable: false,
-      },
-      {
-        text: "Niet ingediend",
-        value: "not_submitted",
+        text: "Email",
+        value: "email",
         sortable: false,
       },
     ],
@@ -113,7 +162,7 @@ export default {
       try {
         let response = await await this.$axios.get(
           "/working_hours/admin/weeks_not_submitted",
-          { params: { from_date: this.from_date, to_date: this.to_date } }
+          { params: { from_date: this.dates[0], to_date: this.dates[1] } }
         );
         this.weeks_not_submitted = response.data.reverse();
       } catch (err) {
@@ -127,6 +176,12 @@ export default {
     },
   },
   computed: {
+    
+    dateRangeText() {
+      const sortedDates = this.dates.sort((a,b) => moment(a).diff(b));
+      console.log(sortedDates)
+      return sortedDates.join(" ~ ");
+    },
     workingHoursPerWeekInSelectedYear() {
       var usersNotSubmittedForWeeksInYear = [];
       var date = moment(String(this.computedSelectedYear)).startOf("year");
@@ -189,7 +244,7 @@ export default {
     },
   },
   created() {
-    this.notSubmittedWeeks()
+    this.notSubmittedWeeks();
   },
 };
 </script>
