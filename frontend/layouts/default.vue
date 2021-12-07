@@ -233,7 +233,8 @@ export default {
         },
         {
           action: "mdi-account-clock-outline",
-          items: [{ title: "Overzicht", route: "/admin/working_hours" }],
+          items: [{ title: "Week overzicht", route: "/admin/working_hours/week_overview" },
+          { title: "Medewerker overzicht", route: "/admin/working_hours/employee_overview" }],
           title: "Uren",
         },
         {
