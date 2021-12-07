@@ -1,5 +1,6 @@
 <template>
   <v-container>
+        <ConfirmDlg ref="confirm" />
     <v-container>
       <v-row>
         <v-col cols="4" class="justify-left">
@@ -88,6 +89,7 @@
 </template>
 
 <script>
+import ConfirmDlg from "~/components/ConfirmDlg.vue";
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
@@ -140,6 +142,12 @@ export default {
       console.log(item);
     },
     async unlockWeek(item) {
+            if (
+        await this.$refs.confirm.open(
+          "Bevestig",
+          "Weet je zeker dat je de uren voor deze week wilt vrijgeven?"
+        )
+      )
       // Login API call
       try {
         let response = await this.$axios.get(

@@ -1,43 +1,47 @@
 <template>
-  <v-data-table>
-      
-  </v-data-table>
+  <v-container>
+    <v-data-table
+      :headers="headers"
+      :items="werknemers"
+    >
+      <template #item.name="{ item }">
+                    <a v-bind:href="'/admin/working_hours/user/' + item.id">
+                      {{ item.first_name }} {{ item.last_name }}
+                    </a>
+      </template>
+
+    </v-data-table>
+  </v-container>
+
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 export default {
- data: () => ({
-         headers: [
+  data: () => ({
+    headers: [
       {
-        text: "Week",
-        value: "week_number",
-        sortable: false,
-      },
-      {
-        text: "Van",
-        value: "start_of_week",
-        sortable: false,
-      },
-            {
-        text: "Tot",
-        value: "end_of_week",
-        sortable: false,
-      },
-      {
-        text: "Totaal uren",
-        value: "total_hours",
-        sortable: false,
-      },
-      {
-        text: "Ingediend?",
-        value: "submitted",
+        text: "Naam",
+        value: "name",
         sortable: false,
       },
     ],
   }),
-}
+  methods: {
+    ...mapActions({
+      getAllUsers: "users/getUsers",
+    }),
+  },
+  computed: {
+    ...mapGetters({
+      werknemers: "users/Werknemers",
+    }),
+  },
+  created() {
+    this.getAllUsers();
+  },
+};
 </script>
 
 <style>
-
 </style>

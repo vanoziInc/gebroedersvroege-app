@@ -7,13 +7,21 @@
       <v-tab href="#openstaand">Week overzicht</v-tab>
       <v-tab-item value="overview">
         <v-container>
+
           <v-toolbar flat>
             <!-- jaar aanpassen -->
-            <v-btn icon @click="substractYear">
+            <v-btn
+              icon
+              @click="substractYear"
+            >
               <v-icon>mdi-chevron-triple-left</v-icon>
             </v-btn>
             <b>{{ computedSelectedYear }}</b>
-            <v-btn icon @click="addYear" v-if="nextYearAllowed">
+            <v-btn
+              icon
+              @click="addYear"
+              v-if="nextYearAllowed"
+            >
               <v-icon>mdi-chevron-triple-right</v-icon>
             </v-btn>
           </v-toolbar>
@@ -36,41 +44,55 @@
               </tbody>
             </template>
           </v-simple-table>
+          <br>
+          <v-row>
+            <v-col class="justify-left">Totaal uren: &nbsp {{yearTotal}}</v-col>
+          </v-row>
         </v-container>
       </v-tab-item>
       <v-tab href="#overview">Maand overzicht</v-tab>
       <v-tab-item value="openstaand">
         <v-container>
+
           <v-toolbar flat>
             <!-- jaar aanpassen -->
-            <v-btn icon @click="substractYear">
+            <v-btn
+              icon
+              @click="substractYear"
+            >
               <v-icon>mdi-chevron-triple-left</v-icon>
             </v-btn>
             <b>{{ computedSelectedYear }}</b>
-            <v-btn icon @click="addYear" v-if="nextYearAllowed">
+            <v-btn
+              icon
+              @click="addYear"
+              v-if="nextYearAllowed"
+            >
               <v-icon>mdi-chevron-triple-right</v-icon>
             </v-btn>
           </v-toolbar>
 
           <v-data-table
-          dense
+            dense
             :headers="headers"
             :items="workingHoursPerWeekInSelectedYear"
-                :sort-by="['end_of_week']"
-                :sort-desc="[true]"
+            :sort-by="['end_of_week']"
+            :sort-desc="[true]"
             :items-per-page="10"
           >
-            <template #item.date_range="{ item }"
-              >{{ item.start_of_week }} / {{ item.end_of_week }}</template
-            >
-            <template #item.submitted="{ item }"
-              ><v-icon color="green" v-if="item.submitted">
-                mdi-hand-okay</v-icon
+            <template #item.date_range="{ item }">{{ item.start_of_week }} / {{ item.end_of_week }}</template>
+            <template #item.submitted="{ item }">
+              <v-icon
+                color="green"
+                v-if="item.submitted"
               >
-              <v-icon color="red" v-else>
-                mdi-skull-crossbones-outline</v-icon
-              ></template
-            >
+                mdi-hand-okay</v-icon>
+              <v-icon
+                color="red"
+                v-else-if="item.submitted == false"
+              >
+                mdi-skull-crossbones-outline</v-icon>
+            </template>
           </v-data-table>
         </v-container>
       </v-tab-item>
@@ -96,7 +118,7 @@ export default {
         value: "start_of_week",
         sortable: false,
       },
-            {
+      {
         text: "Tot",
         value: "end_of_week",
         sortable: false,
@@ -166,6 +188,18 @@ export default {
       );
       return filteredHours;
     },
+    yearTotal() {
+      var total = 0;
+
+      for (
+        var i = 0, n = this.workingHoursPerMonthInSelectedYear.length;
+        i < n;
+        ++i
+      ) {
+        total += this.workingHoursPerMonthInSelectedYear[i].sum;
+      }
+      return total;
+    },
     workingHoursPerMonthInSelectedYear() {
       var hourSumsForYear = [];
       for (let i = 0; i < 12; i++) {
@@ -199,10 +233,11 @@ export default {
       var hourSumsForYear = [];
       var date = moment(String(this.computedSelectedYear)).startOf("year");
       if (this.computedSelectedYear == moment().year()) {
-        var endDate = moment().endOf("isoweek")
+        var endDate = moment().endOf("isoweek");
+      } else {
+        var endDate = moment(String(this.computedSelectedYear)).endOf("year");
       }
-      else { var endDate = moment(String(this.computedSelectedYear)).endOf("year")}
-      
+
       while (date <= endDate) {
         var beginningOfWeek = moment(date)
           .startOf("isoweek")
@@ -214,16 +249,36 @@ export default {
             moment(item.date) >= moment(beginningOfWeek) &&
             moment(item.date) <= moment(endOfWeek)
         );
-        if (hoursWeek.length === 0) {
+        // checker fucntion
+        let checker = (arr) => arr.every(Boolean);
+        let result = hoursWeek.map((a) => a.submitted);
+        console.log(result);
+        if (moment(this.$auth.user.created_at) > moment(endOfWeek)) {
+          console.log(endOfWeek);
+          console.log(this.$auth.user.created_at);
+          var weekIsSubmitted = null;
+        } else if (hoursWeek.length === 0) {
           var weekIsSubmitted = false;
-        } else {
-          var weekIsSubmitted = hoursWeek.every(function (e) {
-            console.log(e.submitted);
-            return e.submitted === true;
-          });
+        } else if (checker(result) === true) {
+          var weekIsSubmitted = true;
         }
 
-        console.log(hoursWeek);
+        console.log(endOfWeek);
+        console.log(hoursWeek.length);
+        // var weekIsSubmitted = hoursWeek.every(function (e) {
+        //   return e.submitted === true;
+        // });
+        // if (weekIsSubmitted == true) {
+        //   console.log(hoursWeek);
+        //   var weekIsSubmitted = false;
+        // }
+        // } else if (moment(this.$auth.user.created_at) > endOfWeek) {
+        //   var weekIsSubmitted = null;
+        //   // var weekIsSubmitted = hoursWeek.every(function (e) {
+        //   //   console.log(e.submitted);
+        //   //   return e.submitted === true;
+        //   // });
+        // }
         var total = this.getArraySum(hoursWeek);
         hourSumsForYear.push({
           week_number: weekNumber,
@@ -233,9 +288,8 @@ export default {
           submitted: weekIsSubmitted,
         });
         date = date.add(7, "days");
-         
       }
-     return hourSumsForYear;
+      return hourSumsForYear;
     },
   },
 

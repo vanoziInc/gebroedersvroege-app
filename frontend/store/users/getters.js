@@ -5,9 +5,10 @@ export default {
     Werknemers: state => {
         var werknemers = []
         for (const x of state.allUsers)
+
         {
             const role_names = Array.from(x.roles, x => x.name)
-            if (role_names.includes('werknemer')) {
+            if (role_names.includes('werknemer') && x.is_active ==true) {
                 werknemers.push(x)
             }
         }
