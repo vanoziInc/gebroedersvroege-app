@@ -97,7 +97,7 @@
       app
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <nuxt-link to="/">{{ title }}</nuxt-link>
+      <nuxt-link class="link" style="color:black" to="/">{{ title }}</nuxt-link>
       <v-spacer />
 
       <!-- RIGHT SIDE MENU WHEN LOGGED IN -->
@@ -200,11 +200,6 @@ export default {
         //   title: "Algemeen",
         // },
         {
-          action: "mdi-view-dashboard-variant-outline",
-          title: "Dashboard",
-          route: "/"
-        },
-        {
           action: "mdi-account-clock-outline",
           items: [
             { title: "Overzicht", route: "/working_hours/overview" },
@@ -265,7 +260,7 @@ export default {
 
 <style>
 @use "sass:math";
-a:link {
+.link {
   color: black;
   text-decoration: none;
   font-size: 1.2em;

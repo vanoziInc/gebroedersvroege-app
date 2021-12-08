@@ -10,25 +10,60 @@
         <v-icon>mdi-chevron-triple-right</v-icon>
       </v-btn>
     </v-toolbar>
-    <v-simple-table dense>
-      <template v-slot:default>
-        <thead>
-          <tr>
-            <th class="text-left">Maand</th>
-            <th class="text-left">Totaal uren</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="item in workingHoursPerMonthInSelectedYear"
-            :key="item.month"
-          >
-            <td>{{ item.month }}</td>
-            <td>{{ item.sum }}</td>
-          </tr>
-        </tbody>
-      </template>
-    </v-simple-table>
+    <v-tabs centered>
+      <v-tab href="#month_overview">Maand overzicht</v-tab>
+      <v-tab-item value="month_overview">
+        <v-simple-table dense class="mt-3">
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th class="text-left">Maand</th>
+                <th class="text-left">Totaal uren</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="item in workingHoursPerMonthInSelectedYear"
+                :key="item.month"
+              >
+                <td>{{ item.month }}</td>
+                <td>{{ item.sum }}</td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
+      </v-tab-item>
+      <v-tab href="#week_overview">Week overzicht</v-tab>
+      <v-tab-item value="week_overview">
+        <v-simple-table dense class="mt-3">
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th class="text-left">Week</th>
+                <th class="text-left">Van</th>
+                <th class="text-left">Tot</th>
+                <th class="text-left">Uren</th>
+                <th class="text-left">Ingediend?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, i) in week_overview" :key="i">
+                <td>{{ item.week }}</td>
+                <td>{{ item.week_start }}</td>
+                <td>{{ item.week_end }}</td>
+                <td>{{ item.sum_hours }}</td>
+                <td>
+                  <v-icon color="green" v-if="item.submitted">
+                    mdi-hand-okay</v-icon
+                  >
+                  <v-icon color="red" v-else> mdi-close-octagon-outline</v-icon>
+                </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
+      </v-tab-item>
+    </v-tabs>
   </v-container>
 </template>
 
@@ -38,6 +73,7 @@ import moment from "moment";
 export default {
   data: () => ({
     today: moment().format("YYYY-MM-DD"),
+    week_overview: null,
     headers: [
       {
         text: "Datum",
@@ -64,9 +100,11 @@ export default {
     }),
     substractYear() {
       this.today = moment(this.today).subtract(1, "years").format("YYYY-MM-DD");
+      this.weekOverview();
     },
     addYear() {
       this.today = moment(this.today).add(1, "years").format("YYYY-MM-DD");
+      this.weekOverview();
     },
 
     getArraySum(a) {
@@ -75,6 +113,26 @@ export default {
         total += a[i].hours;
       }
       return total;
+    },
+    async weekOverview() {
+      // Login API call
+      try {
+        let response = await this.$axios.get("/working_hours/week_overview/", {
+          params: {
+            from_date: moment(this.today).startOf("year").format("YYYY-MM-DD"),
+            to_date: moment(this.today).endOf("year").format("YYYY-MM-DD"),
+            user_id: this.$auth.user.id,
+          },
+        });
+        this.week_overview = response.data.reverse();
+      } catch (err) {
+        if (err.response) {
+          this.$notifier.showMessage({
+            content: err.response.data.detail,
+            color: "error",
+          });
+        }
+      }
     },
   },
   computed: {
@@ -143,6 +201,7 @@ export default {
   },
   created() {
     this.getAllWorkingHoursForUser(this.$auth.user.id);
+    this.weekOverview();
   },
 };
 </script>

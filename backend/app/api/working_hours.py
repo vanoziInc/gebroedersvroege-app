@@ -10,6 +10,7 @@ from app.helpers.date_functions import daterange
 from app.models.pydantic import (WeeksNotSubmittedAllUsersResponseSchema,
                                  WorkingHoursCreateSchema,
                                  WorkingHoursResponseSchema,
+                                 WeeksNotSubmittedSingleUsersResponseSchema,
                                  WorkingHoursSubmitSchema,
                                  WorkingHoursUpdateSchema)
 from app.models.tortoise import Users, WorkingHours
@@ -149,6 +150,46 @@ async def delete_working_hours_item(id: int):
         return JSONResponse({"detail": "Uren succesvol verwijderd"}, status_code=200)
 
 
+@router.get(
+    "/week_overview/",
+    response_model=List[WeeksNotSubmittedSingleUsersResponseSchema],
+    dependencies=[Depends(get_current_active_user)]
+)
+async def get_weeks_not_submitted(from_date:datetime.date, to_date:datetime.date, user_id:int
+):
+
+    # Create a list of week numbers for the date range
+    week_numbers_from_date_range = list(dict.fromkeys([( x.isocalendar()[0], x.isocalendar()[1]) for x in daterange(from_date, to_date)]))
+
+    # lookup the user for whom the hours are submitted
+    user = await Users.get_or_none(id=user_id)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="De gebruiker waarvoor de uren zijn ingediend is niet bekend"
+        )
+    await user.fetch_related('roles', 'working_hours')
+    # loop over weeks and collect data
+    result_list = []
+    for item in week_numbers_from_date_range:
+        year = item[0]
+        week_number = item[1]
+        week_start = Week(item[0], item[1]).monday()
+        week_end = Week(item[0], item[1]).sunday()
+        if user.created_at.date() > week_end:
+            continue
+        else:
+            working_hours = await user.working_hours.filter(date__range=[week_start, week_end])
+            sum_hours = sum([i.hours for i in working_hours])
+            # check if after the user was created he did not register hours for a particular week
+            submitted = False if working_hours == [] and user.created_at.date()<week_end else None
+            # if any of the working items 
+            for i in working_hours:
+                submitted = False if i.submitted == False else True
+                if submitted == False:
+                    break
+        result_list.append({'year':year, 'week':week_number, 'week_start':datetime.date.strftime(week_start, '%Y-%m-%d'), 'week_end':datetime.date.strftime(week_end, '%Y-%m-%d'), 'sum_hours':sum_hours, 'submitted':submitted})
+    return result_list
+
 # admin routes
 # Get weeks not submitted for all users in timerange
 @router.get(
@@ -161,8 +202,6 @@ async def get_weeks_not_submitted(from_date:datetime.date, to_date:datetime.date
 
     # Create a list of week numbers for the date range
     week_numbers_from_date_range = list(dict.fromkeys([( x.isocalendar()[0], x.isocalendar()[1]) for x in daterange(from_date, to_date)]))
-    for item in week_numbers_from_date_range:
-        weekday_start = Week(item[0], item[1]).monday()
 
     # create a list of users with role werknemer
     werknemers = []
@@ -195,6 +234,8 @@ async def get_weeks_not_submitted(from_date:datetime.date, to_date:datetime.date
                 # if any of the working items 
                 for i in working_hours:
                     werknemer_info["submitted"] = False if i.submitted == False else True
+                    if werknemer_info["submitted"] == False:
+                        break
                 employee_hours.append(werknemer_info)
 
             week_results.append(werknemer_info)

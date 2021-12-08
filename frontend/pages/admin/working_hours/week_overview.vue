@@ -1,9 +1,12 @@
 <template>
   <v-container>
-        <ConfirmDlg ref="confirm" />
+    <ConfirmDlg ref="confirm" />
     <v-container>
       <v-row>
-        <v-col cols="4" class="justify-left">
+        <v-col
+          :cols=
+          class="justify-left"
+        >
           <v-dialog
             ref="dialog"
             v-model="modal"
@@ -142,33 +145,33 @@ export default {
       console.log(item);
     },
     async unlockWeek(item) {
-            if (
+      if (
         await this.$refs.confirm.open(
           "Bevestig",
           "Weet je zeker dat je de uren voor deze week wilt vrijgeven?"
         )
       )
-      // Login API call
-      try {
-        let response = await this.$axios.get(
-          "/working_hours/admin/unlock_week",
-          {
-            params: {
-              from_date: this.weekStart,
-              to_date: this.weekEnd,
-              user_id: item.user_id,
-            },
+        // Login API call
+        try {
+          let response = await this.$axios.get(
+            "/working_hours/admin/unlock_week",
+            {
+              params: {
+                from_date: this.weekStart,
+                to_date: this.weekEnd,
+                user_id: item.user_id,
+              },
+            }
+          );
+          this.notSubmittedWeeks();
+        } catch (err) {
+          if (err.response) {
+            this.$notifier.showMessage({
+              content: err.response.data.detail,
+              color: "error",
+            });
           }
-        );
-        this.notSubmittedWeeks();
-      } catch (err) {
-        if (err.response) {
-          this.$notifier.showMessage({
-            content: err.response.data.detail,
-            color: "error",
-          });
         }
-      }
     },
 
     async notSubmittedWeeks() {

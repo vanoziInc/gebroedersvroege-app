@@ -16,7 +16,7 @@
     >
       <!-- Datum pickers -->
       <template v-slot:top>
-        <v-card class="d-flex justify-center" flat tile>
+        <v-card class="d-flex justify-left" flat tile>
           <v-card class="pa-2" flat tile>
             <v-btn-toggle tile v-model="toggle_year">
               <v-icon @click="substractYear">mdi-chevron-triple-left</v-icon>

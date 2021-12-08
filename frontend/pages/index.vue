@@ -1,24 +1,25 @@
 <template>
   <div>
+    <!-- Normal user Homepage -->
     <v-container v-if="!userIsAdmin">
       <v-row class="justify-center">
-        <v-col cols="lg-7 sm-6" class="justify-center">
+        <v-col :cols="$vuetify.breakpoint.mdAndUp ? 8: 12" class="justify-center">
           <v-card>
             <v-card-title>Uren registratie</v-card-title>
             <v-card-text>
               Je kunt per week de gewerkte uren uren invoeren, als er
               bijzonderheden zijn kun je die kwijt bij de omschrijving. <br />
               Zodra je ze hebt ingedient zijn ze zichtbaar voor de administratie
-              en in principe definitief <br />
+              en in principe definitief. <br />
               Mocht je een foutje hebben gemaakt kan de administratie (Marijke
               of Marietje) de uren voor die week weer vrijgeven.
             </v-card-text>
             <v-card-actions class="justify-center">
-              <v-btn x-large outlined color="primary" to="/working_hours/"
+              <v-btn  outlined color="primary" to="/working_hours/"
                 >Invoeren</v-btn
               >
               <v-btn
-                x-large
+                
                 outlined
                 color="primary"
                 to="/working_hours/overview"
@@ -32,15 +33,27 @@
     <!-- Admin homepage -->
     <v-container v-if="userIsAdmin">
       <v-row class="justify-center">
-        <v-col cols="lg-7 sm-6" class="justify-center">
+        <v-col :cols="$vuetify.breakpoint.mdAndUp ? 6: 12">
           <v-card>
-            <v-card-title>Openstaand afgelopen week</v-card-title>
-            <v-card-text> </v-card-text>
-            <v-card-actions class="justify-center">
-              <v-btn x-large outlined color="primary" to="/working_hours/"
-                >Week overzicht</v-btn
-              >
-            </v-card-actions>
+            <v-card-subtitle class="font-weight-bold">
+              Ontbrekende uren afgelopen week
+            </v-card-subtitle>
+            <v-card-text>
+              <p>
+                Week {{ lastWeekNumber }}:
+                <span class="font-weight-light font-italic"
+                  >({{ beginningOfLastWeek }}) ({{ endOfLastWeek }})</span
+                >
+              </p>
+              <ul>
+                <li v-for="(item, i) in usersNotSubmittedLastWeek" :key="i">
+                  <a
+                    v-bind:href="'/admin/working_hours/user/' + item.user_id"
+                    >{{ item.name }}</a
+                  >
+                </li>
+              </ul>
+            </v-card-text>
           </v-card>
         </v-col>
       </v-row>
@@ -49,28 +62,51 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
-  data: () => ({}),
+  data: () => ({
+    dateformat: "YYYY-MM-DD",
+    missingHoursLastWeek: null,
+    usersNotSubmittedLastWeek: null,
+    sevenDaysAgo: moment().subtract(7, "days"),
+  }),
   methods: {
-    async notSubmittedWeeks() {
+    async notSubmittedLastWeek() {
       // Login API call
-      try {
-        let response = await this.$axios.get(
-          "/working_hours/admin/week_overview",
-          { params: { from_date: this.dates[0], to_date: this.dates[1] } }
-        );
-        this.weeks_not_submitted = response.data.reverse();
-      } catch (err) {
-        if (err.response) {
-          this.$notifier.showMessage({
-            content: err.response.data.detail,
-            color: "error",
-          });
+      if (this.userIsAdmin) {
+        try {
+          let response = await this.$axios.get(
+            "/working_hours/admin/week_overview",
+            {
+              params: {
+                from_date: this.beginningOfLastWeek,
+                to_date: this.endOfLastWeek,
+              },
+            }
+          );
+          this.missingHoursLastWeek = response.data;
+          this.usersNotSubmittedLastWeek = response.data[0].employee_info;
+        } catch (err) {
+          if (err.response) {
+            this.$notifier.showMessage({
+              content: err.response.data.detail,
+              color: "error",
+            });
+          }
         }
       }
     },
   },
   computed: {
+    lastWeekNumber() {
+      return this.sevenDaysAgo.isoWeek();
+    },
+    beginningOfLastWeek() {
+      return this.sevenDaysAgo.startOf("isoweek").format(this.dateformat);
+    },
+    endOfLastWeek() {
+      return this.sevenDaysAgo.endOf("isoweek").format(this.dateformat);
+    },
     userIsAdmin() {
       if (this.$auth.user.roles.filter((e) => e.name === "admin").length > 0) {
         return true;
@@ -78,6 +114,9 @@ export default {
         return false;
       }
     },
+  },
+  created() {
+    this.notSubmittedLastWeek();
   },
 };
 </script>
