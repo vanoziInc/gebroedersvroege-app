@@ -97,7 +97,7 @@
       app
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <h3>{{ title }}</h3>
+      <nuxt-link to="/">{{ title }}</nuxt-link>
       <v-spacer />
 
       <!-- RIGHT SIDE MENU WHEN LOGGED IN -->
@@ -237,11 +237,11 @@ export default {
           { title: "Medewerker overzicht", route: "/admin/working_hours/employee_overview" }],
           title: "Uren",
         },
-        {
-          action: "mdi-account-multiple-outline",
-          items: [{ title: "Overzicht", route: "/" }],
-          title: "Medewerkers",
-        },
+        // {
+        //   action: "mdi-account-multiple-outline",
+        //   items: [{ title: "Overzicht", route: "/" }],
+        //   title: "Medewerkers",
+        // },
       ],
     };
   },
@@ -265,4 +265,11 @@ export default {
 
 <style>
 @use "sass:math";
+a:link {
+  color: black;
+  text-decoration: none;
+  font-size: 1.2em;
+  font-weight: bold;
+  font-family: "Roboto", "Courier New", monospace;;
+}
 </style>
