@@ -4,24 +4,16 @@
     <!-- overzicht uren -->
     <!-- administratie indienen en vrijgeven -->
     <v-tabs centered>
-      <v-tab href="#openstaand">Week overzicht</v-tab>
-      <v-tab-item value="overview">
+      <v-tab href="#week_overview">Week overzicht</v-tab>
+      <v-tab-item value="month_overview">
         <v-container>
-
           <v-toolbar flat>
             <!-- jaar aanpassen -->
-            <v-btn
-              icon
-              @click="substractYear"
-            >
+            <v-btn icon @click="substractYear">
               <v-icon>mdi-chevron-triple-left</v-icon>
             </v-btn>
             <b>{{ computedSelectedYear }}</b>
-            <v-btn
-              icon
-              @click="addYear"
-              v-if="nextYearAllowed"
-            >
+            <v-btn icon @click="addYear" v-if="nextYearAllowed">
               <v-icon>mdi-chevron-triple-right</v-icon>
             </v-btn>
           </v-toolbar>
@@ -44,56 +36,55 @@
               </tbody>
             </template>
           </v-simple-table>
-          <br>
+          <br />
           <v-row>
-            <v-col class="justify-left">Totaal uren: &nbsp {{yearTotal}}</v-col>
+            <v-col class="justify-left"
+              >Totaal uren: &nbsp {{ yearTotal }}</v-col
+            >
           </v-row>
         </v-container>
       </v-tab-item>
-      <v-tab href="#overview">Maand overzicht</v-tab>
-      <v-tab-item value="openstaand">
+      <v-tab href="#month_overview">Maand overzicht</v-tab>
+      <v-tab-item value="week_overview">
         <v-container>
-
           <v-toolbar flat>
             <!-- jaar aanpassen -->
-            <v-btn
-              icon
-              @click="substractYear"
-            >
+            <v-btn icon @click="substractYear">
               <v-icon>mdi-chevron-triple-left</v-icon>
             </v-btn>
             <b>{{ computedSelectedYear }}</b>
-            <v-btn
-              icon
-              @click="addYear"
-              v-if="nextYearAllowed"
-            >
+            <v-btn icon @click="addYear" v-if="nextYearAllowed">
               <v-icon>mdi-chevron-triple-right</v-icon>
             </v-btn>
           </v-toolbar>
 
-          <v-data-table
-            dense
-            :headers="headers"
-            :items="workingHoursPerWeekInSelectedYear"
-            :sort-by="['end_of_week']"
-            :sort-desc="[true]"
-            :items-per-page="10"
-          >
-            <template #item.date_range="{ item }">{{ item.start_of_week }} / {{ item.end_of_week }}</template>
-            <template #item.submitted="{ item }">
-              <v-icon
-                color="green"
-                v-if="item.submitted"
-              >
-                mdi-hand-okay</v-icon>
-              <v-icon
-                color="red"
-                v-else-if="item.submitted == false"
-              >
-                mdi-skull-crossbones-outline</v-icon>
-            </template>
-          </v-data-table>
+        <v-simple-table dense class="mt-3">
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th class="text-left">Week</th>
+                <th class="text-left">Van</th>
+                <th class="text-left">Tot</th>
+                <th class="text-left">Uren</th>
+                <th class="text-left">Ingediend?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, i) in week_overview" :key="i">
+                <td>{{ item.week }}</td>
+                <td>{{  formatDateforTemplate(item.week_start) }}</td>
+                <td>{{ formatDateforTemplate(item.week_end)}}</td>
+                <td>{{ item.sum_hours }}</td>
+                <td>
+                  <v-icon color="green" v-if="item.submitted">
+                    mdi-hand-okay</v-icon
+                  >
+                  <v-icon color="red" v-else> mdi-close-octagon-outline</v-icon>
+                </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
         </v-container>
       </v-tab-item>
     </v-tabs>
@@ -107,6 +98,7 @@ export default {
   data: () => ({
     dateformat: "YYYY-MM-DD",
     today: moment().format("YYYY-MM-DD"),
+    week_overview:null,
     headers: [
       {
         text: "Week",
@@ -136,14 +128,19 @@ export default {
     ],
   }),
   methods: {
+    formatDateforTemplate(value){
+      return moment(value).locale('nl').format('DD MMM')
+    },
     ...mapActions({
       getAllWorkingHoursForUser: "working_hours/getAllWorkingHours",
     }),
     substractYear() {
       this.today = moment(this.today).subtract(1, "years").format("YYYY-MM-DD");
+      this.weekOverview();
     },
     addYear() {
       this.today = moment(this.today).add(1, "years").format("YYYY-MM-DD");
+      this.weekOverview();
     },
 
     getArraySum(a) {
@@ -152,6 +149,26 @@ export default {
         total += a[i].hours;
       }
       return total;
+    },
+    async weekOverview() {
+      // Login API call
+      try {
+        let response = await this.$axios.get("/working_hours/week_overview/", {
+          params: {
+            from_date: moment(this.today).startOf("year").format("YYYY-MM-DD"),
+            to_date: moment(this.today).endOf("year").format("YYYY-MM-DD"),
+            user_id: this.$auth.user.id,
+          },
+        });
+        this.week_overview = response.data.reverse();
+      } catch (err) {
+        if (err.response) {
+          this.$notifier.showMessage({
+            content: err.response.data.detail,
+            color: "error",
+          });
+        }
+      }
     },
   },
   computed: {
@@ -296,6 +313,7 @@ export default {
   created() {
     console.log(this.$route.params.slug);
     this.getAllWorkingHoursForUser(this.$route.params.slug);
+    this.weekOverview();
   },
 };
 </script>

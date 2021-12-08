@@ -49,8 +49,8 @@
             <tbody>
               <tr v-for="(item, i) in week_overview" :key="i">
                 <td>{{ item.week }}</td>
-                <td>{{ item.week_start }}</td>
-                <td>{{ item.week_end }}</td>
+                <td>{{ formatDateforTemplate(item.week_start) }}</td>
+                <td>{{ formatDateforTemplate(item.week_end) }}</td>
                 <td>{{ item.sum_hours }}</td>
                 <td>
                   <v-icon color="green" v-if="item.submitted">
@@ -95,6 +95,9 @@ export default {
     ],
   }),
   methods: {
+    formatDateforTemplate(value) {
+      return moment(value).locale("nl").format("DD MMM");
+    },
     ...mapActions({
       getAllWorkingHoursForUser: "working_hours/getAllWorkingHours",
     }),

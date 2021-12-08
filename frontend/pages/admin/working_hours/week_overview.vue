@@ -4,7 +4,7 @@
     <v-container>
       <v-row>
         <v-col
-          :cols=
+          :cols="$vuetify.breakpoint.mdAndUp ? 4 : 12"
           class="justify-left"
         >
           <v-dialog
