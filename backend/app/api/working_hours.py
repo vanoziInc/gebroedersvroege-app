@@ -152,10 +152,10 @@ async def delete_working_hours_item(id: int):
 
 @router.get(
     "/week_overview/",
-    response_model=List[WeeksNotSubmittedSingleUsersResponseSchema],
+    response_model=WeeksNotSubmittedSingleUsersResponseSchema,
     dependencies=[Depends(get_current_active_user)]
 )
-async def get_weeks_not_submitted(from_date:datetime.date, to_date:datetime.date, user_id:int
+async def get_week_overview(from_date:datetime.date, to_date:datetime.date, user_id:int
 ):
 
     # Create a list of week numbers for the date range
@@ -188,7 +188,7 @@ async def get_weeks_not_submitted(from_date:datetime.date, to_date:datetime.date
                 if submitted == False:
                     break
         result_list.append({'year':year, 'week':week_number, 'week_start':datetime.date.strftime(week_start, '%Y-%m-%d'), 'week_end':datetime.date.strftime(week_end, '%Y-%m-%d'), 'sum_hours':sum_hours, 'submitted':submitted})
-    return result_list
+    return {'werknemer':user, 'week_data':result_list}
 
 # admin routes
 # Get weeks not submitted for all users in timerange
@@ -197,7 +197,7 @@ async def get_weeks_not_submitted(from_date:datetime.date, to_date:datetime.date
     response_model=List[WeeksNotSubmittedAllUsersResponseSchema],
     dependencies=[Depends(RoleChecker(['admin']))]
 )
-async def get_weeks_not_submitted(from_date:datetime.date, to_date:datetime.date
+async def get_week_overview_admin(from_date:datetime.date, to_date:datetime.date
 ):
 
     # Create a list of week numbers for the date range

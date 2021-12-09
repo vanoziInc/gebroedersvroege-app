@@ -116,10 +116,17 @@ class WeeksNotSubmittedAllUsersResponseSchema(pydantic.BaseModel):
     week_end : datetime.date
     employee_info : List[WeekResult]
 
-class WeeksNotSubmittedSingleUsersResponseSchema(pydantic.BaseModel):
+
+class WeekData(pydantic.BaseModel):
     year :int
     week : int
     week_start : datetime.date
     week_end : datetime.date
     sum_hours : float
     submitted : bool
+
+
+class WeeksNotSubmittedSingleUsersResponseSchema(pydantic.BaseModel):
+
+    week_data:List[WeekData]
+    werknemer:User_Pydantic

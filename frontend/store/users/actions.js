@@ -7,6 +7,7 @@ export default {
           console.log(err.response);
         }
       },
+    
       async addUser({commit}, payload) {
         try {
           let response = await this.$axios.post("/auth/register", payload);

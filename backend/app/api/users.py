@@ -15,6 +15,8 @@ async def get_all_users():
     #     await user.fetch_related("roles")
     return users
 
+
+
 @router.get('/me', response_model=User_Pydantic)
 async def get_me(current_active_user = Depends(get_current_active_user)) -> User_Pydantic:
     return current_active_user
