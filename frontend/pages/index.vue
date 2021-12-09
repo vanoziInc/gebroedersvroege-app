@@ -3,11 +3,14 @@
     <!-- Normal user Homepage -->
     <v-container v-if="!userIsAdmin">
       <v-row class="justify-center">
-        <v-col :cols="$vuetify.breakpoint.mdAndUp ? 8: 12" class="justify-center">
+        <v-col
+          :cols="$vuetify.breakpoint.mdAndUp ? 8: 12"
+          class="justify-center"
+        >
           <v-card>
             <v-card-title>Uren registratie</v-card-title>
             <v-card-text>
-              Je kunt per week de gewerkte uren uren invoeren, als er
+              Je kunt per week de gewerkte uren invoeren, als er
               bijzonderheden zijn kun je die kwijt bij de omschrijving. <br />
               Zodra je ze hebt ingedient zijn ze zichtbaar voor de administratie
               en in principe definitief. <br />
@@ -15,16 +18,16 @@
               of Marietje) de uren voor die week weer vrijgeven.
             </v-card-text>
             <v-card-actions class="justify-center">
-              <v-btn  outlined color="primary" to="/working_hours/"
-                >Invoeren</v-btn
-              >
               <v-btn
-                
+                outlined
+                color="primary"
+                to="/working_hours/"
+              >Invoeren</v-btn>
+              <v-btn
                 outlined
                 color="primary"
                 to="/working_hours/overview"
-                >Overzicht</v-btn
-              >
+              >Overzicht</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -41,17 +44,19 @@
             <v-card-text>
               <p>
                 Week {{ lastWeekNumber }}:
-                <span class="font-weight-light font-italic"
-                  >({{ beginningOfLastWeek }}) ({{ endOfLastWeek }})</span
-                >
+                <span class="font-weight-light font-italic">({{ formatDateforTemplate(beginningOfLastWeek) }} / {{ formatDateforTemplate(endOfLastWeek) }})</span>
               </p>
               <ul>
-                <li v-for="(item, i) in usersNotSubmittedLastWeek" :key="i">
-                  <a
-                    v-bind:href="'/admin/working_hours/user/' + item.user_id"
-                    >{{ item.name }}</a
-                  >
+                <div
+                  v-for="(item, i) in usersNotSubmittedLastWeek"
+                  :key="i"
+                >
+
+                
+                <li v-if="item.submitted ==false">
+                  <a v-bind:href="'/admin/working_hours/user/' + item.user_id">{{ item.name }}</a>
                 </li>
+                </div>
               </ul>
             </v-card-text>
           </v-card>
@@ -71,6 +76,9 @@ export default {
     sevenDaysAgo: moment().subtract(7, "days"),
   }),
   methods: {
+        formatDateforTemplate(value) {
+      return moment(value).locale("nl").format("DD MMM");
+    },
     async notSubmittedLastWeek() {
       // Login API call
       if (this.userIsAdmin) {
