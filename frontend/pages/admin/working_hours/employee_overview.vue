@@ -1,16 +1,28 @@
 <template>
   <v-container>
-    <v-data-table
-      :headers="headers"
-      :items="werknemers"
-    >
-      <template #item.name="{ item }">
-                    <a v-bind:href="'/admin/working_hours/user/' + item.id">
-                      {{ item.first_name }} {{ item.last_name }}
-                    </a>
-      </template>
 
-    </v-data-table>
+    <v-simple-table
+      dense
+      class="mt-3"
+    >
+      <template v-slot:default>
+        <thead>
+          <tr>
+            <th class="text-left">Naam</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(item, i) in werknemers"
+            :key="i"
+          >
+            <td> <a v-bind:href="'/admin/working_hours/user/' + item.id">
+                {{ item.first_name }} {{ item.last_name }}
+              </a></td>
+          </tr>
+        </tbody>
+      </template>
+    </v-simple-table>
   </v-container>
 
 </template>
