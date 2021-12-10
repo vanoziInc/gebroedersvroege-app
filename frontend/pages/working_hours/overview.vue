@@ -106,7 +106,7 @@
         </v-simple-table>
                   <br />
           <v-row>
-            <v-col class="justify-left">Totaal uren: &nbsp {{ yearTotal }}</v-col>
+            <v-col class="justify-left ml-2">Totaal uren: &nbsp {{ yearTotal }}</v-col>
           </v-row>
       </v-tab-item>
 

@@ -187,7 +187,7 @@ async def get_week_overview(from_date:datetime.date, to_date:datetime.date, user
                 submitted = False if i.submitted == False else True
                 if submitted == False:
                     break
-        result_list.append({'year':year, 'week':week_number, 'week_start':datetime.date.strftime(week_start, '%Y-%m-%d'), 'week_end':datetime.date.strftime(week_end, '%Y-%m-%d'), 'sum_hours':sum_hours, 'submitted':submitted})
+        result_list.append({'year':year, 'week':week_number, 'week_start':datetime.date.strftime(week_start, '%Y-%m-%d'), 'week_end':datetime.date.strftime(week_end, '%Y-%m-%d'), 'sum_hours':sum_hours, 'submitted':submitted, 'working_hours':working_hours})
     return {'werknemer':user, 'week_data':result_list}
 
 # admin routes
@@ -228,6 +228,7 @@ async def get_week_overview_admin(from_date:datetime.date, to_date:datetime.date
                 werknemer_info["user_id"] = werknemer.id
                 werknemer_info["name"] = f"{werknemer.first_name} {werknemer.last_name}"
                 working_hours = await werknemer.working_hours.filter(date__range=[week_start, week_end])
+                werknemer_info['working_hours'] = working_hours
                 werknemer_info['sum_hours'] = sum([i.hours for i in working_hours])
                 # check if after the user was created he did not register hours for a particular week
                 werknemer_info['submitted'] = False if working_hours == [] and werknemer.created_at.date()<week_end else None

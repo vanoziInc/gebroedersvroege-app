@@ -1,6 +1,8 @@
 <template>
   <v-container>
         <ConfirmDlg ref="confirm" />
+        <SubmittedWeekDlg ref="week_overview"/>
+
     <!-- tabs -->
     <!-- overzicht uren -->
     <!-- administratie indienen en vrijgeven -->
@@ -49,6 +51,7 @@
               <tr
                 v-for="(item, i) in week_overview"
                 :key="i"
+                @click="showWeekOverview(item)"
               >
                 <td>{{ item.week }}</td>
                 <td>{{ formatDateforTemplate(item.week_start) }}/{{ formatDateforTemplate(item.week_end) }}</td>
@@ -128,7 +131,7 @@
           </v-simple-table>
           <br />
           <v-row>
-            <v-col class="justify-left">Totaal uren: &nbsp {{ yearTotal }}</v-col>
+            <v-col class="justify-left ml-2">Totaal uren: &nbsp {{ yearTotal }}</v-col>
           </v-row>
 
       </v-tab-item>
@@ -137,6 +140,7 @@
 </template>
 
 <script>
+import SubmittedWeekDlg from "~/components/SubmittedWeekDlg.vue";
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
@@ -215,6 +219,9 @@ export default {
           });
         }
       }
+    },
+    async showWeekOverview(item) {
+      await this.$refs.week_overview.open(item.week, item.week_start, item.week_end, item.working_hours)
     },
     async unlockWeek(item) {
       if (

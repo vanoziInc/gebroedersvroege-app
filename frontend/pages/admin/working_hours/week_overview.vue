@@ -100,31 +100,31 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(x, i) in item.employee_info"
-                    :key="i"
-                  >
-                    <td>{{ x.name }}</td>
-                    <td>{{ x.sum_hours }}</td>
-                    <td>
-                      <div v-if="x.submitted">
-                        <v-icon color="green">
-                          mdi-hand-okay</v-icon>
-                        <v-btn
-                          color="primary"
-                          icon
-                          @click="unlockWeek(x)"
-                        >
-                          <v-icon>mdi-lock-open-variant-outline</v-icon>
-                        </v-btn>
-                      </div>
+                    <tr                   v-for="(x, i) in item.employee_info"
+                    :key="i">
+                      <td>{{ x.name }}</td>
+                      <td>{{ x.sum_hours }}</td>
+                      <td>
+                        <div v-if="x.submitted">
+                          <v-icon color="green">
+                            mdi-hand-okay</v-icon>
+                          <v-btn
+                            color="primary"
+                            icon
+                            @click="unlockWeek(x)"
+                          >
+                            <v-icon>mdi-lock-open-variant-outline</v-icon>
+                          </v-btn>
+                        </div>
 
-                      <v-icon
-                        color="red"
-                        v-else
-                      > mdi-close-octagon-outline</v-icon>
-                    </td>
-                  </tr>
+                        <v-icon
+                          color="red"
+                          v-else
+                        > mdi-close-octagon-outline</v-icon>
+                      </td>
+
+                    </tr>
+
                 </tbody>
               </template>
             </v-simple-table>
@@ -208,7 +208,7 @@ export default {
               },
             }
           );
-          this.notSubmittedWeeks()
+          this.notSubmittedWeeks();
         } catch (err) {
           if (err.response) {
             this.$notifier.showMessage({
@@ -217,7 +217,6 @@ export default {
             });
           }
         }
-
     },
 
     async notSubmittedWeeks() {

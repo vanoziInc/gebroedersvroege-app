@@ -108,6 +108,7 @@ class WeekResult(pydantic.BaseModel):
     name : str
     sum_hours : float
     submitted : bool
+    working_hours: List[WorkingHoursResponseSchema]
 
 class WeeksNotSubmittedAllUsersResponseSchema(pydantic.BaseModel):
     year :int
@@ -122,6 +123,7 @@ class WeekData(pydantic.BaseModel):
     week : int
     week_start : datetime.date
     week_end : datetime.date
+    working_hours : List[WorkingHoursResponseSchema]
     sum_hours : float
     submitted : bool
 
