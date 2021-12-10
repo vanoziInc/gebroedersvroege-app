@@ -36,7 +36,7 @@ services:
       always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`test.gebroedersvroege.nl`)"
+      - "traefik.http.routers.frontend.rule=Host(`superleuk.gebroedersvroege.nl`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
 
@@ -69,7 +69,7 @@ services:
       - ./backend:/app
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`test.gebroedersvroege.nl`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.fastapi.rule=Host(`superleuk.gebroedersvroege.nl`) && PathPrefix(`/api`)"
       - "traefik.http.routers.fastapi.entrypoints=websecure"
       - "traefik.http.routers.fastapi.tls.certresolver=myresolver"
 
