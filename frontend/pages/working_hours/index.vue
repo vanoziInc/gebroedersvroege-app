@@ -3,10 +3,7 @@
 <template>
   <v-container>
     <ConfirmDlg ref="confirm" />
-    <EditHoursDlg
-      ref="edit"
-      @save="save($event)"
-    />
+    <EditHoursDlg ref="edit" @save="save($event)" />
 
     <v-data-table
       :headers="headers"
@@ -19,96 +16,53 @@
     >
       <!-- Datum pickers -->
       <template v-slot:top>
-        <v-card
-          class="d-flex justify-left"
-          flat
-          tile
-        >
-          <v-card
-            class="pa-2"
-            flat
-            tile
-          >
-            <v-btn-toggle
-              tile
-              v-model="toggle_year"
-            >
+        <v-card class="d-flex justify-left" flat tile>
+          <v-card class="pa-2" flat tile>
+            <v-btn-toggle tile v-model="toggle_year">
               <v-icon @click="substractYear">mdi-chevron-triple-left</v-icon>
 
               <b class="mx-2">{{ computedSelectedYear }}</b>
-              <v-icon
-                @click="addYear"
-                v-if="nextYearAllowed"
-              >mdi-chevron-triple-right</v-icon>
+              <v-icon @click="addYear" v-if="nextYearAllowed"
+                >mdi-chevron-triple-right</v-icon
+              >
             </v-btn-toggle>
           </v-card>
-          <v-card
-            class="pa-2"
-            flat
-            tile
-          >
-            <v-btn-toggle
-              tile
-              v-model="toggle_month"
-            >
+          <v-card class="pa-2" flat tile>
+            <v-btn-toggle tile v-model="toggle_month">
               <v-icon @click="substractMonth">mdi-chevron-double-left</v-icon>
 
               <b class="mx-2">{{ computedSelectedMonth }}</b>
 
-              <v-icon
-                @click="addMonth"
-                v-if="nextMonthAllowed"
-              >mdi-chevron-double-right</v-icon>
+              <v-icon @click="addMonth" v-if="nextMonthAllowed"
+                >mdi-chevron-double-right</v-icon
+              >
             </v-btn-toggle>
           </v-card>
-          <v-card
-            class="pa-2"
-            flat
-            tile
-          >
-            <v-btn-toggle
-              tile
-              v-model="toggle_week"
-            >
+          <v-card class="pa-2" flat tile>
+            <v-btn-toggle tile v-model="toggle_week">
               <v-icon @click="substractWeek">mdi-chevron-left</v-icon>
               <b class="mx-2">{{ computedSelectedWeek }}</b>
 
-              <v-icon
-                v-if="nextWeekAllowed"
-                @click="addWeek"
-              >mdi-chevron-right</v-icon>
+              <v-icon v-if="nextWeekAllowed" @click="addWeek"
+                >mdi-chevron-right</v-icon
+              >
             </v-btn-toggle>
           </v-card>
         </v-card>
 
         <v-toolbar flat>
           <!-- Indien functionality -->
-          <div class="h6"><span class="font-weight-bold">Totaal uren:</span>
-             {{ totalHoursCurrentWeek }}</div>
+          <div class="h6">
+            <span class="font-weight-bold">Totaal uren:</span>
+            {{ totalHoursCurrentWeek }}
+          </div>
           <v-spacer></v-spacer>
-          <v-btn
-            v-if="weekSubmitted"
-            outlined
-            color="grey"
-            small
-          >
-            <v-icon
-              class="mr-2"
-              color="gre"
-            >mdi-content-save-outline</v-icon>
+          <v-btn v-if="weekSubmitted" outlined color="grey" small>
+            <v-icon class="mr-2" color="gre">mdi-content-save-outline</v-icon>
             Indienen
           </v-btn>
-          <v-btn
-            v-else
-            outlined
-            @click="submitWeek()"
-            color="green"
-            small
-          >
-            <v-icon
-              class="mr-2"
-              color="green"
-            >mdi-content-save-outline</v-icon>
+          <v-btn v-else outlined @click="submitWeek()" color="green" small>
+            <v-icon class="mr-2" color="green">mdi-content-save-outline</v-icon>
             Indienen
           </v-btn>
         </v-toolbar>
@@ -194,6 +148,7 @@ export default {
       }, 300);
     },
     save(editedItem) {
+
       if (this.editedIndex > -1) {
         editedItem.user_id = this.$auth.user.id;
         this.addOrUpdateWorkingHoursForUser(editedItem);
@@ -241,7 +196,10 @@ export default {
         if (this.workingHoursOfCurrentWeek[i].submitted == true) {
           return false;
         }
-        if (moment(item.date) > moment() | moment(item.date) < moment(this.$auth.user.created_at)) {
+        if (
+          (moment(item.date) > moment()) |
+          (moment(item.date) < moment(this.$auth.user.created_at))
+        ) {
           return false;
         }
       }
@@ -254,7 +212,10 @@ export default {
     itemRowBackground(item) {
       if (item.submitted == true) {
         return "blue-grey lighten-5";
-      } else if (moment(item.date) < moment() && moment(item.date) > moment(this.$auth.user.created_at)) {
+      } else if (
+        moment(item.date) < moment() &&
+        moment(item.date) > moment(this.$auth.user.created_at)
+      ) {
         return "white";
       } else {
         return "blue-grey lighten-5";

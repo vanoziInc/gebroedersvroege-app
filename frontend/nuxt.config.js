@@ -5,7 +5,6 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     titleTemplate: '%s - Gebroeders Vroege',
-    title: 'nuxt-fastapi-template',
     htmlAttrs: {
       lang: 'en'
     },

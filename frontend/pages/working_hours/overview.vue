@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <SubmittedWeekDlg ref="week_overview"/>
     <v-tabs centered>
             <v-tab href="#week_overview">Week overzicht</v-tab>
       <v-tab-item value="week_overview">
@@ -29,7 +30,7 @@
         >
           <template v-slot:default>
             <thead>
-              <tr>
+              <tr >
                 <th class="text-left">Week</th>
     <th class="text-left">Van/Tot</th>
                 <th class="text-left">Uren</th>
@@ -40,6 +41,7 @@
               <tr
                 v-for="(item, i) in week_overview"
                 :key="i"
+                 @click="showWeekOverview(item)"
               >
                 <td>{{ item.week }}</td>
  <td>{{ formatDateforTemplate(item.week_start) }}/{{ formatDateforTemplate(item.week_end) }}</td>
@@ -118,7 +120,12 @@
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
+    head() {
+      return {
+        title: this.title,}
+        },
   data: () => ({
+    title: "Overzicht",
     today: moment().format("YYYY-MM-DD"),
     week_overview: null,
     headers: [
@@ -142,6 +149,9 @@ export default {
     ],
   }),
   methods: {
+        async showWeekOverview(item) {
+      await this.$refs.week_overview.open(item.week, item.week_start, item.week_end, item.working_hours)
+    },
     formatDateforTemplate(value) {
       return moment(value).locale("nl").format("DD MMM");
     },
