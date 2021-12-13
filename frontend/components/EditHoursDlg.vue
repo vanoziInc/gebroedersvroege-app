@@ -14,16 +14,15 @@
         </v-toolbar-title>
       </v-toolbar>
       <v-card-text class="pa-4 black--text">
-        <v-form v-model="valid">
+        <v-form ref="hours_submission" v-model="valid">
           <v-text-field
             v-model="editedItem.hours"
             label="Uren"
-            required
+            :rules="hoursRules"
           ></v-text-field>
           <v-text-field
             v-model="editedItem.description"
             label="Omschrijving"
-            required
           ></v-text-field></v-form
       ></v-card-text>
       <v-card-actions class="pt-3">
@@ -53,6 +52,12 @@ export default {
   name: "EditHoursDlg",
   data() {
     return {
+      hoursRules: [
+        (v) => /^$|^[+-]?\d+(\.\d+)?$/.test(v) || "Onjuiste invoer",
+        (v) =>
+          /^$/.test(v) | (v <= 24) ||
+          "Er zitten niet meer dan 24 uur in een dag",
+      ],
       valid: false,
       dialog: false,
       resolve: null,
@@ -69,6 +74,9 @@ export default {
   },
 
   methods: {
+    reset() {
+      this.$refs.hours_submission.reset();
+    },
     open(title, editedItem, options) {
       this.dialog = true;
       this.title = title;
@@ -84,8 +92,8 @@ export default {
     },
     agree() {
       // Emit een event met als data editItem om zo de uren op te slaan
-      console.log(this.editedItem)
-      if (this.editedItem.hours == null | this.editedItem.hours == '') {
+      console.log(this.editedItem);
+      if ((this.editedItem.hours == null) | (this.editedItem.hours == "")) {
         this.editedItem.hours = 0;
       }
       this.$emit("save", this.editedItem);
@@ -95,6 +103,7 @@ export default {
     cancel() {
       this.resolve(false);
       this.dialog = false;
+      this.reset();
     },
   },
 };

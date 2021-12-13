@@ -5,78 +5,86 @@
     <ConfirmDlg ref="confirm" />
     <EditHoursDlg ref="edit" @save="save($event)" />
 
-    <v-data-table
-      :headers="headers"
-      :items="workingHoursOfCurrentWeek"
-      fixed-header
-      hide-default-footer
-      @click:row="openEditDialog"
-      dense
-      :item-class="itemRowBackground"
-    >
-      <!-- Datum pickers -->
-      <template v-slot:top>
-        <v-card class="d-flex justify-left" flat tile>
-          <v-card class="pa-2" flat tile>
-            <v-btn-toggle tile v-model="toggle_year">
-              <v-icon @click="substractYear">mdi-chevron-triple-left</v-icon>
+    <v-toolbar flat>
+      <!-- Indien functionality -->
+      <div class="h6">
+        <span class="font-weight-bold">Totaal uren:</span>
+        {{ totalHoursCurrentWeek }}
+      </div>
+      <v-spacer></v-spacer>
+      <v-btn v-if="weekSubmitted" outlined color="grey" small>
+        <v-icon class="mr-2" color="gre">mdi-content-save-outline</v-icon>
+        Indienen
+      </v-btn>
+      <v-btn v-else outlined @click="submitWeek()" color="green" small>
+        <v-icon class="mr-2" color="green">mdi-content-save-outline</v-icon>
+        Indienen
+      </v-btn>
+    </v-toolbar>
+    <v-toolbar flat>
+    <v-card class="d-flex justify-left" flat tile>
+      <v-card class="pa-2" flat tile>
+        <v-btn-toggle tile v-model="toggle_year">
+          <v-icon @click="substractYear">mdi-chevron-triple-left</v-icon>
 
-              <b class="mx-2">{{ computedSelectedYear }}</b>
-              <v-icon @click="addYear" v-if="nextYearAllowed"
-                >mdi-chevron-triple-right</v-icon
-              >
-            </v-btn-toggle>
-          </v-card>
-          <v-card class="pa-2" flat tile>
-            <v-btn-toggle tile v-model="toggle_month">
-              <v-icon @click="substractMonth">mdi-chevron-double-left</v-icon>
+          <b class="mx-2">{{ computedSelectedYear }}</b>
+          <v-icon @click="addYear" v-if="nextYearAllowed"
+            >mdi-chevron-triple-right</v-icon
+          >
+        </v-btn-toggle>
+      </v-card>
+      <v-card class="pa-2" flat tile>
+        <v-btn-toggle tile v-model="toggle_month">
+          <v-icon @click="substractMonth">mdi-chevron-double-left</v-icon>
 
-              <b class="mx-2">{{ computedSelectedMonth }}</b>
+          <b class="mx-2">{{ computedSelectedMonth }}</b>
 
-              <v-icon @click="addMonth" v-if="nextMonthAllowed"
-                >mdi-chevron-double-right</v-icon
-              >
-            </v-btn-toggle>
-          </v-card>
-          <v-card class="pa-2" flat tile>
-            <v-btn-toggle tile v-model="toggle_week">
-              <v-icon @click="substractWeek">mdi-chevron-left</v-icon>
-              <b class="mx-2">{{ computedSelectedWeek }}</b>
+          <v-icon @click="addMonth" v-if="nextMonthAllowed"
+            >mdi-chevron-double-right</v-icon
+          >
+        </v-btn-toggle>
+      </v-card>
+      <v-card class="pa-2" flat tile>
+        <v-btn-toggle tile v-model="toggle_week">
+          <v-icon @click="substractWeek">mdi-chevron-left</v-icon>
+          <b class="mx-2">{{ computedSelectedWeek }}</b>
 
-              <v-icon v-if="nextWeekAllowed" @click="addWeek"
-                >mdi-chevron-right</v-icon
-              >
-            </v-btn-toggle>
-          </v-card>
-        </v-card>
+          <v-icon v-if="nextWeekAllowed" @click="addWeek"
+            >mdi-chevron-right</v-icon
+          >
+        </v-btn-toggle>
+      </v-card>
+    </v-card>
+    </v-toolbar>
 
-        <v-toolbar flat>
-          <!-- Indien functionality -->
-          <div class="h6">
-            <span class="font-weight-bold">Totaal uren:</span>
-            {{ totalHoursCurrentWeek }}
-          </div>
-          <v-spacer></v-spacer>
-          <v-btn v-if="weekSubmitted" outlined color="grey" small>
-            <v-icon class="mr-2" color="gre">mdi-content-save-outline</v-icon>
-            Indienen
-          </v-btn>
-          <v-btn v-else outlined @click="submitWeek()" color="green" small>
-            <v-icon class="mr-2" color="green">mdi-content-save-outline</v-icon>
-            Indienen
-          </v-btn>
-        </v-toolbar>
-      </template>
-      <!-- This template looks for headers with formatters and executes them -->
-      <template
-        v-for="header in headers.filter((header) =>
-          header.hasOwnProperty('formatter')
-        )"
-        v-slot:[`item.${header.value}`]="{ header, value }"
-      >
-        {{ header.formatter(value) }}
-      </template>
-    </v-data-table>
+
+    <v-simple-table dense class="mt-3">
+      <thead>
+        <tr>
+          <th class="text-left">Datum</th>
+          <th class="text-left">Uren</th>
+          <th class="text-left">Omschrijving</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="(item, i) in workingHoursOfCurrentWeek"
+          :key="i"
+          :class="{ grey: (item.submitted == true) | itemRowBackground(item) }"
+          @click="openEditDialog(item)"
+        >
+          <td style="white-space: nowrap; width: 75px">
+            {{ formatDateforTemplate(item.date) }}
+          </td>
+          <td style="white-space: nowrap; width: 75px">
+            {{ item.hours }}
+          </td>
+          <td>
+            {{ item.description }}
+          </td>
+        </tr>
+      </tbody>
+    </v-simple-table>
   </v-container>
 </template>
 
@@ -136,6 +144,9 @@ export default {
     };
   },
   methods: {
+    formatDateforTemplate(value) {
+      return moment(value).locale("nl").format("dd DD MMM");
+    },
     ...mapActions({
       getAllWorkingHoursForUser: "working_hours/getAllWorkingHours",
       addOrUpdateWorkingHoursForUser: "working_hours/addOrUpdateWorkingHours",
@@ -148,7 +159,6 @@ export default {
       }, 300);
     },
     save(editedItem) {
-
       if (this.editedIndex > -1) {
         editedItem.user_id = this.$auth.user.id;
         this.addOrUpdateWorkingHoursForUser(editedItem);
@@ -211,14 +221,14 @@ export default {
     },
     itemRowBackground(item) {
       if (item.submitted == true) {
-        return "blue-grey lighten-5";
+        return true;
       } else if (
         moment(item.date) < moment() &&
         moment(item.date) > moment(this.$auth.user.created_at)
       ) {
-        return "white";
+        return false;
       } else {
-        return "blue-grey lighten-5";
+        return true;
       }
     },
   },
