@@ -1,38 +1,27 @@
 <template>
   <v-container>
-    <SubmittedWeekDlg ref="week_overview"/>
+    <SubmittedWeekDlg ref="week_overview" />
     <v-tabs centered>
-            <v-tab href="#week_overview">Week overzicht</v-tab>
+      <v-tab href="#week_overview">Week overzicht</v-tab>
       <v-tab-item value="week_overview">
-            <v-row class="ml-1">
-      <v-col>
-        <!-- jaar aanpassen -->
-        <v-btn
-          icon
-          @click="substractYear"
-          v-if="previousYearAllowed"
-        >
-          <v-icon>mdi-chevron-triple-left</v-icon>
-        </v-btn>
-        <b>{{ computedSelectedYear }}</b>
-        <v-btn
-          icon
-          @click="addYear"
-          v-if="nextYearAllowed"
-        >
-          <v-icon>mdi-chevron-triple-right</v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-        <v-simple-table
-          dense
-          class="mt-3"
-        >
+        <v-row class="mt-3 ml-1">
+          <v-col>
+            <!-- jaar aanpassen -->
+            <v-btn icon @click="substractYear" v-if="previousYearAllowed">
+              <v-icon>mdi-chevron-triple-left</v-icon>
+            </v-btn>
+            <b>{{ computedSelectedYear }}</b>
+            <v-btn icon @click="addYear" v-if="nextYearAllowed">
+              <v-icon>mdi-chevron-triple-right</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-simple-table dense class="mt-3">
           <template v-slot:default>
             <thead>
-              <tr >
+              <tr>
                 <th class="text-left">Week</th>
-    <th class="text-left">Van/Tot</th>
+                <th class="text-left">Van/Tot</th>
                 <th class="text-left">Uren</th>
                 <th class="text-left">Ingediend?</th>
               </tr>
@@ -41,21 +30,20 @@
               <tr
                 v-for="(item, i) in week_overview"
                 :key="i"
-                 @click="showWeekOverview(item)"
+                @click="showWeekOverview(item)"
               >
                 <td>{{ item.week }}</td>
- <td>{{ formatDateforTemplate(item.week_start) }}/{{ formatDateforTemplate(item.week_end) }}</td>
+                <td>
+                  {{ formatDateforTemplate(item.week_start) }}/{{
+                    formatDateforTemplate(item.week_end)
+                  }}
+                </td>
                 <td>{{ item.sum_hours }}</td>
                 <td>
-                  <v-icon
-                    color="green"
-                    v-if="item.submitted"
+                  <v-icon color="green" v-if="item.submitted">
+                    mdi-hand-okay</v-icon
                   >
-                    mdi-hand-okay</v-icon>
-                  <v-icon
-                    color="red"
-                    v-else
-                  > mdi-close-octagon-outline</v-icon>
+                  <v-icon color="red" v-else> mdi-close-octagon-outline</v-icon>
                 </td>
               </tr>
             </tbody>
@@ -64,30 +52,19 @@
       </v-tab-item>
       <v-tab href="#month_overview">Maand overzicht</v-tab>
       <v-tab-item value="month_overview">
-            <v-row class="ml-1">
-      <v-col>
-        <!-- jaar aanpassen -->
-        <v-btn
-          icon
-          @click="substractYear"
-          v-if="previousYearAllowed"
-        >
-          <v-icon>mdi-chevron-triple-left</v-icon>
-        </v-btn>
-        <b>{{ computedSelectedYear }}</b>
-        <v-btn
-          icon
-          @click="addYear"
-          v-if="nextYearAllowed"
-        >
-          <v-icon>mdi-chevron-triple-right</v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
-        <v-simple-table
-          dense
-          class="mt-3"
-        >
+        <v-row class="mt-3 ml-1">
+          <v-col>
+            <!-- jaar aanpassen -->
+            <v-btn icon @click="substractYear" v-if="previousYearAllowed">
+              <v-icon>mdi-chevron-triple-left</v-icon>
+            </v-btn>
+            <b>{{ computedSelectedYear }}</b>
+            <v-btn icon @click="addYear" v-if="nextYearAllowed">
+              <v-icon>mdi-chevron-triple-right</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-simple-table dense class="mt-3">
           <template v-slot:default>
             <thead>
               <tr>
@@ -106,12 +83,13 @@
             </tbody>
           </template>
         </v-simple-table>
-                  <br />
-          <v-row>
-            <v-col class="justify-left ml-2">Totaal uren: &nbsp {{ yearTotal }}</v-col>
-          </v-row>
+        <br />
+        <v-row>
+          <v-col class="justify-left ml-2"
+            >Totaal uren: &nbsp {{ yearTotal }}</v-col
+          >
+        </v-row>
       </v-tab-item>
-
     </v-tabs>
   </v-container>
 </template>
@@ -120,10 +98,11 @@
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
-    head() {
-      return {
-        title: this.title,}
-        },
+  head() {
+    return {
+      title: this.title,
+    };
+  },
   data: () => ({
     title: "Overzicht",
     today: moment().format("YYYY-MM-DD"),
@@ -149,8 +128,13 @@ export default {
     ],
   }),
   methods: {
-        async showWeekOverview(item) {
-      await this.$refs.week_overview.open(item.week, item.week_start, item.week_end, item.working_hours)
+    async showWeekOverview(item) {
+      await this.$refs.week_overview.open(
+        item.week,
+        item.week_start,
+        item.week_end,
+        item.working_hours
+      );
     },
     formatDateforTemplate(value) {
       return moment(value).locale("nl").format("DD MMM");
@@ -267,7 +251,7 @@ export default {
         return false;
       }
     },
-        yearTotal() {
+    yearTotal() {
       var total = 0;
 
       for (
