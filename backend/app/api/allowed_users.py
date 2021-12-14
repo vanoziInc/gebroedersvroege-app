@@ -30,33 +30,33 @@ async def post_allowed_users(
         raise HTTPException(status_code=400, detail="Er is al een uitnodiging gestuurd naar dit email adres")
     elif await Users.get_or_none(email=added_user.email) is not None:
         raise HTTPException(status_code=400, detail="Dit email adres is al geregistreerd")
-        # Add allowed user to database
-        try:
-            allowed_user = await AllowedUsers.create(email=added_user.email)
-        except:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Er is een overwachte fout opgetreden bij het opslaan in de database",
-            )
-        # Send email
-        try:
-            await Mailer.send_invitation_message(
-                config=config,
-                email=EmailSchema(
-                    recipient_addresses=[allowed_user.email],
-                    body={
-                        "base_url": os.getenv("BASE_URL"),
-                        "sender": "Gebroeders Vroege",
-                    },
-                ),
-            )
-        except:
-            await allowed_user.delete()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Er is een overwachte fout opgetreden bij het versturen van de email",
-            )
-        return allowed_user
+    # Add allowed user to database
+    try:
+        allowed_user = await AllowedUsers.create(email=added_user.email)
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Er is een overwachte fout opgetreden bij het opslaan in de database",
+        )
+    # Send email
+    try:
+        await Mailer.send_invitation_message(
+            config=config,
+            email=EmailSchema(
+                recipient_addresses=[allowed_user.email],
+                body={
+                    "base_url": os.getenv("BASE_URL"),
+                    "sender": "Gebroeders Vroege",
+                },
+            ),
+        )
+    except:
+        await allowed_user.delete()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Er is een overwachte fout opgetreden bij het versturen van de email",
+        )
+    return allowed_user
 
 # Read all allowed users (Only the admin can do this)
 @router.get(
