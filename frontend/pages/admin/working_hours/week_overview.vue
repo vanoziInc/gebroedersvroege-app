@@ -102,7 +102,10 @@
                 <tbody>
                     <tr                   v-for="(x, i) in item.employee_info"
                     :key="i">
-                      <td>{{ x.name }}</td>
+                      <!-- <td>{{ x.name }}</td> -->
+                                  <td> <a v-bind:href="'/admin/working_hours/user/' + x.id">
+                {{ item.name }}
+              </a></td>
                       <td>{{ x.sum_hours }}</td>
                       <td>
                         <div v-if="x.submitted">
