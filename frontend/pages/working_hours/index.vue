@@ -21,42 +21,44 @@
         Indienen
       </v-btn>
     </v-toolbar>
+    <!-- Toolbar om naar andere week te springen -->
     <v-toolbar flat>
-    <v-card class="d-flex justify-left" flat tile>
-      <v-card class="pa-2" flat tile>
-        <v-btn-toggle tile v-model="toggle_year">
-          <v-icon @click="substractYear">mdi-chevron-triple-left</v-icon>
+      <v-card class="d-flex justify-left" flat tile>
+        <v-card class="pa-2" flat tile >
+          <v-btn-toggle tile v-model="toggle_year">
+            <v-icon v-if="lastYearAllowed" @click="substractYear">mdi-chevron-triple-left</v-icon>
 
-          <b class="mx-2">{{ computedSelectedYear }}</b>
-          <v-icon @click="addYear" v-if="nextYearAllowed"
-            >mdi-chevron-triple-right</v-icon
-          >
-        </v-btn-toggle>
+            <b class="mx-2">{{ computedSelectedYear }}</b>
+            <v-icon @click="addYear" v-if="nextYearAllowed"
+              >mdi-chevron-triple-right</v-icon
+            >
+          </v-btn-toggle>
+        </v-card>
+        <v-card class="pa-2" flat tile >
+          <v-btn-toggle tile v-model="toggle_month">
+            <v-icon v-if="lastMonthAllowed" @click="substractMonth">mdi-chevron-double-left</v-icon>
+
+            <b class="mx-2">{{ computedSelectedMonth }}</b>
+
+            <v-icon @click="addMonth" v-if="nextMonthAllowed"
+              >mdi-chevron-double-right</v-icon
+            >
+          </v-btn-toggle>
+        </v-card>
+        <v-card class="pa-2" flat tile>
+          <v-btn-toggle tile v-model="toggle_week">
+            <v-icon v-if="lastWeekAllowed" @click="substractWeek"
+              >mdi-chevron-left</v-icon
+            >
+            <b class="mx-2">{{ computedSelectedWeek }}</b>
+
+            <v-icon v-if="nextWeekAllowed" @click="addWeek"
+              >mdi-chevron-right</v-icon
+            >
+          </v-btn-toggle>
+        </v-card>
       </v-card>
-      <v-card class="pa-2" flat tile>
-        <v-btn-toggle tile v-model="toggle_month">
-          <v-icon @click="substractMonth">mdi-chevron-double-left</v-icon>
-
-          <b class="mx-2">{{ computedSelectedMonth }}</b>
-
-          <v-icon @click="addMonth" v-if="nextMonthAllowed"
-            >mdi-chevron-double-right</v-icon
-          >
-        </v-btn-toggle>
-      </v-card>
-      <v-card class="pa-2" flat tile>
-        <v-btn-toggle tile v-model="toggle_week">
-          <v-icon @click="substractWeek">mdi-chevron-left</v-icon>
-          <b class="mx-2">{{ computedSelectedWeek }}</b>
-
-          <v-icon v-if="nextWeekAllowed" @click="addWeek"
-            >mdi-chevron-right</v-icon
-          >
-        </v-btn-toggle>
-      </v-card>
-    </v-card>
     </v-toolbar>
-
 
     <v-simple-table dense class="mt-3">
       <thead>
@@ -208,7 +210,8 @@ export default {
         }
         if (
           (moment(item.date) > moment()) |
-          (moment(item.date) < moment(this.$auth.user.created_at))
+          (moment(item.date).format(moment.HTML5_FMT.DATE) <
+            moment(this.$auth.user.created_at).format(moment.HTML5_FMT.DATE))
         ) {
           return false;
         }
@@ -224,7 +227,8 @@ export default {
         return true;
       } else if (
         moment(item.date) < moment() &&
-        moment(item.date) > moment(this.$auth.user.created_at)
+        moment(item.date).format(moment.HTML5_FMT.DATE) >=
+          moment(this.$auth.user.created_at).format(moment.HTML5_FMT.DATE)
       ) {
         return false;
       } else {
@@ -322,6 +326,16 @@ export default {
         return false;
       }
     },
+    lastWeekAllowed() {
+      if (
+        moment(this.date).subtract(7, "days").endOf("isoWeek") >=
+        moment(this.$auth.user.created_at)
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
 
     nextMonthAllowed() {
       if (moment(this.date).month() + 1 < moment().month() + 1) {
@@ -330,8 +344,28 @@ export default {
         return false;
       }
     },
+    lastMonthAllowed() {
+      if (
+        moment(this.date).subtract(1, "months").format(moment.HTML5_FMT.DATE) >=
+        moment(this.$auth.user.created_at).format(moment.HTML5_FMT.DATE)
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     nextYearAllowed() {
       if (moment(this.date).year() + 1 < moment().year() + 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    lastYearAllowed() {
+      if (
+        moment(this.date).subtract(1, "year").format(moment.HTML5_FMT.DATE) >=
+        moment(this.$auth.user.created_at).format(moment.HTML5_FMT.DATE)
+      ) {
         return true;
       } else {
         return false;
