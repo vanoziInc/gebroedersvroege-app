@@ -24,17 +24,9 @@
                 v-model="dateRangeText"
               ></v-text-field>
             </template>
-            <v-date-picker
-              locale="nl-nl"
-              v-model="dates"
-              range
-            >
+            <v-date-picker locale="nl-nl" v-model="dates" range>
               <v-spacer></v-spacer>
-              <v-btn
-                text
-                color="primary"
-                @click="modal = false"
-              >
+              <v-btn text color="primary" @click="modal = false">
                 Annuleer
               </v-btn>
               <v-btn
@@ -58,8 +50,13 @@
           v-for="(item, i) in weeks_not_submitted"
           :key="i"
         >
-          <v-expansion-panel-header class="subtitle-1">Week {{ item.week }}:&nbsp;<span class="subtitle-2 font-weight-light font-italic">
-              ({{ item.week_start }} - {{ item.week_end }})</span></v-expansion-panel-header>
+          <v-expansion-panel-header class="subtitle-1"
+            >Week {{ item.week }}:&nbsp;<span
+              class="subtitle-2 font-weight-light font-italic"
+            >
+              ({{ item.week_start }} - {{ item.week_end }})</span
+            ></v-expansion-panel-header
+          >
           <v-expansion-panel-content>
             <!-- <v-data-table
               :headers="headers"
@@ -87,10 +84,7 @@
                 >
               </template>
             </v-data-table> -->
-            <v-simple-table
-              dense
-              class="mt-3"
-            >
+            <v-simple-table dense class="mt-3">
               <template v-slot:default>
                 <thead>
                   <tr>
@@ -100,38 +94,30 @@
                   </tr>
                 </thead>
                 <tbody>
-                    <tr                   v-for="(x, i) in item.employee_info"
-                    :key="i">
-                      <!-- <td>{{ x.name }}</td> -->
-                                  <td> <a v-bind:href="'/admin/working_hours/user/' + x.id">
-                {{ item.name }}
-              </a></td>
-                      <td>{{ x.sum_hours }}</td>
-                      <td>
-                        <div v-if="x.submitted">
-                          <v-icon color="green">
-                            mdi-hand-okay</v-icon>
-                          <v-btn
-                            color="primary"
-                            icon
-                            @click="unlockWeek(x)"
-                          >
-                            <v-icon>mdi-lock-open-variant-outline</v-icon>
-                          </v-btn>
-                        </div>
+                  <tr v-for="(x, i) in item.employee_info" :key="i">
+                    <!-- <td>{{ x.name }}</td> -->
+                    <td>
+                      <a v-bind:href="'/admin/working_hours/user/' + x.user_id">
+                        {{ x.name }}
+                      </a>
+                    </td>
+                    <td>{{ x.sum_hours }}</td>
+                    <td>
+                      <div v-if="x.submitted">
+                        <v-icon color="green"> mdi-hand-okay</v-icon>
+                        <v-btn color="primary" icon @click="unlockWeek(x)">
+                          <v-icon>mdi-lock-open-variant-outline</v-icon>
+                        </v-btn>
+                      </div>
 
-                        <v-icon
-                          color="red"
-                          v-else
-                        > mdi-close-octagon-outline</v-icon>
-                      </td>
-
-                    </tr>
-
+                      <v-icon color="red" v-else>
+                        mdi-close-octagon-outline</v-icon
+                      >
+                    </td>
+                  </tr>
                 </tbody>
               </template>
             </v-simple-table>
-
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
