@@ -47,7 +47,7 @@
         </v-card>
         <v-card class="pa-2" flat tile>
           <v-btn-toggle tile v-model="toggle_week">
-            <v-icon v-if="lastWeekAllowed" @click="substractWeek"
+            <v-icon v-if="lastWeekAllowed"  @click="substractWeek"
               >mdi-chevron-left</v-icon
             >
             <b class="mx-2">{{ computedSelectedWeek }}</b>

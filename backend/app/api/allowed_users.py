@@ -8,7 +8,7 @@ from app.models.pydantic import (
     AllowedUsersResponseSchema,
     EmailSchema,
 )
-from app.models.tortoise import AllowedUsers
+from app.models.tortoise import AllowedUsers, Users
 from app.services.auth import RoleChecker
 from app.services.mail import Mailer
 from fastapi import APIRouter, HTTPException
@@ -28,7 +28,8 @@ async def post_allowed_users(
 ) -> AllowedUsersResponseSchema:
     if await AllowedUsers.get_or_none(email=added_user.email) is not None:
         raise HTTPException(status_code=400, detail="Er is al een uitnodiging gestuurd naar dit email adres")
-    else:
+    elif await Users.get_or_none(email=added_user.email) is not None:
+        raise HTTPException(status_code=400, detail="Dit email adres is al geregistreerd")
         # Add allowed user to database
         try:
             allowed_user = await AllowedUsers.create(email=added_user.email)

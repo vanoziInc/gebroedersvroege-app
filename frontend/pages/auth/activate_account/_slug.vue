@@ -29,14 +29,16 @@ export default {
   methods: {
     async activateAccount() {
       try {
-        let response = await this.$axios.post("/auth/activate_account", {
+        const response = await this.$axios.post("/auth/activate_account", {
           token: this.token,
         });
         this.$notifier.showMessage({
           content: "Je account is geactiveerd, je kunt nu inloggen",
           color: "success",
         });
-        this.$router.push("/auth/login");
+        if (response.status == 200) {
+          this.$router.push("/auth/login");
+        }
       } catch (err) {
         if (err.response) {
           if (

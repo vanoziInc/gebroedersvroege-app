@@ -36,6 +36,7 @@
           >Annuleer</v-btn
         >
         <v-btn
+        :disabled="!valid" 
           color="primary"
           class="body-2 font-weight-bold"
           outlined
@@ -53,9 +54,9 @@ export default {
   data() {
     return {
       hoursRules: [
-        (v) => /^$|^[+-]?\d+(\.\d+)?$/.test(v) || "Onjuiste invoer",
+        (v) => /^[+-]?\d+(\.\d+)?$/.test(v) || "Onjuiste invoer",
         (v) =>
-          /^$/.test(v) | (v <= 24) ||
+          (v <= 24) ||
           "Er zitten niet meer dan 24 uur in een dag",
       ],
       valid: false,
@@ -82,7 +83,7 @@ export default {
       this.title = title;
       this.options = Object.assign(this.options, options);
       if (editedItem.hours == 0) {
-        editedItem.hours = null;
+        editedItem.hours = '';
       }
       this.editedItem = editedItem;
       return new Promise((resolve, reject) => {
