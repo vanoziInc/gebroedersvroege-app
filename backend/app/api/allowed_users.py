@@ -26,13 +26,13 @@ async def post_allowed_users(
     added_user: AllowedUsersCreateSchema,
     config: ConnectionConfig = Depends(get_fastapi_mail_config),
 ) -> AllowedUsersResponseSchema:
-    if await AllowedUsers.get_or_none(email=added_user.email) is not None:
+    if await AllowedUsers.get_or_none(email=added_user.email.lower()) is not None:
         raise HTTPException(status_code=400, detail="Er is al een uitnodiging gestuurd naar dit email adres")
     elif await Users.get_or_none(email=added_user.email) is not None:
         raise HTTPException(status_code=400, detail="Dit email adres is al geregistreerd")
     # Add allowed user to database
     try:
-        allowed_user = await AllowedUsers.create(email=added_user.email)
+        allowed_user = await AllowedUsers.create(email=added_user.email.lower())
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
