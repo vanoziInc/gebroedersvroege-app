@@ -4,7 +4,7 @@ from app.models.tortoise import AllowedUsers, GeneralMaintenance, Roles, Users, 
 
 import pydantic
 import datetime
-from pydantic import EmailStr
+from pydantic import EmailStr, constr
 from tortoise import Tortoise
 from tortoise.contrib.pydantic import pydantic_model_creator
 
@@ -18,7 +18,7 @@ Tortoise.init_models(["app.models.tortoise"], "models")
 class CreateUser(pydantic.BaseModel):
     first_name :str
     last_name :str
-    email: pydantic.EmailStr
+    email: constr(to_lower=True)
     password: pydantic.SecretStr
 
 
@@ -39,7 +39,7 @@ RolesSchema = pydantic_model_creator(
 
 #  Email
 class EmailSchema(pydantic.BaseModel):
-    recipient_addresses: List[EmailStr]
+    recipient_addresses: List[constr(to_lower=True)]
     body: Dict[str, Any]
 
 # Activate Account
@@ -56,10 +56,10 @@ class ResetPassword(pydantic.BaseModel):
 
 # Allowed Users
 class AllowedUsersCreateSchema(pydantic.BaseModel):
-    email: EmailStr
+    email: constr(to_lower=True)
 
 class AllowedUsersUpdateschema(pydantic.BaseModel):
-    email: EmailStr
+    email: constr(to_lower=True)
 
 AllowedUsersResponseSchema = pydantic_model_creator(
     AllowedUsers

@@ -165,6 +165,12 @@ async def get_login_token(
             detail="Email en/of wachtwoord onjuist",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    if user.is_active is False:
+             raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Gebruiker is nog niet geactiveerd!",
+            headers={"WWW-Authenticate": "Bearer"},
+        )   
     access_token = Auth.get_access_token(email=user.email)
     refresh_token = Auth.get_refresh_token(email=user.email)
     return JSONResponse(
