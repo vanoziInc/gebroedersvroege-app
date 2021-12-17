@@ -115,7 +115,7 @@ async def resent_activation_code(
     email: str, config: ConnectionConfig = Depends(get_fastapi_mail_config)
 ):
     # Check if user allready exists
-    if await Users.get_or_none(email=email) is None:
+    if await Users.get_or_none(email=email.lower()) is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Dit email adres is niet bekend",
@@ -208,7 +208,7 @@ async def forgot_password(
     config: ConnectionConfig = Depends(get_fastapi_mail_config),
 ):
     # check if email address exists
-    user = await Users.get_or_none(email=email)
+    user = await Users.get_or_none(email=email.lower())
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Deze gebruiker bestaat niet"
