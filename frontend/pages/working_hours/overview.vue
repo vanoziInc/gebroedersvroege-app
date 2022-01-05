@@ -164,7 +164,10 @@ export default {
         let response = await this.$axios.get("/working_hours/week_overview/", {
           params: {
             from_date: moment(this.today).startOf("year").format("YYYY-MM-DD"),
-            to_date: moment(this.today).endOf("isoweek").format("YYYY-MM-DD"),
+            to_date:
+              moment(this.today).year() < moment().year()
+                ? moment(this.today).endOf("year").format("YYYY-MM-DD")
+                : moment(this.today).endOf("isoweek").format("YYYY-MM-DD"),
             user_id: this.$auth.user.id,
           },
         });
