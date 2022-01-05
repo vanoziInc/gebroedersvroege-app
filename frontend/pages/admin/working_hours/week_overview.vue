@@ -74,7 +74,7 @@
                   <tr
                     v-for="(x, i) in item.employee_info"
                     :key="i"
-                    @click="showWeekOverview(x)"
+                    @click="showWeekOverview(x.working_hours)"
                   >
                     <!-- <td>{{ x.name }}</td> -->
                     <td>
@@ -158,19 +158,18 @@ export default {
     formatDateforTemplate(value) {
       return moment(value).locale("nl").format("dd DD MMM");
     },
-    async showWeekOverview(item) {
-      console.log(item.week);
+    async showWeekOverview(working_hours) {
       await this.$refs.week_overview.open(
-        item.week,
-        item.week_start,
-        item.week_end,
-        item.working_hours
+        this.week,
+        this.weekStart,
+        this.weekEnd,
+        working_hours
       );
     },
     setWeekDates(item) {
+      this.week = item.week;
       this.weekStart = item.week_start;
       this.weekEnd = item.week_end;
-      console.log(item);
     },
     async unlockWeek(item) {
       if (
@@ -223,7 +222,6 @@ export default {
   computed: {
     dateRangeText() {
       const sortedDates = this.dates.sort((a, b) => moment(a).diff(b));
-      console.log(sortedDates);
       return sortedDates.join(" ~ ");
     },
     workingHoursPerWeekInSelectedYear() {
@@ -258,7 +256,6 @@ export default {
             );
           } else {
             var weekIsSubmitted = hoursWeek.every(function (e) {
-              console.log(e.submitted);
               return e.submitted === true;
             });
           }
