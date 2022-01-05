@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <ConfirmDlg ref="confirm" />
+    <SubmittedWeekDlg ref="week_overview" />
     <v-container>
       <v-row>
         <v-col
@@ -54,7 +55,9 @@
             >Week {{ item.week }}:&nbsp;<span
               class="subtitle-2 font-weight-light font-italic"
             >
-              ({{ item.week_start }} - {{ item.week_end }})</span
+              ( {{ formatDateforTemplate(item.week_start) }}/{{
+                formatDateforTemplate(item.week_end)
+              }})</span
             ></v-expansion-panel-header
           >
           <v-expansion-panel-content>
@@ -68,7 +71,11 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(x, i) in item.employee_info" :key="i">
+                  <tr
+                    v-for="(x, i) in item.employee_info"
+                    :key="i"
+                    @click="showWeekOverview(x)"
+                  >
                     <!-- <td>{{ x.name }}</td> -->
                     <td>
                       <a v-bind:href="'/admin/working_hours/user/' + x.user_id">
@@ -101,6 +108,7 @@
 
 <script>
 import ConfirmDlg from "~/components/ConfirmDlg.vue";
+import SubmittedWeekDlg from "~/components/SubmittedWeekDlg.vue";
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 export default {
@@ -147,6 +155,18 @@ export default {
         "working_hours/addWorkingHoursToAllUsersState",
       resetAll: "working_hours/resetStateAllUsersAllWorkingHours",
     }),
+    formatDateforTemplate(value) {
+      return moment(value).locale("nl").format("dd DD MMM");
+    },
+    async showWeekOverview(item) {
+      console.log(item.week);
+      await this.$refs.week_overview.open(
+        item.week,
+        item.week_start,
+        item.week_end,
+        item.working_hours
+      );
+    },
     setWeekDates(item) {
       this.weekStart = item.week_start;
       this.weekEnd = item.week_end;
