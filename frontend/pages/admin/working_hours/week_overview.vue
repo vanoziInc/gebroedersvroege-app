@@ -58,32 +58,6 @@
             ></v-expansion-panel-header
           >
           <v-expansion-panel-content>
-            <!-- <v-data-table
-              :headers="headers"
-              :items="item.employee_info"
-              :items-per-page="10"
-              class="elevation-1"
-            >
-              <template #item.submitted="{ item }"
-                ><v-icon color="green" v-if="item.submitted">
-                  mdi-hand-okay</v-icon
-                >
-                <v-icon color="red" v-else>
-                  mdi-close-octagon-outline</v-icon
-                ></template
-              >
-              <template v-slot:item.acties="{ item }">
-                <v-btn
-                  small
-                  flat
-                  color="primary"
-                  outlined
-                  v-if="item.submitted == true"
-                  @click="unlockWeek(item)"
-                  >Geef vrij</v-btn
-                >
-              </template>
-            </v-data-table> -->
             <v-simple-table dense class="mt-3">
               <template v-slot:default>
                 <thead>

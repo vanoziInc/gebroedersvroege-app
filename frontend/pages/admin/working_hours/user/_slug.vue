@@ -1,7 +1,7 @@
 <template>
   <v-container>
-        <ConfirmDlg ref="confirm" />
-        <SubmittedWeekDlg ref="week_overview"/>
+    <ConfirmDlg ref="confirm" />
+    <SubmittedWeekDlg ref="week_overview" />
 
     <!-- tabs -->
     <!-- overzicht uren -->
@@ -11,7 +11,8 @@
       <v-tab-item value="week_overview">
         <v-row class="mt-3 ml-1">
           <v-col v-if="werknemer != null">
-            <span class="font-weight-bold">Naam: </span>{{ werknemer.first_name }} {{ werknemer.last_name }}
+            <span class="font-weight-bold">Naam: </span
+            >{{ werknemer.first_name }} {{ werknemer.last_name }}
           </v-col>
         </v-row>
         <v-row class="ml-1">
@@ -20,24 +21,17 @@
             <v-btn
               icon
               @click="substractYear"
-              v-if="werknemer !=null && previousYearAllowed"
+              v-if="werknemer != null && previousYearAllowed"
             >
               <v-icon>mdi-chevron-triple-left</v-icon>
             </v-btn>
             <b>{{ computedSelectedYear }}</b>
-            <v-btn
-              icon
-              @click="addYear"
-              v-if="nextYearAllowed"
-            >
+            <v-btn icon @click="addYear" v-if="nextYearAllowed">
               <v-icon>mdi-chevron-triple-right</v-icon>
             </v-btn>
           </v-col>
         </v-row>
-        <v-simple-table
-          dense
-          class="mt-3"
-        >
+        <v-simple-table dense class="mt-3">
           <template v-slot:default>
             <thead>
               <tr>
@@ -54,25 +48,21 @@
                 @click="showWeekOverview(item)"
               >
                 <td>{{ item.week }}</td>
-                <td>{{ formatDateforTemplate(item.week_start) }}/{{ formatDateforTemplate(item.week_end) }}</td>
+                <td>
+                  {{ formatDateforTemplate(item.week_start) }}/{{
+                    formatDateforTemplate(item.week_end)
+                  }}
+                </td>
                 <td>{{ item.sum_hours }}</td>
                 <td>
                   <div v-if="item.submitted">
-                    <v-icon color="green">
-                      mdi-hand-okay</v-icon>
-                    <v-btn
-                      color="primary"
-                      icon
-                       @click="unlockWeek(item)"
-                    >
+                    <v-icon color="green"> mdi-hand-okay</v-icon>
+                    <v-btn color="primary" icon @click="unlockWeek(item)">
                       <v-icon>mdi-lock-open-variant-outline</v-icon>
                     </v-btn>
                   </div>
 
-                  <v-icon
-                    color="red"
-                    v-else
-                  > mdi-close-octagon-outline</v-icon>
+                  <v-icon color="red" v-else> mdi-close-octagon-outline</v-icon>
                 </td>
               </tr>
             </tbody>
@@ -82,58 +72,53 @@
 
       <v-tab href="#month_overview">Maand overzicht</v-tab>
       <v-tab-item value="month_overview">
-          <v-row class="mt-3 ml-1">
-            <v-col v-if="werknemer != null">
-              <span class="font-weight-bold">Naam: </span>{{ werknemer.first_name }} {{ werknemer.last_name }}
-            </v-col>
-          </v-row>
-          <v-row class="ml-1">
-            <v-col>
-              <!-- jaar aanpassen -->
-              <v-btn
-                icon
-                @click="substractYear"
-                v-if="werknemer !=null && previousYearAllowed"
+        <v-row class="mt-3 ml-1">
+          <v-col v-if="werknemer != null">
+            <span class="font-weight-bold">Naam: </span
+            >{{ werknemer.first_name }} {{ werknemer.last_name }}
+          </v-col>
+        </v-row>
+        <v-row class="ml-1">
+          <v-col>
+            <!-- jaar aanpassen -->
+            <v-btn
+              icon
+              @click="substractYear"
+              v-if="werknemer != null && previousYearAllowed"
+            >
+              <v-icon>mdi-chevron-triple-left</v-icon>
+            </v-btn>
+            <b>{{ computedSelectedYear }}</b>
+            <v-btn icon @click="addYear" v-if="nextYearAllowed">
+              <v-icon>mdi-chevron-triple-right</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-simple-table class="mt-3" dense>
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th class="text-left">Maand</th>
+                <th class="text-left">Totaal uren</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="item in workingHoursPerMonthInSelectedYear"
+                :key="item.month"
               >
-                <v-icon>mdi-chevron-triple-left</v-icon>
-              </v-btn>
-              <b>{{ computedSelectedYear }}</b>
-              <v-btn
-                icon
-                @click="addYear"
-                v-if="nextYearAllowed"
-              >
-                <v-icon>mdi-chevron-triple-right</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-simple-table
-            class="mt-3"
-            dense
+                <td>{{ item.month }}</td>
+                <td>{{ item.sum }}</td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
+        <br />
+        <v-row>
+          <v-col class="justify-left ml-2"
+            >Totaal uren: &nbsp {{ yearTotal }}</v-col
           >
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th class="text-left">Maand</th>
-                  <th class="text-left">Totaal uren</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="item in workingHoursPerMonthInSelectedYear"
-                  :key="item.month"
-                >
-                  <td>{{ item.month }}</td>
-                  <td>{{ item.sum }}</td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
-          <br />
-          <v-row>
-            <v-col class="justify-left ml-2">Totaal uren: &nbsp {{ yearTotal }}</v-col>
-          </v-row>
-
+        </v-row>
       </v-tab-item>
     </v-tabs>
   </v-container>
@@ -205,7 +190,10 @@ export default {
         let response = await this.$axios.get("/working_hours/week_overview/", {
           params: {
             from_date: moment(this.today).startOf("year").format("YYYY-MM-DD"),
-            to_date: moment(this.today).endOf("isoweek").format("YYYY-MM-DD"),
+            to_date:
+              moment(this.today).year() < moment().year()
+                ? moment(this.today).endOf("year").format("YYYY-MM-DD")
+                : moment(this.today).endOf("isoweek").format("YYYY-MM-DD"),
             user_id: this.$route.params.slug,
           },
         });
@@ -221,7 +209,12 @@ export default {
       }
     },
     async showWeekOverview(item) {
-      await this.$refs.week_overview.open(item.week, item.week_start, item.week_end, item.working_hours)
+      await this.$refs.week_overview.open(
+        item.week,
+        item.week_start,
+        item.week_end,
+        item.working_hours
+      );
     },
     async unlockWeek(item) {
       if (
