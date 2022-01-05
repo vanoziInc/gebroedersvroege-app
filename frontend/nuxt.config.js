@@ -50,7 +50,7 @@ export default {
 
   publicRuntimeConfig: {
     axios: {
-      baseURL: process.env.BASE_URL || 'http://localhost:8004/api'
+      baseURL: process.env.BASE_URL_API || 'http://localhost:8004/api'
     }
   },
 
@@ -61,7 +61,7 @@ export default {
   vuetify: {
     lang: {
       locales: { nl },
-      current : 'nl'
+      current: 'nl'
     },
     customVariables: ['~/assets/variables.scss'],
     theme: {
@@ -89,7 +89,7 @@ export default {
     }
   },
   auth: {
-    scopeKey : 'roles',
+    scopeKey: 'roles',
     redirect: {
       login: '/auth/login',
       logout: false,
@@ -98,7 +98,7 @@ export default {
     },
     strategies: {
       local: {
-        scheme : 'refresh',
+        scheme: 'refresh',
         token: {
           property: 'access_token',
           global: true,
@@ -130,5 +130,5 @@ export default {
     less: [],
     stylus: [],
     hoistUseStatements: true  // Hoists the "@use" imports. Applies only to "sass", "scss" and "less". Default: false.
-   }
+  }
 }

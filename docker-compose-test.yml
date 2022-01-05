@@ -6,7 +6,6 @@ services:
     image: "traefik:v2.5"
     container_name: "traefik"
     command:
-      #- "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
@@ -23,16 +22,14 @@ services:
       dockerfile: Dockerfile
     container_name: "frontend"
     environment:
-      - BASE_URL=${BASE_URL}
+      - BASE_URL_API=${BASE_URL_API}
     depends_on:
       - fastapi
-    restart:
-      always
+    restart: always
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
       - "traefik.http.routers.frontend.entrypoints=web"
-      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
 
   fastapi:
     build:
@@ -44,7 +41,7 @@ services:
       - TESTING=1
       - DATABASE_URL=postgres://postgres:postgres@database:5432/test
       - DATABASE_TEST_URL=postgres://postgres:postgres@database:5432/test
-      - DATABASE_TEST_BACKEND_URL=postgres://postgres:postgres@database:5432/test-backend
+      - DATABASE_TEST_BACKEND_URL=postgres://postgres:postgres@database:5432/test_backend
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_FROM=${MAIL_FROM}
@@ -53,19 +50,19 @@ services:
       - MAIL_FROM_NAME=${MAIL_FROM_NAME}
       - MAIL_TLS=${MAIL_TLS}
       - MAIL_SSL=${MAIL_SSL}
-      - BASE_URL=http://api.localhost
+      - BASE_URL=http://${BASE_URL_API}
     # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
     depends_on:
       - database
     restart: always
-    command : uvicorn app.main:app --host 0.0.0.0 --port 8004
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8004
     expose:
       - 8004
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.fastapi.rule=Host(`api.localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.fastapi.rule=Host(`${BASE_URL_API}`) &&
+        PathPrefix(`/api`)"
       - "traefik.http.routers.fastapi.entrypoints=web"
-      - "traefik.http.routers.fastapi.tls.certresolver=myresolver"
 
   database:
     build:
@@ -79,8 +76,7 @@ services:
       - POSTGRES_PASSWORD=postgres
     restart: always
     volumes:
-      - db-data:/var/lib/postgresql/data/
-
+      - db-test-data:/var/lib/postgresql/data/
 
 volumes:
-  db-data:
+  db-test-data: null

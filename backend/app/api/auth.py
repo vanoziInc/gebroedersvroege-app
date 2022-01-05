@@ -1,8 +1,13 @@
 import os
 
 from app.config import Settings, get_fastapi_mail_config, get_settings
-from app.models.pydantic import (CreateUser, EmailSchema, ResetPassword,
-                                 TokenSchema, User_Pydantic)
+from app.models.pydantic import (
+    CreateUser,
+    EmailSchema,
+    ResetPassword,
+    TokenSchema,
+    User_Pydantic,
+)
 from app.models.tortoise import AllowedUsers, Roles, Users
 from app.services.auth import Auth
 from app.services.mail import Mailer
@@ -47,7 +52,9 @@ async def register(
         user.confirmation = confirmation_token["jti"]
         await user.save()
         # add user roles
-        role, _ = await Roles.get_or_create(name="werknemer", description="User met algemene werknemers rechten")
+        role, _ = await Roles.get_or_create(
+            name="werknemer", description="User met algemene werknemers rechten"
+        )
         await user.roles.add(role)
         await Mailer.send_welcome_message(
             config=config,
@@ -55,7 +62,7 @@ async def register(
                 recipient_addresses=[user.email],
                 body={
                     "first_name": user.first_name,
-                    "base_url": os.getenv("BASE_URL"),
+                    "base_url": os.getenv("BASE_URL_FRONTEND"),
                     "confirmation_token": confirmation_token["token"],
                 },
             ),
@@ -138,7 +145,7 @@ async def resent_activation_code(
             email=EmailSchema(
                 recipient_addresses=[user.email],
                 body={
-                    "base_url": os.getenv("BASE_URL"),
+                    "base_url": os.getenv("BASE_URL_FRONTEND"),
                     "fist_name": user.first_name,
                     "confirmation_token": confirmation_token["token"],
                 },
@@ -169,19 +176,23 @@ async def get_login_token(
     refresh_token = Auth.get_refresh_token(email=user.email)
     return JSONResponse(
         {
-            "access_token": access_token["token"], 
-            "refresh_token" : refresh_token["token"],
-            "token_type": "bearer"
-        }, status_code=200
+            "access_token": access_token["token"],
+            "refresh_token": refresh_token["token"],
+            "token_type": "bearer",
+        },
+        status_code=200,
     )
 
+
 @router.post("/refresh")
-async def refresh(token:TokenSchema, settings: Settings = Depends(get_settings)):
+async def refresh(token: TokenSchema, settings: Settings = Depends(get_settings)):
     invalid_token_error = HTTPException(status_code=400, detail="Invalid token")
     # Check if token expiration date is reached
     try:
         payload = jwt.decode(
-            token.refresh_token, settings.secret_key, algorithms=settings.token_algorithm
+            token.refresh_token,
+            settings.secret_key,
+            algorithms=settings.token_algorithm,
         )
     except jwt.JWTError as e:
         raise HTTPException(status_code=403, detail="Refresh toke is verlopen")
@@ -196,11 +207,13 @@ async def refresh(token:TokenSchema, settings: Settings = Depends(get_settings))
     refresh_token = Auth.get_refresh_token(email=user.email)
     return JSONResponse(
         {
-            "access_token": access_token["token"], 
-            "refresh_token" : refresh_token["token"],
-            "token_type": "bearer"
-        }, status_code=200
+            "access_token": access_token["token"],
+            "refresh_token": refresh_token["token"],
+            "token_type": "bearer",
+        },
+        status_code=200,
     )
+
 
 @router.get("/forgot_password/{email}")
 async def forgot_password(
@@ -211,12 +224,14 @@ async def forgot_password(
     user = await Users.get_or_none(email=email)
     if user is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Deze gebruiker bestaat niet"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Deze gebruiker bestaat niet",
         )
     # kijken of de gebruiker actief is
     if user.is_active is False:
-                raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Deze gebruiker is nog niet actief"
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Deze gebruiker is nog niet actief",
         )
     reset_password_token = Auth.get_reset_password_token(email=user.email)
     try:
@@ -226,12 +241,17 @@ async def forgot_password(
                 recipient_addresses=[user.email],
                 body={
                     "first_name": user.first_name,
-                    "base_url": os.getenv("BASE_URL"),
+                    "base_url": os.getenv("BASE_URL_FRONTEND"),
                     "reset_password_token": reset_password_token["token"],
                 },
             ),
         )
-        return JSONResponse({"message": "Er is een link verstuurd waarmee je je wachtwoord kunt resetten"}, status_code=200)
+        return JSONResponse(
+            {
+                "message": "Er is een link verstuurd waarmee je je wachtwoord kunt resetten"
+            },
+            status_code=200,
+        )
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
