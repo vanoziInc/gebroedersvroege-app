@@ -8,14 +8,13 @@
     @keydown.esc="cancel"
   >
     <v-card>
-      <v-toolbar
-        dark
-        :color="options.color"
-        dense
-        flat
-      >
-        <v-toolbar-title class="text-body-1 font-weight-bold grey--text text--darken-2">
-          Week: {{ week_number }} ({{formatDateforTemplate(week_start)}}/{{formatDateforTemplate(week_end)}})
+      <v-toolbar dark :color="options.color" dense flat>
+        <v-toolbar-title
+          class="text-body-1 font-weight-bold grey--text text--darken-2"
+        >
+          Week: {{ week_number }} ({{ formatDateforTemplate(week_start) }}/{{
+            formatDateforTemplate(week_end)
+          }})
         </v-toolbar-title>
       </v-toolbar>
       <v-card-text class="pa-4 black--text">
@@ -28,18 +27,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(x, i) in working_hours"
-              :key="i"
-            >
+            <tr v-for="(x, i) in working_hours" :key="i">
               <td width="120px">{{ formatDateforTemplate(x.date) }}</td>
               <td width="80px ">{{ x.hours }}</td>
               <td>
-                {{x.description}}
+                {{ x.description }}
               </td>
-
             </tr>
-
           </tbody>
         </v-simple-table>
       </v-card-text>
@@ -50,7 +44,8 @@
           class="body-2 font-weight-bold"
           outlined
           @click.native="agree"
-        >OK</v-btn>
+          >OK</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -79,13 +74,12 @@ export default {
 
   methods: {
     open(week_number, week_start, week_end, working_hours, options) {
-      console.log(week_number, week_start, week_end, working_hours);
       this.dialog = true;
       this.week_number = week_number;
       this.week_start = week_start;
       this.week_end = week_end;
       this.working_hours = working_hours;
-      this.workingHoursSorted()
+      this.workingHoursSorted();
       this.options = Object.assign(this.options, options);
       return new Promise((resolve, reject) => {
         this.resolve = resolve;
@@ -101,14 +95,14 @@ export default {
       this.resolve(false);
       this.dialog = false;
     },
-        formatDateforTemplate(value) {
+    formatDateforTemplate(value) {
       return moment(value).locale("nl").format("dd DD MMM");
     },
-        workingHoursSorted() {
+    workingHoursSorted() {
       if (this.working_hours != null) {
         this.working_hours.sort(function (a, b) {
           console.log(a.date, b.date);
-          console.log(a.date.localeCompare(b.date))
+          console.log(a.date.localeCompare(b.date));
           return a.date.localeCompare(b.date);
         });
       } else {
@@ -116,8 +110,6 @@ export default {
       }
     },
   },
-  computed: {
-
-  },
+  computed: {},
 };
 </script>
