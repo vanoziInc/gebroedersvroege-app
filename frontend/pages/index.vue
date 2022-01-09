@@ -35,6 +35,7 @@
     </v-container>
     <!-- Admin homepage -->
     <v-container v-if="userIsAdmin">
+    <h1>Willie walrus</h1>
       <v-row class="justify-center">
         <v-col :cols="$vuetify.breakpoint.mdAndUp ? 6: 12">
           <v-card>
