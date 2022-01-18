@@ -87,7 +87,7 @@ class Auth:
     # Authenticate and return user
     @staticmethod
     async def authenticate_user(email: str, password: str) -> User_Pydantic:
-        user = await Users.get_or_none(email=email)
+        user = await Users.get_or_none(email=email.lower())
         if not user:
             return False
         if not Auth.verify_password(

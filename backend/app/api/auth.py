@@ -122,7 +122,7 @@ async def resent_activation_code(
     email: str, config: ConnectionConfig = Depends(get_fastapi_mail_config)
 ):
     # Check if user allready exists
-    if await Users.get_or_none(email=email) is None:
+    if await Users.get_or_none(email=email.lower()) is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Dit email adres is niet bekend",
@@ -172,6 +172,12 @@ async def get_login_token(
             detail="Email en/of wachtwoord onjuist",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    if user.is_active is False:
+             raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Gebruiker is nog niet geactiveerd!",
+            headers={"WWW-Authenticate": "Bearer"},
+        )   
     access_token = Auth.get_access_token(email=user.email)
     refresh_token = Auth.get_refresh_token(email=user.email)
     return JSONResponse(
@@ -221,7 +227,7 @@ async def forgot_password(
     config: ConnectionConfig = Depends(get_fastapi_mail_config),
 ):
     # check if email address exists
-    user = await Users.get_or_none(email=email)
+    user = await Users.get_or_none(email=email.lower())
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
