@@ -1,4 +1,4 @@
-name: CI/CD
+name: Tests
 
 on:
   push:
@@ -28,27 +28,3 @@ jobs:
       # - name: Run frontend tests image
       #   continue-on-error: true
       #   run: docker run playwright-tests
-
-on:
-  release:
-    types: [published]
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        script: |
-          cd nuxt-fastapi-docker-base
-          docker-compose -f docker-compose-prod.yml --env-file .env.prod down
-          git pull
-          docker-compose -f docker-compose-prod.yml --env-file .env.prod build
-          docker-compose -f docker-compose-prod.yml --env-file .env.prod up -d
-          docker exec fastapi aerich migrate
-          docker exec fastapi aerich upgrade
