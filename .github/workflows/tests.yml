@@ -3,7 +3,7 @@ name: Tests
 on:
   push:
     branches:    
-      - '!master'   # excludes master
+      - 'master'   # excludes master
 
 jobs:
   test:
