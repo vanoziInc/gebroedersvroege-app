@@ -16,7 +16,7 @@ jobs:
         run: docker-compose -f "docker-compose-test.yml" --env-file .env.test up -d
       - name: Perform unit tests
         continue-on-error: true
-        run: docker-compose -f docker-compose-test.yml --env-file .env.test exec fastapi python -m pytest -v -m unittest
+        run: docker-compose -f docker-compose-test.yml --env-file .env.test exec -T fastapi python -m pytest -v -m unittest
       # - name: setup database for frontend testing
       #   run: | 
       #     docker exec database psql -U postgres -c "CREATE DATABASE test;"
