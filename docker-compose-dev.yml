@@ -15,7 +15,8 @@ services:
       - ENVIRONMENT=dev
       - TESTING=0
       - DATABASE_URL=postgres://postgres:postgres@database:5432/dev
-      - DATABASE_TEST_URL=postgres://postgres:postgres@database:5432/test 
+      - DATABASE_TEST_URL=postgres://postgres:postgres@database:5432/test
+      - DATABASE_TEST_BACKEND_URL=postgres://postgres:postgres@database:5432/test_backend
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_FROM=${MAIL_FROM}
@@ -24,14 +25,16 @@ services:
       - MAIL_FROM_NAME=${MAIL_FROM_NAME}
       - MAIL_TLS=${MAIL_TLS}
       - MAIL_SSL=${MAIL_SSL}
-      - BASE_URL=${BASE_URL_FRONTEND}
+      - BASE_URL_API=${BASE_URL_API}
     volumes:
       - ./backend:/app
-    command: 
+    command:
       [
         "sh",
         "-c",
-        "pip install debugpy && python -m debugpy --wait-for-client --listen 0.0.0.0:5678 -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8004",
+        "pip install debugpy && python -m debugpy --wait-for-client --listen
+          0.0.0.0:5678 -m uvicorn app.main:app --reload --host 0.0.0.0 --port
+          8004"
       ]
     depends_on:
       - database
@@ -50,7 +53,6 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data/
 
-  
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
@@ -61,7 +63,6 @@ services:
     ports:
       - "5050:80"
 
- 
 volumes:
-  db-data:
-  pgadmin-data:
+  db-data: null
+  pgadmin-data: null
