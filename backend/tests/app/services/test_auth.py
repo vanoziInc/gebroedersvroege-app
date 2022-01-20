@@ -8,41 +8,43 @@ from tests.conftest import get_settings_override
 
 
 @pytest.mark.unittest
-class TestAuthenticationClass:
-    def test_password_hash_generation_with_valid_password(self):
-        """Tests Auth.get_password_hash with a password length greater than 0"""
-        hashed_password = Auth.get_password_hash(password="secretstring")
-        assert hashed_password != "secretstring"
+class TestAuth:
+    def test_get_password_hash(self):
+        """
+        1. Password length greater then 0 - exp. valid hash created
+        2. Password length equal to 0 - exp. valid hash created
+        3. Password type is int instead of string - exp. TypeError
+        """
+        assert Auth.get_password_hash(password="secretstring") != "secretstring"
+        assert Auth.get_password_hash(password="") != ""
+        with pytest.raises(TypeError) as excinfo:
+            Auth.get_password_hash(password=12345)
 
-    def test_password_hash_generation_with_empty_password(self):
-        """Tests Auth.get_password_hash with a password length of 0"""
-        hashed_password = Auth.get_password_hash(password="")
-        assert hashed_password != ""
+    def test_verify_password(self):
+        """
+        1. Plain password corresponds with hashed password - exp. returns True
+        2. Plain password does not correspond with hashed password - exp. returns False
+        3. Plain password is None - exp. TypeError: secret must be unicode or bytes, not None
 
-    def test_password_verification_plain_password_is_equal_to_hashed_password(self):
-        """Tests Auth.verify_password whereby plain password corresponds with hashed password"""
-        hashed_password = Auth.get_password_hash(password="secretstring")
+        """
         assert Auth.verify_password(
-            plain_password="secretstring", hashed_password=hashed_password
+            plain_password="secretstring",
+            hashed_password=Auth.get_password_hash(password="secretstring"),
         )
-
-    def test_password_verification_plain_password_is_not_equal_to_hashed_password(self):
-        """Tests Auth.verify_password whereby plain password does not correspond with hashed password"""
-        hashed_password = Auth.get_password_hash(password="secretstring")
         assert (
             Auth.verify_password(
-                plain_password="secretstring_mismatch", hashed_password=hashed_password
+                plain_password="secretstring_mismatch",
+                hashed_password=Auth.get_password_hash(password="secretstring"),
             )
             is False
         )
+        with pytest.raises(TypeError) as excinfo:
+            Auth.verify_password(plain_password=None, hashed_password=Auth.get_password_hash(password="secretstring"))
 
-    def test_password_verification_with_plain_password_equal_to_None(self):
-        """Tests Auth.verify_password whereby plain password is None raises an Exception"""
-        hashed_password = Auth.get_password_hash(password="secretstring")
-        with pytest.raises(Exception) as e_info:
-            Auth.verify_password(plain_password=None, hashed_password=hashed_password)
 
-    def test_generation_of_token(self):
+
+
+    def test_get_token(self):
         """Tests Auth.get_token Token generation with email address"""
         token: str = Auth.get_token(data={"email": "test@test.com"}, expires_delta=10)
         assert token.startswith("ey")
