@@ -3,21 +3,29 @@ import pytest, json
 from fastapi.testclient import TestClient
 from app.models.pydantic import AllowedUsersCreateSchema
 
+from app.services.mail import fm
+
 pytestmark = pytest.mark.anyio
 
 
 @pytest.mark.apitest
+@pytest.mark.dev
 async def test_add_allowed_users(test_client: TestClient, request_headers_admin: dict):
-    payload = AllowedUsersCreateSchema(email="test_gebruiker@test.com").json()
-    response = await test_client.post(
-        "/allowed_users/", headers=request_headers_admin, data=payload
-    )
-    pytest.assume(response.status_code == 201)
-    pytest.assume(response.json()["id"])
-    pytest.assume(response.json()["created_at"])
-    pytest.assume(response.json()["last_modified_at"])
-    pytest.assume(response.json()["email"] == "test_gebruiker@test.com")
-
+    fm.config.SUPPRESS_SEND = 1
+    with fm.record_messages() as outbox:
+        payload = AllowedUsersCreateSchema(email="test_gebruiker@test.com").json()
+        response = await test_client.post(
+            "/allowed_users/", headers=request_headers_admin, data=payload
+        )
+        pytest.assume(response.status_code == 201)
+        pytest.assume(response.json()["id"])
+        pytest.assume(response.json()["created_at"])
+        pytest.assume(response.json()["last_modified_at"])
+        pytest.assume(response.json()["email"] == "test_gebruiker@test.com")
+        pytest.assume(len(outbox) == 1)
+        pytest.assume(outbox[0]['from'] == 'Supermooi App <noreply@gebroedersvroege.nl>')
+        pytest.assume(outbox[0]['To'] == 'test_gebruiker@test.com')
+        pytest.assume(outbox[0]['Subject'] == 'Uitnoding voor Gebr. Vroege app')
 
 @pytest.mark.apitest
 async def test_add_allowed_users_invalid_email_address(
