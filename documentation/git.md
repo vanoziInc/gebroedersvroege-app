@@ -4,6 +4,6 @@ https://www.atlassian.com/git/tutorials/inspecting-a-repository/git-tag
 create a new tag for a release 
 git tag -a v0.1 -m "first tag"
 push the tag 
-git tag -a v0.1 -m "first tag"
+git push origin v1.1
 
 link release with tag

@@ -29,7 +29,7 @@ services:
       dockerfile: Dockerfile
     container_name: "frontend"
     environment:
-      - BASE_URL=${BASE_URL_FRONTEND}
+      - BASE_URL_API=${BASE_URL_API}
     depends_on:
       - fastapi
     restart:
