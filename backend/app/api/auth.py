@@ -1,13 +1,8 @@
 import os
 
 from app.config import Settings, get_fastapi_mail_config, get_settings
-from app.models.pydantic import (
-    CreateUser,
-    EmailSchema,
-    ResetPassword,
-    TokenSchema,
-    User_Pydantic,
-)
+from app.models.pydantic import (CreateUser, EmailSchema, ResetPassword,
+                                 TokenSchema, User_Pydantic)
 from app.models.tortoise import AllowedUsers, Roles, Users
 from app.services.auth import Auth
 from app.services.mail import Mailer
@@ -57,7 +52,6 @@ async def register(
         )
         await user.roles.add(role)
         await Mailer.send_welcome_message(
-            config=config,
             email=EmailSchema(
                 recipient_addresses=[user.email],
                 body={
@@ -141,7 +135,6 @@ async def resent_activation_code(
     await user.save()
     try:
         await Mailer.send_welcome_message(
-            config=config,
             email=EmailSchema(
                 recipient_addresses=[user.email],
                 body={
@@ -173,11 +166,11 @@ async def get_login_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     if user.is_active is False:
-             raise HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Gebruiker is nog niet geactiveerd!",
             headers={"WWW-Authenticate": "Bearer"},
-        )   
+        )
     access_token = Auth.get_access_token(email=user.email)
     refresh_token = Auth.get_refresh_token(email=user.email)
     return JSONResponse(
@@ -242,7 +235,6 @@ async def forgot_password(
     reset_password_token = Auth.get_reset_password_token(email=user.email)
     try:
         await Mailer.send_reset_password_message(
-            config=config,
             email=EmailSchema(
                 recipient_addresses=[user.email],
                 body={

@@ -15,7 +15,11 @@ jobs:
       - name: Build and run the docker compose stack
         run: docker-compose -f "docker-compose-test.yml" --env-file .env.test up -d
       - name: Perform unit tests
-        run: docker-compose -f docker-compose-test.yml --env-file .env.test exec -T fastapi python -m pytest -v -m unittest
+      # run: docker-compose -f docker-compose-test.yml --env-file .env.test exec -T fastapi python -m pytest -v -m unittest  
+        run: docker-compose exec -T fastapi python -m pytest -v -m unittest
+      - name: Perform api tests
+        # run: docker-compose -f docker-compose-test.yml --env-file .env.test exec -T fastapi python -m pytest -v -m unittest  
+          run: docker-compose exec -T fastapi python -m pytest -v -m apitest
       # - name: setup database for frontend testing
       #   run: | 
       #     docker exec database psql -U postgres -c "CREATE DATABASE test;"

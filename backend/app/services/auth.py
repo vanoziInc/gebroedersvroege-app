@@ -24,11 +24,11 @@ class Auth:
         return cls.password_context.hash(password)
 
     @classmethod
-    def verify_password(cls, plain_password: str, hashed_password: str):
+    def verify_password(cls, plain_password: str, hashed_password: str) -> bool:
         return cls.password_context.verify(plain_password, hashed_password)
 
     @staticmethod
-    def get_token(data: dict, expires_delta: int):
+    def get_token(data: dict, expires_delta: int) -> str:
         to_encode = data.copy()
         to_encode.update(
             {

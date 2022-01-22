@@ -51,7 +51,6 @@ async def post_allowed_users(
     # Send email
     try:
         await Mailer.send_invitation_message(
-            config=config,
             email=EmailSchema(
                 recipient_addresses=[allowed_user.email],
                 body={
@@ -113,8 +112,7 @@ async def update_allowed_user(
         await allowed_user.save()
         # Send email
         try:
-            await Mailer.send_invitation_message(
-                config=config,
+            await Mailer.send_invitation_message(              
                 email=EmailSchema(
                     recipient_addresses=[allowed_user.email],
                     body={
