@@ -29,7 +29,7 @@ services:
       dockerfile: Dockerfile
     container_name: "frontend"
     environment:
-      - BASE_URL=${BASE_URL}
+      - BASE_URL=${BASE_URL_FRONTEND}
     depends_on:
       - fastapi
     restart:
@@ -57,7 +57,8 @@ services:
       - MAIL_FROM_NAME=${MAIL_FROM_NAME}
       - MAIL_TLS=${MAIL_TLS}
       - MAIL_SSL=${MAIL_SSL}
-      - BASE_URL=${BASE_URL_FRONTEND}
+      - BASE_URL_API=${BASE_URL_API}
+      - BASE_URL_FRONTEND=${BASE_URL_FRONTEND}
     # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
     depends_on:
       - database

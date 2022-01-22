@@ -62,6 +62,7 @@ def anyio_backend():
 async def test_client(anyio_backend):
     app = create_application()
     await init()
+    print(os.getenv("BASE_URL_API"))
     yield AsyncClient(app=app, base_url=os.getenv("BASE_URL_API"))
     await Tortoise._drop_databases()
     print("Database dropped")

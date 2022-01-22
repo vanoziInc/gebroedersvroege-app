@@ -14,7 +14,8 @@ python-multipart==0.0.5
 fastapi-mail==1.0.0
 isoweek==1.3.3
 
-# Testin packages
+# Testing packages
+pytest-playwright==0.2.2
 pytest==6.2.4
 pytest-xdist[psutil]==2.5.0
 pytest-assume
