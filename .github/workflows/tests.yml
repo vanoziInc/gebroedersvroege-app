@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: microsoft/playwright-github-action@v1
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'
@@ -34,4 +33,5 @@ jobs:
       # - name: Run frontend tests image
       #   run: docker run playwright-tests
       - run: pip install -r ./frontend-testing/requirements.txt
+      - run: playwright install
       - run: pytest frontend-testing/
