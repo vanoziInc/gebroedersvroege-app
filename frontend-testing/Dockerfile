@@ -6,4 +6,4 @@ RUN pip install -r requirements.txt
 RUN playwright install
 COPY . .
 
-ENTRYPOINT ["pytest"]
+# ENTRYPOINT ["pytest"]
