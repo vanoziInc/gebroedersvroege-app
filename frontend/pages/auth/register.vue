@@ -4,18 +4,23 @@
       <v-col cols="lg-7 sm-6">
         <v-card>
           <v-card-text>
-            <v-form ref="form" v-model="valid">
-                            <v-text-field
+            <v-form
+              ref="form"
+              v-model="valid"
+            >
+              <v-text-field
                 v-model="firstName"
                 :rules="nameRules"
                 label="Voornaam"
                 required
+                data-test="first-name-input"
               ></v-text-field>
-                            <v-text-field
+              <v-text-field
                 v-model="lastName"
                 :rules="nameRules"
                 label="Achternaam"
                 required
+                data-test="last-name-input"
               ></v-text-field>
 
               <v-text-field
@@ -23,6 +28,7 @@
                 :rules="emailRules"
                 label="E-mail adres"
                 required
+                data-test="email-input"
               ></v-text-field>
 
               <v-text-field
@@ -31,8 +37,9 @@
                 label="Wachtwoord"
                 required
                 :type="show ?'text': 'password'"
-                :append-icon="show ?'mdi-eye':'mdi-eye-off'"   
+                :append-icon="show ?'mdi-eye':'mdi-eye-off'"
                 @click:append="show=!show"
+                data-test="password-input"
               ></v-text-field>
               <v-text-field
                 label="Herhaal wachtwoord"
@@ -40,15 +47,19 @@
                 :rules="confirmPasswordRules.concat(passwordConfirmationRule)"
                 required
                 :type="show ?'text': 'password'"
-                :append-icon="show ?'mdi-eye':'mdi-eye-off'"   
+                :append-icon="show ?'mdi-eye':'mdi-eye-off'"
                 @click:append="show=!show"
+                data-test="confirm-password-input"
               ></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" :disabled="!valid" @click="registerUser"
-              >Registreer</v-btn
-            >
+            <v-btn
+              color="primary"
+              :disabled="!valid"
+              @click="registerUser"
+              data-test="register-submit-button"
+            >Registreer</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -59,13 +70,13 @@
 <script>
 export default {
   auth: false,
-  middleware: ['isLoggedIn'],
+  middleware: ["isLoggedIn"],
   data: () => ({
-    title:"Registreer",
-    show:false,
+    title: "Registreer",
+    show: false,
     valid: false,
-    firstName:"",
-    lastName:"",
+    firstName: "",
+    lastName: "",
     email: "",
     emailRules: [
       (v) => !!v || "E-mail adres is verplicht",
@@ -74,19 +85,21 @@ export default {
     password: "",
     passwordRules: [
       (v) => !!v || "Wachtwoord is verplicht",
-      (v) => (v && v.length >= 5) || "Wachtwoord moet minstens 5 tekens lang zijn",
+      (v) =>
+        (v && v.length >= 5) || "Wachtwoord moet minstens 5 tekens lang zijn",
     ],
-        nameRules: [
+    nameRules: [
       (v) => !!v || "Dit veld is verplicht",
       (v) => (v && v.length <= 20) || "Maximaal 20 tekens",
     ],
     confirmPassword: "",
     confirmPasswordRules: [(v) => !!v || "Dit veld is verplicht"],
   }),
-    head() {
-      return {
-        title: this.title,}
-        },
+  head() {
+    return {
+      title: this.title,
+    };
+  },
 
   methods: {
     validate() {
@@ -101,7 +114,7 @@ export default {
     registerUser() {
       this.$store.dispatch("users/addUser", {
         first_name: this.firstName,
-        last_name:this.lastName,
+        last_name: this.lastName,
         email: this.email,
         password: this.password,
       });
@@ -110,7 +123,8 @@ export default {
   computed: {
     passwordConfirmationRule() {
       return () =>
-        this.password === this.confirmPassword || "Wachtwoorden moeten overeen komen";
+        this.password === this.confirmPassword ||
+        "Wachtwoorden moeten overeen komen";
     },
   },
 };

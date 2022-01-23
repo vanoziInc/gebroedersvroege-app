@@ -6,7 +6,7 @@ on:
       - 'master'   # excludes master
 
 jobs:
-  test-backend:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,23 +17,16 @@ jobs:
       - name: Perform unit tests
         run: docker-compose -f docker-compose-test.yml --env-file .env.test exec -T fastapi python -m pytest -v -m unittest  
       - name: Perform api tests
-        run: docker-compose -f docker-compose-test.yml --env-file .env.test exec -T fastapi python -m pytest -v -m apitest  
-
-  test-frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install playwright
-          pip install -e .
-      - name: Ensure browsers are installed
-        run: python -m playwright install
-      - name: Install operating system dependencies
-        run: python -m playwright install-deps
-      - name: Run your tests
-        run: pytest -m frontendtest
+        run: docker-compose -f docker-compose-test.yml --env-file .env.test exec -T fastapi python -m pytest -v -m unittest  
+        run: docker-compose exec -T fastapi python -m pytest -v -m apitest
+      - name: Perform ui tests
+        run: | 
+          docker exec database psql -U postgres -c "CREATE DATABASE test;"
+          docker exec fastapi aerich init -t app.db.TORTOISE_ORM
+          docker exec fastapi aerich init-db
+          docker exec -u postgres database psql test postgres -f /sql_files/setup_testdata.sql
+      - name: Build frontend tests image
+        run: docker build -t playwright-tests ./frontend-testing/.
+      - name: Run frontend tests image
+        continue-on-error: true
+        run: docker run playwright-tests
