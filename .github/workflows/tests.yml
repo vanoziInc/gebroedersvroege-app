@@ -30,6 +30,7 @@ jobs:
       - name: Run frontend tests image
         run: docker run playwright-tests
         continue-on-error: true
-      - name: docker exec playwright-tests curl http://frontend.localhost/auth/login
+      - name: testen of curl bij de frontend container mag
+        run: docker exec playwright-tests curl http://frontend.localhost/auth/login
 
 #           docker exec database psql -U postgres -c "CREATE DATABASE test;"
