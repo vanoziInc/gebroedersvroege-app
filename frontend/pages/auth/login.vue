@@ -6,19 +6,19 @@
           <v-card-text>
             <v-form id="login_form" ref="form" v-model="valid">
               <v-text-field
-                id="login_email"
                 v-model="email"
                 :rules="emailRules"
                 label="E-mail adres"
                 required
+                data-test='email-input'
               ></v-text-field>
 
               <v-text-field
-                id="login_password"
                 v-model="password"
                 :rules="passwordRules"
                 label="Wachtwoord"
                 required
+                data-test='password-input'
                 :type="show ? 'text' : 'password'"
                 :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="show = !show"
@@ -29,8 +29,8 @@
           <v-card-actions>
 
             <v-btn
-              id="login_submit"
               color="primary"
+              data-test='login-submit-button'
               :disabled="!valid"
               @click="userLogin"
               >Login</v-btn
