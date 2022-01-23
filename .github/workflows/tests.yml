@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: microsoft/playwright-github-action@v1
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pip'
       # - name: Create network
       #   run: docker network create database
       - name: Build and run the docker compose stack
@@ -24,7 +29,9 @@ jobs:
           docker exec fastapi aerich init-db
           docker exec fastapi aerich upgrade
           docker exec database psql -U postgres -d test -f setup_testdata.sql
-      - name: Build frontend tests image
-        run: docker build -t playwright-tests ./frontend-testing/.
-      - name: Run frontend tests image
-        run: docker run playwright-tests
+      # - name: Build frontend tests image
+      #   run: docker build -t playwright-tests ./frontend-testing/.
+      # - name: Run frontend tests image
+      #   run: docker run playwright-tests
+      - run: pip install -r ./frontend-testing/requirements.txt
+      - run: pytest -m uitests

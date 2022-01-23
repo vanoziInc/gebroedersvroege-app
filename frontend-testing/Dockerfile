@@ -6,6 +6,6 @@ RUN pip install -r requirements.txt
 RUN playwright install
 COPY . .
 
-CMD ["curl", "http://frontend.localhost/auth/login"]
+# CMD ["curl", "http://frontend.localhost/auth/login"]
 
-# ENTRYPOINT ["pytest"]
+ENTRYPOINT ["pytest"]
