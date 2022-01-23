@@ -21,7 +21,6 @@ jobs:
         run: docker-compose -f docker-compose-test.yml --env-file .env.test exec -T fastapi python -m pytest -v -m apitest  
       - name: Perform ui tests
         run: | 
-          curl http://frontend.localhost/auth/login
           docker exec fastapi aerich init -t app.db.TORTOISE_ORM
           docker exec fastapi aerich init-db
           docker exec fastapi aerich upgrade
@@ -30,5 +29,7 @@ jobs:
         run: docker build -t playwright-tests ./frontend-testing/.
       - name: Run frontend tests image
         run: docker run playwright-tests
+        continue-on-error: true
+      - name: docker exec playwright-tests curl http://frontend.localhost/auth/login
 
 #           docker exec database psql -U postgres -c "CREATE DATABASE test;"
