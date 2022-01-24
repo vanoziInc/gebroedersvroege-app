@@ -10,6 +10,9 @@ from starlette.testclient import TestClient
 from tortoise import Tortoise
 from tortoise.contrib.fastapi import register_tortoise
 
+from app.services.mail import fm
+from app.models.pydantic import AllowedUsersCreateSchema
+
 
 def get_settings_override():
     return Settings(testing=1, database_url=os.environ.get("DATABASE_TEST_BACKEND_URL"))
@@ -62,7 +65,6 @@ def anyio_backend():
 async def test_client(anyio_backend):
     app = create_application()
     await init()
-    print(os.getenv("BASE_URL_API"))
     yield AsyncClient(app=app, base_url=os.getenv("BASE_URL_API"))
     await Tortoise._drop_databases()
     print("Database dropped")
@@ -82,6 +84,7 @@ async def request_headers_admin(test_client):
         "Content-Type": "application/json",
     }
 
+
 @pytest.fixture(scope="session")
 async def request_headers_werknemer(test_client):
     # Get admin access token
@@ -95,3 +98,15 @@ async def request_headers_werknemer(test_client):
         "Authorization": f"Bearer {response.json()['access_token']}",
         "Content-Type": "application/json",
     }
+
+
+@pytest.fixture(scope="function")
+async def invite_new_user_fixture(test_client, request_headers_admin):
+    async def _send_invitation(email_adress: str):
+        fm.config.SUPPRESS_SEND = 1
+        payload = AllowedUsersCreateSchema(email=email_adress).json()
+        response = await test_client.post(
+            "/allowed_users/", headers=request_headers_admin, data=payload
+        )
+        return response.status_code
+    return _send_invitation

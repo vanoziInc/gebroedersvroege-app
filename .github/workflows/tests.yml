@@ -32,6 +32,6 @@ jobs:
       #   run: docker build -t playwright-tests ./frontend-testing/.
       # - name: Run frontend tests image
       #   run: docker run playwright-tests
-      - run: pip install -r ./frontend-testing/requirements.txt
+      - run: pip install -r ./backend/tests/frontend/requirements.txt
       - run: playwright install
-      - run: pytest frontend-testing/
+      - run: pytest ./backend/tests/frontend/

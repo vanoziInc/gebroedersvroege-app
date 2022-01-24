@@ -1,8 +1,13 @@
 import os
 
 from app.config import Settings, get_fastapi_mail_config, get_settings
-from app.models.pydantic import (CreateUser, EmailSchema, ResetPassword,
-                                 TokenSchema, User_Pydantic)
+from app.models.pydantic import (
+    CreateUser,
+    EmailSchema,
+    ResetPassword,
+    TokenSchema,
+    User_Pydantic,
+)
 from app.models.tortoise import AllowedUsers, Roles, Users
 from app.services.auth import Auth
 from app.services.mail import Mailer

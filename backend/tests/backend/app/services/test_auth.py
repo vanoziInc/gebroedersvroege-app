@@ -4,7 +4,7 @@ from app.config import Settings
 import pytest
 from app.services.auth import Auth
 from jose import jwt
-from tests.conftest import get_settings_override
+from tests.backend.conftest import get_settings_override
 
 
 @pytest.mark.unittest

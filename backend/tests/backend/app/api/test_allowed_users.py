@@ -1,15 +1,14 @@
-import pytest, json
+import json
 
-from fastapi.testclient import TestClient
+import pytest
 from app.models.pydantic import AllowedUsersCreateSchema
-
 from app.services.mail import fm
+from fastapi.testclient import TestClient
 
 pytestmark = pytest.mark.anyio
 
 
 @pytest.mark.apitest
-@pytest.mark.dev
 async def test_add_allowed_users(test_client: TestClient, request_headers_admin: dict):
     fm.config.SUPPRESS_SEND = 1
     with fm.record_messages() as outbox:
@@ -23,9 +22,12 @@ async def test_add_allowed_users(test_client: TestClient, request_headers_admin:
         pytest.assume(response.json()["last_modified_at"])
         pytest.assume(response.json()["email"] == "test_gebruiker@test.com")
         pytest.assume(len(outbox) == 1)
-        pytest.assume(outbox[0]['from'] == 'Supermooi App <noreply@gebroedersvroege.nl>')
-        pytest.assume(outbox[0]['To'] == 'test_gebruiker@test.com')
-        pytest.assume(outbox[0]['Subject'] == 'Uitnoding voor Gebr. Vroege app')
+        pytest.assume(
+            outbox[0]["from"] == "Supermooi App <noreply@gebroedersvroege.nl>"
+        )
+        pytest.assume(outbox[0]["To"] == "test_gebruiker@test.com")
+        pytest.assume(outbox[0]["Subject"] == "Uitnoding voor Gebr. Vroege app")
+
 
 @pytest.mark.apitest
 async def test_add_allowed_users_invalid_email_address(
@@ -60,6 +62,7 @@ async def test_allowed_user_allready_invited(
         == "Er is al een uitnodiging gestuurd naar dit email adres"
     )
 
+
 @pytest.mark.apitest
 async def test_allowed_user_allready_registered(
     test_client: TestClient, request_headers_admin: dict
@@ -69,21 +72,16 @@ async def test_allowed_user_allready_registered(
         "/allowed_users/", headers=request_headers_admin, data=payload
     )
     pytest.assume(response.status_code == 400)
-    pytest.assume(
-        response.json()["detail"]
-        == "Dit email adres is al geregistreerd"
-    )
-
+    pytest.assume(response.json()["detail"] == "Dit email adres is al geregistreerd")
 
 
 @pytest.mark.apitest
-async def test_add_allowed_users_insufficient_privilege(test_client: TestClient, request_headers_werknemer: dict):
+async def test_add_allowed_users_insufficient_privilege(
+    test_client: TestClient, request_headers_werknemer: dict
+):
     payload = AllowedUsersCreateSchema(email="werknemer@werknemer.com").json()
     response = await test_client.post(
         "/allowed_users/", headers=request_headers_werknemer, data=payload
     )
     pytest.assume(response.status_code == 403)
-    pytest.assume(
-        response.json()["detail"]
-        == "Operation not permitted"
-    )
+    pytest.assume(response.json()["detail"] == "Operation not permitted")
