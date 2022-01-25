@@ -51,7 +51,7 @@ class TestAuth:
 
     def test_get_confirmation_token(self, settings: Settings = get_settings_override()):
         # set regex pattern for uuid4
-        re_pattern_uuid4 = "[0-9a-f]{32}\Z"
+        re_pattern_uuid4 = r'[0-9a-f]{32}\Z'
         confirmation_token = Auth.get_confirmation_token(email="test@test.com")
         assert len(confirmation_token["jti"]) == 32
         assert re.search(re_pattern_uuid4, confirmation_token["jti"])

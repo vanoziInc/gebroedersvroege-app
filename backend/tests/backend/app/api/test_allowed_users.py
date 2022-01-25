@@ -13,8 +13,10 @@ async def test_add_allowed_users(test_client: TestClient, request_headers_admin:
     fm.config.SUPPRESS_SEND = 1
     with fm.record_messages() as outbox:
         payload = AllowedUsersCreateSchema(email="test_gebruiker@test.com").json()
+        # For uploading raw text or binary content we prefer to use a content parameter, 
+        # in order to better separate this usage from the case of uploading form data.
         response = await test_client.post(
-            "/allowed_users/", headers=request_headers_admin, data=payload
+            "/allowed_users/", headers=request_headers_admin, content=payload
         )
         pytest.assume(response.status_code == 201)
         pytest.assume(response.json()["id"])
@@ -39,7 +41,7 @@ async def test_add_allowed_users_invalid_email_address(
         }
     )
     response = await test_client.post(
-        "/allowed_users/", headers=request_headers_admin, data=payload
+        "/allowed_users/", headers=request_headers_admin, content=payload
     )
     pytest.assume(response.status_code == 422)
     pytest.assume(
@@ -54,7 +56,7 @@ async def test_allowed_user_allready_invited(
 ):
     payload = AllowedUsersCreateSchema(email="test_gebruiker@test.com").json()
     response = await test_client.post(
-        "/allowed_users/", headers=request_headers_admin, data=payload
+        "/allowed_users/", headers=request_headers_admin, content=payload
     )
     pytest.assume(response.status_code == 400)
     pytest.assume(
@@ -69,7 +71,7 @@ async def test_allowed_user_allready_registered(
 ):
     payload = AllowedUsersCreateSchema(email="werknemer@werknemer.com").json()
     response = await test_client.post(
-        "/allowed_users/", headers=request_headers_admin, data=payload
+        "/allowed_users/", headers=request_headers_admin, content=payload
     )
     pytest.assume(response.status_code == 400)
     pytest.assume(response.json()["detail"] == "Dit email adres is al geregistreerd")
@@ -81,7 +83,7 @@ async def test_add_allowed_users_insufficient_privilege(
 ):
     payload = AllowedUsersCreateSchema(email="werknemer@werknemer.com").json()
     response = await test_client.post(
-        "/allowed_users/", headers=request_headers_werknemer, data=payload
+        "/allowed_users/", headers=request_headers_werknemer, content=payload
     )
     pytest.assume(response.status_code == 403)
     pytest.assume(response.json()["detail"] == "Operation not permitted")

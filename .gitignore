@@ -180,5 +180,6 @@ cython_debug/
 
 # Eigen gitignore items
 .vscode
-
 backend/migrations/
+report.html
+.DS*

@@ -3,7 +3,6 @@ uvicorn==0.14.0
 asyncpg==0.23.0
 tortoise-orm==0.17.4
 aerich==0.5.3
-
 requests==2.25.1
 gunicorn==20.1.0
 pydantic[email,dotenv]==1.8.2
@@ -15,11 +14,13 @@ fastapi-mail==1.0.0
 isoweek==1.3.3
 
 # Testing packages
+# Core
 pytest-playwright==0.2.2
 pytest==6.2.4
-pytest-xdist[psutil]==2.5.0
-pytest-assume
-pytest-cov==3.0.0
 anyio==3.5.0
 httpx==0.19.0
-
+# Plugins
+pytest-assume
+pytest-cov==3.0.0
+pytest-sugar
+pytest-html==3.1.1

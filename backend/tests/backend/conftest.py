@@ -65,9 +65,11 @@ def anyio_backend():
 async def test_client(anyio_backend):
     app = create_application()
     await init()
-    yield AsyncClient(app=app, base_url=os.getenv("BASE_URL_API"))
+    async with AsyncClient(app=app, base_url=os.getenv("BASE_URL_API")) as client:
+        yield client
     await Tortoise._drop_databases()
     print("Database dropped")
+    await client.aclose()
 
 
 @pytest.fixture(scope="session")
@@ -106,7 +108,7 @@ async def invite_new_user_fixture(test_client, request_headers_admin):
         fm.config.SUPPRESS_SEND = 1
         payload = AllowedUsersCreateSchema(email=email_adress).json()
         response = await test_client.post(
-            "/allowed_users/", headers=request_headers_admin, data=payload
+            "/allowed_users/", headers=request_headers_admin, content=payload
         )
         return response.status_code
     return _send_invitation
