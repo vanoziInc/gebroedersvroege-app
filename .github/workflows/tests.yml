@@ -36,11 +36,11 @@ jobs:
           docker exec fastapi aerich upgrade
           docker exec database psql -U postgres -d test -f setup_testdata.sql
       - name: Install test dependencies
-      - run: |
+        run: |
           pip install -r ./backend/tests/frontend/requirements.txt
           playwright install
       - name: Perform UI tests
-      - run: pytest ./backend/tests/frontend/ --html=frontend-test-report.html --self-contained-html
+        run: pytest ./backend/tests/frontend/ --html=frontend-test-report.html --self-contained-html
       - name: Copy backend test report from container to host
         run: | 
           docker cp fastapi:/frontend-test-report.html .
