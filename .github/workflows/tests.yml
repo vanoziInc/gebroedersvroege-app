@@ -41,10 +41,7 @@ jobs:
           playwright install
       - name: Perform UI tests
         run: pytest ./backend/tests/frontend/ --html=frontend-test-report.html --self-contained-html
-      - name: Copy frontend test report from container to host
-        run: | 
-          find . -iname frontend-test-report.html
-
+        
       # ARCHIVE TEST REPORTS
       - name: Archive test report
         uses: actions/upload-artifact@v2
