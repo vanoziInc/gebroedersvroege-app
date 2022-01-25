@@ -8,21 +8,21 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-  env:
-    MAIL_USERNAME:${{ secrets.MAIL_USERNAME }}
-    MAIL_PASSWORD:${{ secrets.MAIL_PASSWORD }}
-    MAIL_FROM:${{ secrets.MAIL_FROM }}
-    MAIL_PORT:${{ secrets.MAIL_PORT }}
-    MAIL_SERVER:${{ secrets.MAIL_SERVER }}
-    MAIL_FROM_NAME:${{ secrets.MAIL_FROM_NAME }}
-    MAIL_TLS:${{ secrets.MAIL_TLS }}
-    MAIL_SSL:${{ secrets.MAIL_SSL }}
-    BASE_URL_FRONTEND:${{ secrets.BASE_URL_FRONTEND }}
-    BASE_URL_API:${{ secrets.BASE_URL_API }}
-    DATABASE_URL:${{ secrets.DATABASE_URL }}
-    DATABASE_TEST_BACKEND_URL:${{ secrets.DATABASE_TEST_BACKEND_URL }}
-    POSTGRES_USER:${{ secrets.POSTGRES_USER }}
-    POSTGRES_PASSWORD:${{ secrets.POSTGRES_PASSWORD }}
+    env:
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+      MAIL_FROM: ${{ secrets.MAIL_FROM }}
+      MAIL_PORT: ${{ secrets.MAIL_PORT }}
+      MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+      MAIL_FROM_NAME: ${{ secrets.MAIL_FROM_NAME }}
+      MAIL_TLS: ${{ secrets.MAIL_TLS }}
+      MAIL_SSL: ${{ secrets.MAIL_SSL }}
+      BASE_URL_FRONTEND: ${{ secrets.BASE_URL_FRONTEND }}
+      BASE_URL_API: ${{ secrets.BASE_URL_API }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_TEST_BACKEND_URL: ${{ secrets.DATABASE_TEST_BACKEND_URL }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
     steps:
     # BUILD THE DOCKER COMPOSE STACK
       - uses: actions/checkout@v2
