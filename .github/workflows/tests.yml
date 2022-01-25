@@ -2,8 +2,11 @@ name: Tests
 
 on:
   push:
-    branches:    
-      - 'master'
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
 
 jobs:
   test:
@@ -31,7 +34,6 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - name: Build and run the docker compose stack
-        # run: docker-compose -f "docker-compose-test.yml" --env-file .env.test up -d
         run: docker-compose -f "docker-compose-test.yml" up -d
 
       # BACKEND TESTS
