@@ -41,7 +41,7 @@ jobs:
           playwright install
       - name: Perform UI tests
         run: pytest ./backend/tests/frontend/ --html=frontend-test-report.html --self-contained-html
-        
+
       # ARCHIVE TEST REPORTS
       - name: Archive test report
         uses: actions/upload-artifact@v2
@@ -50,5 +50,3 @@ jobs:
           path: |
             ./backend-test-report.html
             ./frontend-test-report.html
-            
-    #           docker cp fastapi:/home/runner/work/gebroedersvroege-app/gebroedersvroege-app/frontend-test-report.html .

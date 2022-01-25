@@ -183,3 +183,6 @@ cython_debug/
 backend/migrations/
 *report.html
 .DS*
+
+# Environment files
+.env.*

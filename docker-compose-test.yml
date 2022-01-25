@@ -39,8 +39,8 @@ services:
     environment:
       - ENVIRONMENT=test
       - TESTING=1
-      - DATABASE_URL=postgres://postgres:postgres@database:5432/test
-      - DATABASE_TEST_BACKEND_URL=postgres://postgres:postgres@database:5432/test_backend
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_TEST_BACKEND_URL=${DATABASE_TEST_BACKEND_URL}
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_FROM=${MAIL_FROM}
@@ -72,8 +72,8 @@ services:
     expose:
       - 5432
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     restart: always
     volumes:
       - db-test-data:/var/lib/postgresql/data/
