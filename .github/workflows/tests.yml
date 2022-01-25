@@ -9,10 +9,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    
-    # SET ENVIRONMENT VARIABLES
+    # BUILD THE DOCKER COMPOSE STACK
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+          cache: 'pip'
       - name: Set environment variables for the docker compose stack
-      - run: |
+        run: |
           MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
           MAIL_FROM=${{ secrets.MAIL_FROM }}
@@ -27,12 +31,6 @@ jobs:
           DATABASE_TEST_BACKEND_URL=${{ secrets.DATABASE_TEST_BACKEND_URL }}
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-    # BUILD THE DOCKER COMPOSE STACK
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-          cache: 'pip'
       - name: Build and run the docker compose stack
         # run: docker-compose -f "docker-compose-test.yml" --env-file .env.test up -d
         run: docker-compose -f "docker-compose-test.yml" up -d
