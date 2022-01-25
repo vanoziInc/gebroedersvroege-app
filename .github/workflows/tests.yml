@@ -39,8 +39,8 @@ jobs:
       - name: Copy test report from container to host
         run: docker cp fastapi:/app/report.html /report.html
       - name: Archive test report
-          uses: actions/upload-artifact@v2
-          with:
-            name: test-report
-            path: |
-              /report.html
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-report
+          path: |
+            /report.html
