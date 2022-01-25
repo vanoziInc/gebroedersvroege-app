@@ -1,7 +1,3 @@
-# import pytest
-
-
-
-# @pytest.fixture(scope="session")
-# def browser_type_launch_args(browser_type_launch_args):
-#     return {"proxy" : { "server" : "host.docker.internal:80", "bypass":"loopback" }}
+# HTML REPORT HOOKS
+def pytest_html_report_title(report):
+   report.title = 'Frontend Test Report'

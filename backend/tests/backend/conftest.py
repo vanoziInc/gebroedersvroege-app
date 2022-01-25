@@ -112,3 +112,8 @@ async def invite_new_user_fixture(test_client, request_headers_admin):
         )
         return response.status_code
     return _send_invitation
+
+
+# HTML REPORT HOOKS
+def pytest_html_report_title(report):
+   report.title = 'Backend Test Report'
