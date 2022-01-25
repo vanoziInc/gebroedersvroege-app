@@ -25,8 +25,9 @@ jobs:
         # run: docker exec fastapi python -m pytest -v -m apitest 
         run: docker exec fastapi python -m pytest -v -m apitest --html=report.html --self-contained-html
       - name: Copy test report from container to host
-        run: docker cp fastapi:/app/report.html .
-        run: find . -iname report.html
+        run: | 
+          docker cp fastapi:/app/report.html .
+          find . -iname report.html
       - name: Archive test report
         uses: actions/upload-artifact@v2
         with:
