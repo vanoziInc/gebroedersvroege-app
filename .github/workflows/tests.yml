@@ -43,7 +43,7 @@ jobs:
         run: pytest ./backend/tests/frontend/ --html=frontend-test-report.html --self-contained-html
       - name: Copy backend test report from container to host
         run: | 
-          docker cp fastapi:/frontend-test-report.html .
+          docker cp fastapi:/home/runner/work/gebroedersvroege-app/gebroedersvroege-app/frontend-test-report.html .
           find . -iname frontend-test-report.html
 
       # ARCHIVE TEST REPORTS
