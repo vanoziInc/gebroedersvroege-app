@@ -25,7 +25,7 @@ async def test_add_allowed_users(test_client: TestClient, request_headers_admin:
         pytest.assume(response.json()["email"] == "test_gebruiker@test.com")
         pytest.assume(len(outbox) == 1)
         pytest.assume(
-            outbox[0]["from"] == "Superleuk app Gebr. Vroege <supermooiapp@gmail.com>"
+            outbox[0]["from"] == "Gebroeders Vroege <supermooiapp@gmail.com>"
         )
         pytest.assume(outbox[0]["To"] == "test_gebruiker@test.com")
         pytest.assume(outbox[0]["Subject"] == "Uitnoding voor Gebr. Vroege app")
