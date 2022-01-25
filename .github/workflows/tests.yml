@@ -41,9 +41,8 @@ jobs:
           playwright install
       - name: Perform UI tests
         run: pytest ./backend/tests/frontend/ --html=frontend-test-report.html --self-contained-html
-      - name: Copy backend test report from container to host
+      - name: Copy frontend test report from container to host
         run: | 
-          docker cp fastapi:/home/runner/work/gebroedersvroege-app/gebroedersvroege-app/frontend-test-report.html .
           find . -iname frontend-test-report.html
 
       # ARCHIVE TEST REPORTS
@@ -55,3 +54,4 @@ jobs:
             ./backend-test-report.html
             ./frontend-test-report.html
             
+    #           docker cp fastapi:/home/runner/work/gebroedersvroege-app/gebroedersvroege-app/frontend-test-report.html .
