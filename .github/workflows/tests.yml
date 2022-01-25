@@ -50,9 +50,8 @@ jobs:
       - name: Archive test report
         uses: actions/upload-artifact@v2
         with:
-          name: Backend Test Report
+          name: Test reports
           path: |
             ./backend-test-report.html
-          name: Frontend Test Report
-          path: |
             ./frontend-test-report.html
+            
