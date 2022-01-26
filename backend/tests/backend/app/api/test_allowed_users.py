@@ -12,7 +12,7 @@ pytestmark = pytest.mark.anyio
 async def test_add_allowed_users(test_client: TestClient, request_headers_admin: dict):
     fm.config.SUPPRESS_SEND = 1
     with fm.record_messages() as outbox:
-        payload = AllowedUsersCreateSchema(email="test_gebruiker2@test.com").json()
+        payload = AllowedUsersCreateSchema(email="test_gebruiker1@test.com").json()
         # For uploading raw text or binary content we prefer to use a content parameter, 
         # in order to better separate this usage from the case of uploading form data.
         response = await test_client.post(
@@ -22,11 +22,11 @@ async def test_add_allowed_users(test_client: TestClient, request_headers_admin:
         assert response.json()["id"]
         assert response.json()["created_at"]
         assert response.json()["last_modified_at"]
-        assert response.json()["email"] == "test_gebruiker2@test.com"
+        assert response.json()["email"] == "test_gebruiker1@test.com"
         assert len(outbox) == 1
         assert outbox[0]["from"] == "Gebroeders Vroege <supermooiapp@gmail.com>"
         
-        assert outbox[0]["To"] == "test_gebruiker2@test.com"
+        assert outbox[0]["To"] == "test_gebruiker1@test.com"
         assert outbox[0]["Subject"] == "Uitnoding voor Gebr. Vroege app"
 
 
@@ -50,8 +50,10 @@ async def test_add_allowed_users_invalid_email_address(
 
 @pytest.mark.apitest
 async def test_allowed_user_allready_invited(
-    test_client: TestClient, request_headers_admin: dict
+    test_client: TestClient, request_headers_admin: dict, invite_new_user_fixture: int
 ):
+    # Invite user for registration
+    await invite_new_user_fixture("test_gebruiker2@test.com")
     payload = AllowedUsersCreateSchema(email="test_gebruiker2@test.com").json()
     response = await test_client.post(
         "/allowed_users/", headers=request_headers_admin, content=payload

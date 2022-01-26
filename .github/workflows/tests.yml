@@ -39,6 +39,7 @@ jobs:
       # BACKEND TESTS
       - name: Perform unit and api tests
         run: docker exec fastapi python -m pytest -v --cov=app --cov-report html:cov_html --cov-config=tests/.coveragerc -m "apitest or unittest" --html=backend-test-report.html --self-contained-html
+        continue-on-error: true
       - name: Copy backend test report and coverage report from container to host
         run: | 
           docker cp fastapi:/app/backend-test-report.html .
@@ -57,7 +58,8 @@ jobs:
           playwright install
       - name: Perform UI tests
         run: pytest ./backend/tests/frontend/ --html=frontend-test-report.html --self-contained-html
-
+        continue-on-error: true
+        
       # ARCHIVE TEST REPORTS
       - name: Archive test report
         uses: actions/upload-artifact@v2

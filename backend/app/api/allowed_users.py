@@ -41,7 +41,7 @@ async def post_allowed_users(
     try:
         allowed_user = await AllowedUsers.create(email=added_user.email.lower())
     except:
-        return JSONResponse(status_code=500, content={"Er is een overwachte fout opgetreden bij het opslaan in de database"})
+        return JSONResponse(status_code=500, content={"detail","Er is een overwachte fout opgetreden bij het opslaan in de database"})
     # Send email
     try:
         await Mailer.send_invitation_message(
