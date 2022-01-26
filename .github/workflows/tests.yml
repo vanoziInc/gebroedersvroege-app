@@ -38,7 +38,7 @@ jobs:
 
       # BACKEND TESTS
       - name: Perform unit and api tests
-        run: docker exec fastapi python -m pytest -v --cov=app --cov-report html:cov_html --cov-config=tests/.coveragerc -m "apitest or unittest" --html=backend-test-report.html --self-contained-html
+        run: docker exec fastapi python -m pytest -v --cov=app --cov-report term-missing html:cov_html --cov-config=tests/.coveragerc -m "apitest or unittest" --html=backend-test-report.html --self-contained-html
       - name: Copy backend test report and coverage report from container to host
         run: | 
           docker cp fastapi:/app/backend-test-report.html .
