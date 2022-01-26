@@ -15,6 +15,12 @@ from app.services.mail import fm
 
 
 def get_settings_override():
+    """Form a complex number.
+
+    Keyword arguments:
+    real -- the real part (default 0.0)
+    imag -- the imaginary part (default 0.0)
+    """
     return Settings(testing=1, database_url=os.environ.get("DATABASE_TEST_BACKEND_URL"))
 
 
@@ -40,13 +46,13 @@ async def init(db_url: str = os.environ.get("DATABASE_TEST_BACKEND_URL")):
     )
     # Users
     admin_user = await Users.create(
-        email="admin@admin.com",
+        email="test_admin@test.com",
         hashed_password="$2b$12$UKv6whbIteBbIsION9igLef5qOS6yzLn1MczUCST7X6RDn18afzZ2",
         is_active=True,
         confirmation=None,
     )
     werknemer_user = await Users.create(
-        email="werknemer@werknemer.com",
+        email="test_werknemer@test.com",
         hashed_password="$2b$12$X6OGY1eXztIH2rYDwyVFO.nmrPYq98kla4JmweOu4N/oMgoe3yaKK",
         is_active=True,
         confirmation=None,
@@ -72,13 +78,13 @@ async def test_client(anyio_backend):
     await client.aclose()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 async def request_headers_admin(test_client):
     # Get admin access token
     response = await test_client.post(
         url="/auth/login",
         headers={},
-        data={"username": "admin@admin.com", "password": "admin"},
+        data={"username": "test_admin@test.com", "password": "admin"},
         files=[],
     )
     yield {
@@ -87,13 +93,13 @@ async def request_headers_admin(test_client):
     }
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 async def request_headers_werknemer(test_client):
     # Get admin access token
     response = await test_client.post(
         url="/auth/login",
         headers={},
-        data={"username": "werknemer@werknemer.com", "password": "werknemer"},
+        data={"username": "test_werknemer@test.com", "password": "werknemer"},
         files=[],
     )
     yield {
@@ -111,7 +117,6 @@ async def invite_new_user_fixture(test_client, request_headers_admin):
             "/allowed_users/", headers=request_headers_admin, content=payload
         )
         return response.status_code
-
     return _send_invitation
 
 

@@ -12,7 +12,9 @@ from tortoise.contrib.pydantic import pydantic_model_creator
 # Initialise the relationships between Models. This does not initialise any database connection.
 Tortoise.init_models(["app.models.tortoise"], "models")
 
-
+# Response model
+class ResponseMessage(pydantic.BaseModel):
+    detail: str
 
 # Users
 class CreateUser(pydantic.BaseModel):

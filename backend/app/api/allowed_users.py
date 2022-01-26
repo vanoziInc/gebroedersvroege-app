@@ -7,11 +7,13 @@ from app.models.pydantic import (
     AllowedUsersUpdateschema,
     AllowedUsersResponseSchema,
     EmailSchema,
+    ResponseMessage
 )
 from app.models.tortoise import AllowedUsers, Users
 from app.services.auth import RoleChecker
 from app.services.mail import Mailer
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.param_functions import Depends
 from fastapi_mail import ConnectionConfig
 from starlette import status
@@ -26,28 +28,20 @@ router = APIRouter()
     response_model=AllowedUsersResponseSchema,
     status_code=201,
     dependencies=[Depends(RoleChecker(["admin"]))],
+    responses={400: {"model": ResponseMessage}, 500: {"model": ResponseMessage}} ,
 )
 async def post_allowed_users(
     added_user: AllowedUsersCreateSchema,
-    config: ConnectionConfig = Depends(get_fastapi_mail_config),
 ) -> AllowedUsersResponseSchema:
     if await AllowedUsers.get_or_none(email=added_user.email.lower()) is not None:
-        raise HTTPException(
-            status_code=400,
-            detail="Er is al een uitnodiging gestuurd naar dit email adres",
-        )
+        return JSONResponse(status_code=400, content={"detail": "Er is al een uitnodiging gestuurd naar dit email adres"})
     elif await Users.get_or_none(email=added_user.email) is not None:
-        raise HTTPException(
-            status_code=400, detail="Dit email adres is al geregistreerd"
-        )
+        return JSONResponse(status_code=400, content={"detail": "Dit email adres is al geregistreerd"})
     # Add allowed user to database
     try:
         allowed_user = await AllowedUsers.create(email=added_user.email.lower())
     except:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Er is een overwachte fout opgetreden bij het opslaan in de database",
-        )
+        return JSONResponse(status_code=500, content={"Er is een overwachte fout opgetreden bij het opslaan in de database"})
     # Send email
     try:
         await Mailer.send_invitation_message(
