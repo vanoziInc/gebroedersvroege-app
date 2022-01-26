@@ -27,12 +27,20 @@ jobs:
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
     steps:
-    # BUILD THE DOCKER COMPOSE STACK
+    # CHECKOUT THE CODE
       - uses: actions/checkout@v2
+    # CHECK CODE VIOLATIONS WITH FLAKE 8
+      - uses: tonybajan/flake8-check-action@v1.0.0
+      with:
+        # select: E3,E4,E5,E7,W6,F,B,G0
+        # maxlinelength: 100
+        repotoken: ${{ secrets.GITHUB_TOKEN }}
+    # SETUP PYTHON ENVIRONMENT FOR RUNNING THE FRONTEND TEST OUTSIDE CONTAINERS LATER ON
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'
           cache: 'pip'
+    # BUILD THE APPLICATION
       - name: Build and run the docker compose stack
         run: docker-compose -f "docker-compose-test.yml" up -d
 
