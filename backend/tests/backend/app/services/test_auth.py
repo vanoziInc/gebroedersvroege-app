@@ -1,7 +1,7 @@
 import re
 
-from app.config import Settings
 import pytest
+from app.config import Settings
 from app.services.auth import Auth
 from jose import jwt
 from tests.backend.conftest import get_settings_override
@@ -14,11 +14,14 @@ class TestAuth:
         1. Password length greater then 0 - exp. valid hash created
         2. Password length equal to 0 - exp. valid hash created
         3. Password type is int instead of string - exp. TypeError
+        4. Password type is None instead of string - exp. TypeError
         """
         assert Auth.get_password_hash(password="secretstring") != "secretstring"
         assert Auth.get_password_hash(password="") != ""
         with pytest.raises(TypeError) as excinfo:
             Auth.get_password_hash(password=12345)
+        with pytest.raises(TypeError) as excinfo:
+            Auth.get_password_hash(password=None)
 
     def test_verify_password(self):
         """
@@ -39,10 +42,10 @@ class TestAuth:
             is False
         )
         with pytest.raises(TypeError) as excinfo:
-            Auth.verify_password(plain_password=None, hashed_password=Auth.get_password_hash(password="secretstring"))
-
-
-
+            Auth.verify_password(
+                plain_password=None,
+                hashed_password=Auth.get_password_hash(password="secretstring"),
+            )
 
     def test_get_token(self):
         """Tests Auth.get_token Token generation with email address"""
@@ -51,7 +54,7 @@ class TestAuth:
 
     def test_get_confirmation_token(self, settings: Settings = get_settings_override()):
         # set regex pattern for uuid4
-        re_pattern_uuid4 = r'[0-9a-f]{32}\Z'
+        re_pattern_uuid4 = r"[0-9a-f]{32}\Z"
         confirmation_token = Auth.get_confirmation_token(email="test@test.com")
         assert len(confirmation_token["jti"]) == 32
         assert re.search(re_pattern_uuid4, confirmation_token["jti"])

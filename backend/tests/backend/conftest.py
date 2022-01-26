@@ -2,16 +2,16 @@ import os
 from typing import Generator
 
 import pytest
-from app.config import Settings, get_settings
-from app.main import create_application
-from app.models.tortoise import Roles, Users
 from httpx import AsyncClient
 from starlette.testclient import TestClient
 from tortoise import Tortoise
 from tortoise.contrib.fastapi import register_tortoise
 
-from app.services.mail import fm
+from app.config import Settings, get_settings
+from app.main import create_application
 from app.models.pydantic import AllowedUsersCreateSchema
+from app.models.tortoise import Roles, Users
+from app.services.mail import fm
 
 
 def get_settings_override():
@@ -111,9 +111,10 @@ async def invite_new_user_fixture(test_client, request_headers_admin):
             "/allowed_users/", headers=request_headers_admin, content=payload
         )
         return response.status_code
+
     return _send_invitation
 
 
 # HTML REPORT HOOKS
 def pytest_html_report_title(report):
-   report.title = 'Backend Test Report'
+    report.title = "Backend Test Report"

@@ -97,9 +97,6 @@ class Auth:
         return user
 
 
-# get current user
-
-
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
 ) -> User_Pydantic:
