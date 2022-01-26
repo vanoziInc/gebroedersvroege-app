@@ -48,7 +48,6 @@ jobs:
         run: | 
           docker cp fastapi:/app/backend-test-report.html .
           docker cp fastapi:/app/cov_html .
-          find . -iname cov_html
 
       # FRONTEND TESTS
       - name: Setup database for UI tests
