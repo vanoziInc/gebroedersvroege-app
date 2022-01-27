@@ -3,3 +3,11 @@
 [run]
 omit =
     *__init__*
+    */models/*
+    */config.py
+    */main.py
+    */helpers/*
+exclude_lines =
+    # Ignore imports
+    from *
+    import *

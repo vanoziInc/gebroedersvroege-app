@@ -23,9 +23,9 @@ async def test_add_allowed_users(test_client: TestClient, request_headers_admin:
         assert response.json()["created_at"]
         assert response.json()["last_modified_at"]
         assert response.json()["email"] == "test_gebruiker1@test.com"
+        # Check if email has been send out correctly
         assert len(outbox) == 1
         assert outbox[0]["from"] == "Gebroeders Vroege <supermooiapp@gmail.com>"
-        
         assert outbox[0]["To"] == "test_gebruiker1@test.com"
         assert outbox[0]["Subject"] == "Uitnoding voor Gebr. Vroege app"
 
