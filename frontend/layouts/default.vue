@@ -173,7 +173,7 @@
       :absolute="!fixed"
       app
     >
-      <span>&copy; {{ new Date().getFullYear() }} - Vanozi inc.</span>
+      <span>&copy; {{ new Date().getFullYear() }} - Vanozi inc. - Meetup</span>
     </v-footer>
   </v-app>
 </template>
