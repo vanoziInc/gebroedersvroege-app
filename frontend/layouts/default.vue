@@ -19,10 +19,7 @@
       <!-- Normal Users navigation list -->
       <v-list v-if="!userIsAdmin">
         <!-- If one item then just an item -->
-        <div
-          v-for="(item) in Items"
-          :key="item.title"
-        >
+        <div v-for="item in Items" :key="item.title">
           <div v-if="item.items">
             <v-list-group
               :key="item.title"
@@ -43,7 +40,9 @@
                 exact
               >
                 <v-list-item-content>
-                  <v-list-item-subtitle v-text="child.title"></v-list-item-subtitle>
+                  <v-list-item-subtitle
+                    v-text="child.title"
+                  ></v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-list-group>
@@ -59,7 +58,6 @@
             </v-list-item>
           </div>
         </div>
-
       </v-list>
       <v-divider></v-divider>
       <!-- Admin navigation list -->
@@ -91,34 +89,24 @@
       </v-list>
     </v-navigation-drawer>
     <!-- NAVIGATION BAR -->
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-    >
+    <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <nuxt-link class="link" style="color:black" to="/">{{ title }}</nuxt-link>
+      <nuxt-link class="link" style="color: black" to="/">{{
+        title
+      }}</nuxt-link>
       <v-spacer />
 
       <!-- RIGHT SIDE MENU WHEN LOGGED IN -->
       <div v-if="this.$auth.loggedIn">
         <!-- LARGER VIEWPORTS -->
         <div v-if="$vuetify.breakpoint.mdAndUp">
-          <v-btn
-
-            @click="logout"
-            color="primary"
-            outlined
-          >
+          <v-btn @click="logout" color="primary" outlined>
             <v-icon class="mr-2">mdi-lock</v-icon>UITLOGGEN
           </v-btn>
         </div>
         <!-- SMALLER VIEWPORTS -->
         <div v-if="$vuetify.breakpoint.smAndDown">
-          <v-btn
-            icon
-            @click="logout"
-          >
+          <v-btn icon @click="logout">
             <v-icon>mdi-lock</v-icon>
           </v-btn>
         </div>
@@ -128,34 +116,19 @@
       <div v-else>
         <!-- LARGER VIEWPORTS -->
         <div v-if="$vuetify.breakpoint.mdAndUp">
-          <v-btn
-                        color="primary"
-            outlined
-            to="/auth/login"
-          >
+          <v-btn color="primary" outlined to="/auth/login">
             <v-icon class="mr-2">mdi-lock-open</v-icon>INLOGGEN
           </v-btn>
-          <v-btn
-                        color="primary"
-            outlined
-            class="ml-2"
-            to="/auth/register"
-          >
+          <v-btn color="primary" outlined class="ml-2" to="/auth/register">
             <v-icon class="mr-2">mdi-account-plus-outline</v-icon>REGISTREREN
           </v-btn>
         </div>
         <!-- SMALLER VIEWPORTS -->
         <div v-if="$vuetify.breakpoint.smAndDown">
-          <v-btn
-            icon
-            to="/auth/login"
-          >
+          <v-btn icon to="/auth/login">
             <v-icon>mdi-lock-open</v-icon>
           </v-btn>
-          <v-btn
-            icon
-            to="/auth/register"
-          >
+          <v-btn icon to="/auth/register">
             <v-icon>mdi-account-plus-outline</v-icon>
           </v-btn>
         </div>
@@ -169,10 +142,7 @@
       <Snackbar></Snackbar>
       <nuxt />
     </v-main>
-    <v-footer
-      :absolute="!fixed"
-      app
-    >
+    <v-footer :absolute="!fixed" app>
       <span>&copy; {{ new Date().getFullYear() }} - Vanozi inc. - Meetup</span>
     </v-footer>
   </v-app>
@@ -208,17 +178,11 @@ export default {
           ],
           title: "Uren",
         },
-
-        // {
-        //   action: "mdi-cow",
-        //   items: [{ title: "Kalfjes" }],
-        //   title: "Melkvee",
-        // },
-        // {
-        //   action: "mdi-tractor",
-        //   items: [{ title: "Machines" }],
-        //   title: "Loonbedrijf",
-        // },
+        {
+          title: "Bouwplan",
+          action: "mdi-sprout-outline",
+          items: [{ title: "2022", route: "/bouwplan" }],
+        },
       ],
       adminItems: [
         {
@@ -228,15 +192,23 @@ export default {
         },
         {
           action: "mdi-account-clock-outline",
-          items: [{ title: "Week overzicht", route: "/admin/working_hours/week_overview" },
-          { title: "Medewerker overzicht", route: "/admin/working_hours/employee_overview" }],
+          items: [
+            {
+              title: "Week overzicht",
+              route: "/admin/working_hours/week_overview",
+            },
+            {
+              title: "Medewerker overzicht",
+              route: "/admin/working_hours/employee_overview",
+            },
+          ],
           title: "Uren",
         },
-        // {
-        //   action: "mdi-account-multiple-outline",
-        //   items: [{ title: "Overzicht", route: "/" }],
-        //   title: "Medewerkers",
-        // },
+        {
+          title: "Bouwplan",
+          action: "mdi-sprout-outline",
+          items: [{ title: "2022", route: "/bouwplan" }],
+        },
       ],
     };
   },
@@ -265,6 +237,6 @@ export default {
   text-decoration: none;
   font-size: 1.2em;
   font-weight: bold;
-  font-family: "Roboto", "Courier New", monospace;;
+  font-family: "Roboto", "Courier New", monospace;
 }
 </style>
