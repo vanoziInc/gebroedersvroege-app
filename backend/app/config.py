@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     token_algorithm: str = os.getenv("TOKEN_ALGORITHM", "HS256")
     secret_key = SecretStr = os.getenv("SECRET_KEY", "erruggeheim")
     registration_token_lifetime :int = os.getenv("REGISTRATION_TOKEN_LIFETIME", 10080)
-    login_token_lifetime :int = os.getenv("LOGIN_TOKEN_LIFETIME", 1440)
+    login_token_lifetime :int = os.getenv("LOGIN_TOKEN_LIFETIME", 43800)
     refresh_token_lifetime : int= os.getenv("LOGIN_TOKEN_LIFETIME", 43800)
     reset_password_token_lifetime :int = os.getenv("RESET_PASSWORD_TOKEN_LIFETIME", 10080)
 
