@@ -3,3 +3,6 @@ docker exec fastapi python -m pytest --verbose --cov=app --cov-report html:cov_h
 
 # Run frontend tests
 pytest ./backend/tests/frontend/ --html=frontend-test-report.html --self-contained-html
+
+# Run dev test
+docker exec fastapi python -m pytest -v -s --force-sugar -m "dev"

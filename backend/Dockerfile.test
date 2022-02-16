@@ -13,8 +13,10 @@ ENV PYTHONUNBUFFERED 1
 
 # install python dependencies
 COPY ./requirements.txt .
+COPY ./tests/requirements-test.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
+RUN pip install --no-cache-dir --upgrade -r requirements-test.txt
 
 COPY . .
 
