@@ -84,7 +84,7 @@ export default {
     async bouwplan() {
       // Login API call
       try {
-        let response = await this.$axios.get("/bouwplan/", {
+        let response = await this.$axios.get("/bouwplan", {
           params: { year: 2022 },
         });
         this.items = response.data;
@@ -103,7 +103,7 @@ export default {
       console.log(this.files);
       formData.append("in_file", this.files);
       try {
-        let response = await this.$axios.post("/bouwplan/upload/", formData, {
+        let response = await this.$axios.post("/bouwplan/upload", formData, {
           params: { year: 2022 },
         });
         this.$notifier.showMessage({
