@@ -144,7 +144,16 @@ class WeeksNotSubmittedSingleUsersResponseSchema(pydantic.BaseModel):
     werknemer: User_Pydantic
 
 # Bouwplan
-class BouwPlanDataModel(pydantic.BaseModel):
+class BouwPlanDataModelIn(pydantic.BaseModel):
+    ha: float
+    link: str
+    gewas: str
+    opmerking: str
+    perceel_nummer: str
+    werknaam: str
+    mest: str
+
+class BouwPlanDataModelOut(pydantic.BaseModel):
     ha: float
     link: str
     gewas: str

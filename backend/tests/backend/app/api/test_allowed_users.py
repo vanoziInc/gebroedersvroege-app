@@ -13,12 +13,12 @@ async def test_add_allowed_users(test_client: TestClient, admin_token: str):
     fm.config.SUPPRESS_SEND = 1
     with fm.record_messages() as outbox:
         payload = AllowedUsersCreateSchema(email="test_gebruiker1@test.com").json()
-        # For uploading raw text or binary content we prefer to use a content parameter, 
+        # For uploading raw text or binary content we prefer to use a content parameter,
         # in order to better separate this usage from the case of uploading form data.
         headers = {
-        "Authorization": f"Bearer {admin_token}",
-        "Content-Type": "application/json",
-    }
+            "Authorization": f"Bearer {admin_token}",
+            "Content-Type": "application/json",
+        }
         response = await test_client.post(
             "/allowed_users/", headers=headers, content=payload
         )
@@ -52,7 +52,7 @@ async def test_add_allowed_users_invalid_email_address(
     )
     assert response.status_code == 422
     assert response.json()["detail"][0]["msg"] == "value is not a valid email address"
-    
+
     assert response.json()["detail"][0]["type"] == "value_error.email"
 
 
@@ -71,8 +71,10 @@ async def test_allowed_user_allready_invited(
         "/allowed_users/", headers=headers, content=payload
     )
     assert response.status_code == 400
-    assert response.json()["detail"] == "Er is al een uitnodiging gestuurd naar dit email adres"
-    
+    assert (
+        response.json()["detail"]
+        == "Er is al een uitnodiging gestuurd naar dit email adres"
+    )
 
 
 @pytest.mark.apitest
@@ -93,11 +95,16 @@ async def test_allowed_user_allready_registered(
 
 @pytest.mark.apitest
 async def test_add_allowed_users_insufficient_privilege(
-    test_client: TestClient, request_headers_werknemer: dict
+    test_client: TestClient, werknemer_token: dict
 ):
     payload = AllowedUsersCreateSchema(email="test_werknemer@test.com").json()
     response = await test_client.post(
-        "/allowed_users/", headers=request_headers_werknemer, content=payload
+        "/allowed_users/",
+        headers={
+            "Authorization": f"Bearer {werknemer_token}",
+            "Content-Type": "application/json",
+        },
+        content=payload,
     )
     assert response.status_code == 403
     assert response.json()["detail"] == "Operation not permitted"

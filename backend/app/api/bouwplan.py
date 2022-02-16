@@ -2,7 +2,7 @@ from datetime import date
 from typing import List
 
 from app.helpers.excel_functions import excel_to_list_of_dicts
-from app.models.pydantic import BouwPlanDataModel
+from app.models.pydantic import BouwPlanDataModelIn, BouwPlanDataModelOut
 from app.models.tortoise import BouwPlan
 from app.services.auth import RoleChecker
 from fastapi import APIRouter, File, UploadFile
@@ -18,7 +18,7 @@ router = APIRouter()
 @router.get(
     "/",
     dependencies=[Depends(RoleChecker(["admin", "werknemer"]))],
-    response_model=List[BouwPlanDataModel],
+    response_model=List[BouwPlanDataModelOut],
 )
 async def get_bouwplan(year: int):
     bouwplannen = await BouwPlan.filter(year=year)
@@ -29,7 +29,7 @@ async def get_bouwplan(year: int):
 @router.post(
     "/upload",
     dependencies=[Depends(RoleChecker(["admin", "werknemer"]))],
-    response_model=List[BouwPlanDataModel],
+    response_model=List[BouwPlanDataModelOut],
 )
 async def upload_bouwplan(
     year: int,
@@ -43,23 +43,28 @@ async def upload_bouwplan(
         return JSONResponse(
             status_code=400, content={"detail": "Ongeldig document type"}
         )
-    # Parse the excel
-    data = excel_to_list_of_dicts(excel_file=in_file.file.read())
-    # validate against pydantic model
     try:
-        parse_obj_as(List[BouwPlanDataModel], data)
-    except ValidationError as e:
+        # Parse the excel
+        data = excel_to_list_of_dicts(excel_file=in_file.file.read())
+    except Exception as e:
         return JSONResponse(
-            status_code=422, content={"detail": "Fout bij valideren van de data"}
+            status_code=400, content={"detail": "Fout bij inlezen van de excel"}
         )
-    finally:
-        # Delete all bouwplan entries for that year
-        await BouwPlan.filter(year=year).delete()
-        # Save data in the database
-        for bouwplan in data:
-            bouwplan["year"] = year
-            bouwplan["created_by"] = current_user.email
-            bouwplan["last_modified_by"] = current_user.email
-            await BouwPlan.create(**bouwplan)
-        bouwplannen = await BouwPlan.filter(year=year)
-        return bouwplannen
+
+    try:
+        # validate against pydantic model
+        parse_obj_as(List[BouwPlanDataModelIn], data)
+    except Exception as e:
+        return JSONResponse(
+            status_code=400, content={"detail": "Fout bij valideren van de data"}
+        )
+    # Delete all bouwplan entries for that year
+    await BouwPlan.filter(year=year).delete()
+    # Save data in the database
+    for bouwplan in data:
+        bouwplan["year"] = year
+        bouwplan["created_by"] = current_user.email
+        bouwplan["last_modified_by"] = current_user.email
+        await BouwPlan.create(**bouwplan)
+    bouwplannen = await BouwPlan.filter(year=year)
+    return bouwplannen

@@ -12,14 +12,17 @@
             <v-col>
               <v-file-input
                 v-model="files"
-                :rules="rules"
                 accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 placeholder="Selecteer bouwplan excel"
                 prepend-icon="mdi-microsoft-excel"
                 outlined
                 dense
               ></v-file-input>
-              <v-btn :disabled="!this.fileSelected" color="primary" outlined @click="uploadBouwplan"
+              <v-btn
+                :disabled="!this.fileSelected"
+                color="primary"
+                outlined
+                @click="uploadBouwplan"
                 >Uploaden</v-btn
               >
             </v-col>
@@ -53,20 +56,23 @@
 import moment from "moment";
 export default {
   data: () => ({
+    title: "Bouwplan 2022",
     search: "",
-    files : null, 
+    files: null,
     headers: [
       {
         text: "Perceel",
         align: "start",
         sortable: true,
-        value: "perceel nummer",
+        value: "perceel_nummer", align:"left" , width:"1%" 
+        
       },
-      { text: "Werknaam", sortable: true, value: "werknaam" },
+      { text: "Werknaam", sortable: true, value: "werknaam" , align:"left" , width:"1%" },
       //   { text: "Link", sortable: true, value: "boer en bunder link" },
-      { text: "RVO ha", sortable: true, value: "RVO ha totaal" },
-      { text: "Gewas", sortable: true, value: "gewas" },
-      { text: "Opmerking", sortable: true, value: "opmerking" },
+      { text: "RVO ha", sortable: true, value: "ha" , align:"left" , width:"1%" },
+      { text: "Gewas", sortable: true, value: "gewas" , align:"left" , width:"1%" },
+      { text: "Mest", sortable: true, value: "mest" , align:"left" , width:"1%" },
+      { text: "Opmerking", sortable: true, value: "opmerking", align:"left" , width:"1%" },
     ],
     upload_date: "",
     items: [],
@@ -81,7 +87,7 @@ export default {
         let response = await this.$axios.get("/bouwplan/", {
           params: { year: 2022 },
         });
-        this.items = response.data.data;
+        this.items = response.data;
         this.upload_date = response.data.upload_date;
       } catch (err) {
         if (err.response) {
@@ -94,19 +100,14 @@ export default {
     },
     async uploadBouwplan() {
       let formData = new FormData();
+      console.log(this.files);
       formData.append("in_file", this.files);
       try {
-        let response = await this.$axios.post(
-          "/bouwplan/upload/" + moment(this.upload_date).year().toString(),
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        let response = await this.$axios.post("/bouwplan/upload/", formData, {
+          params: { year: 2022 },
+        });
         this.$notifier.showMessage({
-          content: response.data.message,
+          content: "Bouwplan succesvol geupload",
           color: "success",
         });
         this.bouwplan();
@@ -129,18 +130,22 @@ export default {
         return false;
       }
     },
-  fileSelected() {
-    if (this.files !== null) {
-      return true
-    }
-    else {
-      return false
-    }
-  }
+    fileSelected() {
+      if (this.files !== null) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
 
   created() {
     this.bouwplan();
+  },
+  head() {
+    return {
+      title: this.title,
+    };
   },
 };
 </script>
