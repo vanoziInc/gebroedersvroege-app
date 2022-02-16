@@ -1,0 +1,15 @@
+Pillow==9.0.1
+
+pytest-playwright==0.2.2
+playwright==1.16.1
+
+# Testing packages
+# Core
+pytest==6.2.4
+anyio==3.5.0
+httpx==0.19.0
+# Plugins
+pytest-cov==3.0.0
+pytest-sugar==0.9.4
+pytest-html==3.1.1
+pytest-randomly==3.11.0

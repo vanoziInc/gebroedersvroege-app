@@ -9,14 +9,18 @@ pytestmark = pytest.mark.anyio
 
 
 @pytest.mark.apitest
-async def test_add_allowed_users(test_client: TestClient, request_headers_admin: dict):
+async def test_add_allowed_users(test_client: TestClient, admin_token: str):
     fm.config.SUPPRESS_SEND = 1
     with fm.record_messages() as outbox:
         payload = AllowedUsersCreateSchema(email="test_gebruiker1@test.com").json()
         # For uploading raw text or binary content we prefer to use a content parameter, 
         # in order to better separate this usage from the case of uploading form data.
+        headers = {
+        "Authorization": f"Bearer {admin_token}",
+        "Content-Type": "application/json",
+    }
         response = await test_client.post(
-            "/allowed_users/", headers=request_headers_admin, content=payload
+            "/allowed_users/", headers=headers, content=payload
         )
         assert response.status_code == 201
         assert response.json()["id"]
@@ -32,15 +36,19 @@ async def test_add_allowed_users(test_client: TestClient, request_headers_admin:
 
 @pytest.mark.apitest
 async def test_add_allowed_users_invalid_email_address(
-    test_client: TestClient, request_headers_admin: dict
+    test_client: TestClient, admin_token: str
 ):
+    headers = {
+        "Authorization": f"Bearer {admin_token}",
+        "Content-Type": "application/json",
+    }
     payload = json.dumps(
         {
             "email": "test_gebruiker@testcom",
         }
     )
     response = await test_client.post(
-        "/allowed_users/", headers=request_headers_admin, content=payload
+        "/allowed_users/", headers=headers, content=payload
     )
     assert response.status_code == 422
     assert response.json()["detail"][0]["msg"] == "value is not a valid email address"
@@ -50,13 +58,17 @@ async def test_add_allowed_users_invalid_email_address(
 
 @pytest.mark.apitest
 async def test_allowed_user_allready_invited(
-    test_client: TestClient, request_headers_admin: dict, invite_new_user_fixture: int
+    test_client: TestClient, admin_token: str, invite_new_user_fixture: int
 ):
     # Invite user for registration
     await invite_new_user_fixture("test_gebruiker2@test.com")
+    headers = {
+        "Authorization": f"Bearer {admin_token}",
+        "Content-Type": "application/json",
+    }
     payload = AllowedUsersCreateSchema(email="test_gebruiker2@test.com").json()
     response = await test_client.post(
-        "/allowed_users/", headers=request_headers_admin, content=payload
+        "/allowed_users/", headers=headers, content=payload
     )
     assert response.status_code == 400
     assert response.json()["detail"] == "Er is al een uitnodiging gestuurd naar dit email adres"
@@ -65,11 +77,15 @@ async def test_allowed_user_allready_invited(
 
 @pytest.mark.apitest
 async def test_allowed_user_allready_registered(
-    test_client: TestClient, request_headers_admin: dict
+    test_client: TestClient, admin_token: str
 ):
+    headers = {
+        "Authorization": f"Bearer {admin_token}",
+        "Content-Type": "application/json",
+    }
     payload = AllowedUsersCreateSchema(email="test_werknemer@test.com").json()
     response = await test_client.post(
-        "/allowed_users/", headers=request_headers_admin, content=payload
+        "/allowed_users/", headers=headers, content=payload
     )
     assert response.status_code == 400
     assert response.json()["detail"] == "Dit email adres is al geregistreerd"

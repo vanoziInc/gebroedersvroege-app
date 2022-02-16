@@ -143,7 +143,7 @@
       <nuxt />
     </v-main>
     <v-footer :absolute="!fixed" app>
-      <span>&copy; {{ new Date().getFullYear() }} - Vanozi inc. - Meetup</span>
+      <span>&copy; {{ new Date().getFullYear() }} - Vanozi &copy</span>
     </v-footer>
   </v-app>
 </template>

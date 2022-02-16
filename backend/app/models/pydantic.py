@@ -1,6 +1,12 @@
 from typing import Any, Dict, List, Optional
 
-from app.models.tortoise import AllowedUsers, GeneralMaintenance, Roles, Users, WorkingHours
+from app.models.tortoise import (
+    AllowedUsers,
+    GeneralMaintenance,
+    Roles,
+    Users,
+    WorkingHours,
+)
 
 import pydantic
 import datetime
@@ -16,10 +22,11 @@ Tortoise.init_models(["app.models.tortoise"], "models")
 class ResponseMessage(pydantic.BaseModel):
     detail: str
 
+
 # Users
 class CreateUser(pydantic.BaseModel):
-    first_name :str
-    last_name :str
+    first_name: str
+    last_name: str
     email: EmailStr
     password: pydantic.SecretStr
 
@@ -32,17 +39,14 @@ User_Pydantic = pydantic_model_creator(
 
 # Roles
 
-RolesSchema = pydantic_model_creator(
-    Roles,
-    name="Role",
-    exclude=['id','users']
-)
+RolesSchema = pydantic_model_creator(Roles, name="Role", exclude=["id", "users"])
 
 
 #  Email
 class EmailSchema(pydantic.BaseModel):
     recipient_addresses: List[constr(to_lower=True)]
     body: Dict[str, Any]
+
 
 # Activate Account
 class TokenSchema(pydantic.BaseModel):
@@ -60,77 +64,96 @@ class ResetPassword(pydantic.BaseModel):
 class AllowedUsersCreateSchema(pydantic.BaseModel):
     email: EmailStr
 
+
 class AllowedUsersUpdateschema(pydantic.BaseModel):
     email: constr(to_lower=True)
 
-AllowedUsersResponseSchema = pydantic_model_creator(
-    AllowedUsers
-    )
+
+AllowedUsersResponseSchema = pydantic_model_creator(AllowedUsers)
 
 # General maintenance
 # GET
 GeneralMaintenanceResponseSchema = pydantic_model_creator(GeneralMaintenance)
 # CREATE
 class GeneralMaintenanceCreateSchema(pydantic.BaseModel):
-    description : str
+    description: str
+
 
 # UPDATE
 class GeneralMaintenanceUpdateSchema(pydantic.BaseModel):
-    description : str
+    description: str
+
 
 # Working Hours
 # GET
-WorkingHoursResponseSchema = pydantic_model_creator(WorkingHours, exclude=['user'])
-    
+WorkingHoursResponseSchema = pydantic_model_creator(WorkingHours, exclude=["user"])
+
 # CREATE
 class WorkingHoursCreateSchema(pydantic.BaseModel):
-    user_id : int
+    user_id: int
     date: datetime.date
     hours: int
-    description : str
+    description: str
+
 
 # UPDATE
 class WorkingHoursUpdateSchema(pydantic.BaseModel):
-    id : Optional[int]
-    user_id : Optional[int]
+    id: Optional[int]
+    user_id: Optional[int]
     date: Optional[datetime.date]
     hours: Optional[float]
-    description : Optional[str]
+    description: Optional[str]
     submitted: Optional[bool] = False
+
 
 # UPDATE
 class WorkingHoursSubmitSchema(pydantic.BaseModel):
-    ids : List[int]
-
+    ids: List[int]
 
 
 # ADMIN WORKING HOURS
 class WeekResult(pydantic.BaseModel):
-    user_id : int
-    name : str
-    sum_hours : float
-    submitted : bool
+    user_id: int
+    name: str
+    sum_hours: float
+    submitted: bool
     working_hours: List[WorkingHoursResponseSchema]
 
+
 class WeeksNotSubmittedAllUsersResponseSchema(pydantic.BaseModel):
-    year :int
-    week : int
-    week_start : datetime.date
-    week_end : datetime.date
-    employee_info : List[WeekResult]
+    year: int
+    week: int
+    week_start: datetime.date
+    week_end: datetime.date
+    employee_info: List[WeekResult]
 
 
 class WeekData(pydantic.BaseModel):
-    year :int
-    week : int
-    week_start : datetime.date
-    week_end : datetime.date
-    working_hours : List[WorkingHoursResponseSchema]
-    sum_hours : float
-    submitted : bool
+    year: int
+    week: int
+    week_start: datetime.date
+    week_end: datetime.date
+    working_hours: List[WorkingHoursResponseSchema]
+    sum_hours: float
+    submitted: bool
 
 
 class WeeksNotSubmittedSingleUsersResponseSchema(pydantic.BaseModel):
 
-    week_data:List[WeekData]
-    werknemer:User_Pydantic
+    week_data: List[WeekData]
+    werknemer: User_Pydantic
+
+# Bouwplan
+class BouwPlanDataModel(pydantic.BaseModel):
+    ha: float
+    link: str
+    gewas: str
+    opmerking: str
+    perceel_nummer: str
+    werknaam: str
+    mest: str    
+    year : int
+    created_at : datetime.date  
+
+    class Config:
+        orm_mode = True

@@ -8,7 +8,6 @@ from app.services.mail import fm
 pytestmark = pytest.mark.anyio
 
 
-@pytest.mark.dev
 async def test_registration_success(
     test_client: TestClient, invite_new_user_fixture: int
 ):
@@ -71,7 +70,6 @@ async def test_registration_success(
         assert outbox[0]["Subject"] == "Welkom!!"
 
 
-@pytest.mark.dev
 async def test_registration_user_allready_registered(test_client: TestClient):
     payload = json.dumps(
         {
@@ -87,7 +85,7 @@ async def test_registration_user_allready_registered(test_client: TestClient):
     assert response.status_code == 400
     assert response.json()["detail"] == "Deze gebruiker bestaat al"
 
-@pytest.mark.dev
+
 async def test_registration_user_not_invited(
     test_client: TestClient,
 ):
