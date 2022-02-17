@@ -28,7 +28,7 @@ async def get_bouwplan(year: int):
 # TODO: Create test
 @router.post(
     "/upload",
-    dependencies=[Depends(RoleChecker(["admin", "werknemer"]))],
+    dependencies=[Depends(RoleChecker(["admin"]))],
     response_model=List[BouwPlanDataModelOut],
 )
 async def upload_bouwplan(
