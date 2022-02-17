@@ -87,6 +87,7 @@ class GeneralMaintenanceUpdateSchema(pydantic.BaseModel):
 # Working Hours
 # GET
 WorkingHoursResponseSchema = pydantic_model_creator(WorkingHours, exclude=["user"])
+WorkingHoursResponseSchemaComplete = pydantic_model_creator(WorkingHours)
 
 # CREATE
 class WorkingHoursCreateSchema(pydantic.BaseModel):

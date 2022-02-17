@@ -12,7 +12,8 @@ from app.models.pydantic import (WeeksNotSubmittedAllUsersResponseSchema,
                                  WorkingHoursResponseSchema,
                                  WeeksNotSubmittedSingleUsersResponseSchema,
                                  WorkingHoursSubmitSchema,
-                                 WorkingHoursUpdateSchema)
+                                 WorkingHoursUpdateSchema,
+                                 WorkingHoursResponseSchemaComplete)
 from app.models.tortoise import Users, WorkingHours
 from app.services.auth import RoleChecker, get_current_active_user
 from fastapi import APIRouter, HTTPException
@@ -61,7 +62,7 @@ async def post_working_hours(
     return working_hours_item
 
 
-# Read all maintenace issues (Only the admin can do this)
+# All working hours
 @router.get(
     "/all_for_user/{user_id}",
     response_model=List[WorkingHoursResponseSchema],
@@ -149,7 +150,7 @@ async def delete_working_hours_item(id: int):
         # Create a success respons
         return JSONResponse({"detail": "Uren succesvol verwijderd"}, status_code=200)
 
-
+# Week overview for specific user between 2 dates
 @router.get(
     "/week_overview/",
     response_model=WeeksNotSubmittedSingleUsersResponseSchema,
@@ -189,6 +190,16 @@ async def get_week_overview(from_date:datetime.date, to_date:datetime.date, user
                     break
         result_list.append({'year':year, 'week':week_number, 'week_start':datetime.date.strftime(week_start, '%Y-%m-%d'), 'week_end':datetime.date.strftime(week_end, '%Y-%m-%d'), 'sum_hours':sum_hours, 'submitted':submitted, 'working_hours':working_hours})
     return {'werknemer':user, 'week_data':result_list}
+
+@router.get(
+    "/between_dates/",
+    response_model=List[WorkingHoursResponseSchema]
+)
+async def get_working_hours_between_dates(from_date:datetime.date, to_date:datetime.date, current_user = Depends(get_current_active_user)
+):
+    user = await Users.get(id=current_user.id)
+    await user.fetch_related('working_hours')
+    return await user.working_hours
 
 # admin routes
 # Get weeks not submitted for all users in timerange
