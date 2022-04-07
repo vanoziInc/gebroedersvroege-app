@@ -81,7 +81,7 @@ async def test_add_bouwplan_with_invalid_pydantic_Data(
 
 
 @pytest.mark.apitest
-async def test_add_bouwplan_with_invalid_pydantic_Data(
+async def test_add_bouwplan_with_valid_data(
     test_client: TestClient, admin_token: str, tmp_path
 ):
     files = [

@@ -151,8 +151,9 @@ class BouwPlanDataModelIn(pydantic.BaseModel):
     gewas: str
     opmerking: str
     perceel_nummer: str
+    ingetekend_door:str
     werknaam: str
-    mest: str
+    mest: Optional[str]
 
 class BouwPlanDataModelOut(pydantic.BaseModel):
     ha: float
@@ -161,7 +162,8 @@ class BouwPlanDataModelOut(pydantic.BaseModel):
     opmerking: str
     perceel_nummer: str
     werknaam: str
-    mest: str    
+    ingetekend_door : str
+    mest: Optional[str]    
     year : int
     created_at : datetime.date  
 

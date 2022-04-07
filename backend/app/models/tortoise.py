@@ -88,14 +88,15 @@ class BouwPlan(models.Model):
     created_by = fields.CharField(null=False, max_length=255)
     last_modified_at = fields.DatetimeField(auto_now=True)
     last_modified_by = fields.CharField(null=True, max_length=255)
-    year = fields.IntField(null=False)
-    ha = fields.FloatField(null=False)
+    year = fields.IntField(null=True)
+    ha = fields.FloatField(null=True)
     link = fields.CharField(null=True, max_length=255)
-    gewas = fields.CharField(null=False, max_length=255)
-    opmerking = fields.CharField(null=False, max_length=255)
-    perceel_nummer = fields.CharField(null=False, max_length=255)
-    werknaam = fields.CharField(null=False, max_length=255)
-    mest = fields.CharField(null=False, max_length=255)
+    gewas = fields.CharField(null=True, max_length=255)
+    ingetekend_door = fields.CharField(null=True, max_length=255)
+    opmerking = fields.CharField(null=True, max_length=255)
+    perceel_nummer = fields.CharField(null=True, max_length=255)
+    werknaam = fields.CharField(null=True, max_length=255)
+    mest = fields.CharField(null=True, max_length=255)
 
     class Meta:
         table = "bouwplannen"

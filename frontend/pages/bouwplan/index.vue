@@ -71,7 +71,7 @@ export default {
       //   { text: "Link", sortable: true, value: "boer en bunder link" },
       { text: "RVO ha", sortable: true, value: "ha" , align:"left" , width:"1%" },
       { text: "Gewas", sortable: true, value: "gewas" , align:"left" , width:"1%" },
-      { text: "Mest", sortable: true, value: "mest" , align:"left" , width:"1%" },
+      { text: "Ingetekend door", sortable: true, value: "ingetekend_door" , align:"left" , width:"1%" },
       { text: "Opmerking", sortable: true, value: "opmerking", align:"left" , width:"1%" },
     ],
     upload_date: "",
@@ -88,7 +88,7 @@ export default {
           params: { year: 2022 },
         });
         this.items = response.data;
-        this.upload_date = response.data.upload_date;
+        this.upload_date = response.data[0].created_at;
       } catch (err) {
         if (err.response) {
           this.$notifier.showMessage({
