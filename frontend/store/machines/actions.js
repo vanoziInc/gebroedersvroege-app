@@ -1,7 +1,7 @@
 export default {
   async getAllMachines({ commit }) {
     try {
-      let response = await this.$axios.get("/machines");
+      let response = await this.$axios.get("/machines/");
       commit("GETMACHINES", response.data)
     } catch (err) {
       if (err.response) {
@@ -14,7 +14,7 @@ export default {
   },
   async addOrUpdateMachine({ commit }, payload) {
     try {
-      let response = await this.$axios.put("/machines", payload);
+      let response = await this.$axios.put("/machines/", payload);
       commit("ADDORUPDATEMACHINE", response.data)
       this.$notifier.showMessage({
         content: "Machine succesvol toegevoegd/gewijzigd!",

@@ -1,6 +1,6 @@
 <template>
   <v-container>
-        <ConfirmDlg ref="confirm" />
+    <ConfirmDlg ref="confirm" />
     <!-- Tabel met de machines en opties om er 1 toe te voegen -->
     <section>
       <v-data-table :search="search" :headers="userIsAdmin ? headersAdmin : headers" :items="machines"
@@ -92,26 +92,34 @@ export default {
       {
         text: "Werknummer",
         value: "work_number",
+        sortable: true
       },
       {
         text: "Werknaam",
         value: "work_name",
+        sortable: true
       },
       {
         text: "Categorie",
         value: "category",
+        sortable: true,
+
       },
       {
         text: "Merk",
         value: "brand_name",
+        sortable: true,
+
       },
       {
         text: "Type",
         value: "type_name",
+        sortable: true
       },
       {
         text: "Kenteken",
         value: "licence_number",
+        sortable: true
       },
       { text: 'Acties', value: 'actions', sortable: false },
     ],
@@ -131,26 +139,34 @@ export default {
       {
         text: "Werknummer",
         value: "work_number",
+        sortable: true
       },
       {
         text: "Werknaam",
         value: "work_name",
+        sortable: true
       },
       {
         text: "Categorie",
         value: "category",
+        sortable: true,
+
       },
       {
         text: "Merk",
         value: "brand_name",
+        sortable: true,
+
       },
       {
         text: "Type",
         value: "type_name",
+        sortable: true
       },
       {
         text: "Kenteken",
         value: "licence_number",
+        sortable: true
       }
     ],
   }),
@@ -158,7 +174,7 @@ export default {
     ...mapActions({
       getAllMachines: "machines/getAllMachines",
       addOrUpdateMachine: "machines/addOrUpdateMachine",
-      deleteMachine:"machines/deleteMachine"
+      deleteMachine: "machines/deleteMachine"
     }),
     close() {
       this.dialog = false;
@@ -181,8 +197,7 @@ export default {
           "Bevestig",
           "Weet je zeker dat je de machine wilt verwijderen?"
         )
-      )
-      {
+      ) {
         await this.deleteMachine(item.id)
       }
     }
