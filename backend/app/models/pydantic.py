@@ -6,6 +6,7 @@ from app.models.tortoise import (
     Roles,
     Users,
     WorkingHours,
+    Machines
 )
 
 import pydantic
@@ -169,3 +170,16 @@ class BouwPlanDataModelOut(pydantic.BaseModel):
 
     class Config:
         orm_mode = True
+
+
+# Machines
+#  Add a machine
+class MachineCreateSchema(pydantic.BaseModel):
+    work_number : Optional[str] 
+    work_name : Optional[str] 
+    category : Optional[str] 
+    brand_name : Optional[str] 
+    type_name : Optional[str] 
+    licence_number : Optional[str] 
+
+MachineResponseSchema = pydantic_model_creator(Machines)

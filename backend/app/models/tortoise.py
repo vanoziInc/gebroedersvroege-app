@@ -1,3 +1,4 @@
+from io import BufferedRandom
 from tortoise import fields, models
 from tortoise.contrib.pydantic import pydantic_model_creator
 
@@ -100,3 +101,32 @@ class BouwPlan(models.Model):
 
     class Meta:
         table = "bouwplannen"
+
+
+class Machines(models.Model):
+    id =  fields.IntField(pk=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    created_by = fields.CharField(null=False, max_length=255)
+    last_modified_at = fields.DatetimeField(auto_now=True)
+    last_modified_by = fields.CharField(null=True, max_length=255)
+    work_number = fields.CharField(null=True, max_length=255)
+    work_name = fields.CharField(null=True, max_length=255)
+    category = fields.CharField(null=True, max_length=255)
+    brand_name = fields.CharField(null=True, max_length=255)
+    type_name = fields.CharField(null=True, max_length=255)
+    licence_number = fields.CharField(null=True, max_length=255)
+
+
+class MaintenanceMachines(models.Model):
+    id = fields.IntField(pk=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    created_by = fields.CharField(null=False, max_length=255)
+    last_modified_at = fields.DatetimeField(auto_now=True)
+    last_modified_by = fields.CharField(null=True, max_length=255)
+    issue_description = fields.CharField(null=True, max_length=255)
+    priority = fields.IntField()
+    # Relations
+    fields.ForeignKeyField('models.Machines', related_name='maintenance_issues')
+    
+    class Meta:
+        table = "maintenance_machines"
