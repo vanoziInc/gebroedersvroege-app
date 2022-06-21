@@ -1,18 +1,15 @@
 <template>
   <v-container>
-    <!-- Korte uitleg over waar de pagina voor dient -->
-    <section>
-      {{ userIsAdmin }}
-    </section>
+        <ConfirmDlg ref="confirm" />
     <!-- Tabel met de machines en opties om er 1 toe te voegen -->
     <section>
-      <v-data-table :headers="userIsAdmin ? headersAdmin : headers" :items="machines" class="elevation-1">
+      <v-data-table :search="search" :headers="userIsAdmin ? headersAdmin : headers" :items="machines"
+        class="elevation-1">
         <template v-slot:top>
           <v-toolbar flat>
             <v-toolbar-title>Machinepark</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
-
             <!-- Toevoegen en wijzigen dialoog: Only if user is admin -->
             <v-dialog v-if="userIsAdmin" v-model="dialog" max-width="500px" @click:outside="close">
               <template v-slot:activator="{ on, attrs }">
@@ -22,7 +19,8 @@
               </template>
               <v-card>
                 <v-card-title>
-                  <span class="text-h5">Machine Toevoegen</span>
+                  <span class="text-h5" v-if="!machine_edited">Machine Toevoegen</span>
+                  <span class="text-h5" v-if="machine_edited">Machine Aanpassen</span>
                 </v-card-title>
 
                 <v-card-text>
@@ -48,19 +46,10 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
-
-            <!-- Delete dialog -->
-            <v-dialog v-model="dialogDelete" max-width="500px">
-              <v-card>
-                <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1">Cancel</v-btn>
-                  <v-btn color="blue darken-1">OK</v-btn>
-                  <v-spacer></v-spacer>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+          </v-toolbar>
+          <v-toolbar flat>
+            <v-text-field v-model="search" append-icon="mdi-magnify" label="Zoeken" single-line hide-details>
+            </v-text-field>
           </v-toolbar>
         </template>
 
@@ -83,8 +72,10 @@ import { mapGetters, mapActions, store } from "vuex";
 export default {
   data: () => ({
     dialog: false,
+    dialogDelete: false,
     machine_edited: false,
     machine: {},
+    search: "",
     headersAdmin: [
       //   text: string,
       //   value: string,
@@ -166,7 +157,8 @@ export default {
   methods: {
     ...mapActions({
       getAllMachines: "machines/getAllMachines",
-      addOrUpdateMachine: "machines/addOrUpdateMachine"
+      addOrUpdateMachine: "machines/addOrUpdateMachine",
+      deleteMachine:"machines/deleteMachine"
     }),
     close() {
       this.dialog = false;
@@ -183,6 +175,17 @@ export default {
       this.machine_edited = true
       this.dialog = true
     },
+    async deleteItem(item) {
+      if (
+        await this.$refs.confirm.open(
+          "Bevestig",
+          "Weet je zeker dat je de machine wilt verwijderen?"
+        )
+      )
+      {
+        await this.deleteMachine(item.id)
+      }
+    }
   },
   computed: {
     // Getters from the store

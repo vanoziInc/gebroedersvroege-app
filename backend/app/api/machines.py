@@ -8,12 +8,18 @@ from app.services.auth import RoleChecker, get_current_active_user
 from fastapi import APIRouter, HTTPException
 from fastapi.param_functions import Depends
 from starlette import status
+from starlette.responses import JSONResponse
 
 
 router = APIRouter()
 
 
-@router.put("/", dependencies=[Depends(RoleChecker(["admin"]))], status_code=201, response_model=MachineResponseSchema)
+@router.put(
+    "/",
+    dependencies=[Depends(RoleChecker(["admin"]))],
+    status_code=201,
+    response_model=MachineResponseSchema,
+)
 async def post_machine(
     incoming_machine: MachineCreateSchema,
     current_active_user=Depends(get_current_active_user),
@@ -43,13 +49,26 @@ async def post_machine(
 
 @router.get("/", status_code=200, response_model=List[MachineResponseSchema])
 async def get_machines(
-    current_active_user=Depends(get_current_active_user)
+    current_active_user=Depends(get_current_active_user),
 ) -> List[MachineResponseSchema]:
     return await Machines.all()
 
+
 @router.get("/{id}", status_code=200, response_model=MachineResponseSchema)
 async def get_single_machines(
-    id:int,
-    current_active_user=Depends(get_current_active_user)
+    id: int, current_active_user=Depends(get_current_active_user)
 ) -> MachineResponseSchema:
     return await Machines.get_or_none(id=id)
+
+
+@router.delete("/{id}", status_code=200, dependencies=[Depends(RoleChecker(["admin"]))])
+async def delete_single_machine(id: int):
+    machine = await Machines.get_or_none(id=id)
+    if machine is not None:
+        await machine.delete()
+        return JSONResponse({"detail": "Machine succesvol verwijderd"}, status_code=200)
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Machine niet gevonden",
+        )

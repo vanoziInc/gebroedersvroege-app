@@ -28,5 +28,22 @@ export default {
         });
       }
     }
-  }
+  },
+  async deleteMachine({commit}, id) {
+    try {
+      let response = await this.$axios.delete("/machines/" + id);
+      commit("DELETEMACHINE", id)
+      this.$notifier.showMessage({
+        content: response.data.detail,
+        color: "success",
+      });
+    } catch (err) {
+      if (err.response) {
+          this.$notifier.showMessage({
+            content: err.response.data.detail,
+            color: "error",
+          });
+      }
+    }
+  },
 }

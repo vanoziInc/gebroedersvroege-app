@@ -10,4 +10,8 @@ export default {
             state.machines.push(payload)
         }
     },
+    DELETEMACHINE(state, id) {
+        var index = state.machines.findIndex(item => item.id == id);
+        state.machines.splice(index, 1);
+    },
 }

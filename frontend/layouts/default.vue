@@ -2,14 +2,7 @@
   <v-app dark>
     <!-- NAVIGATION DRAWER -->
 
-    <v-navigation-drawer
-      v-if="this.$auth.loggedIn"
-      v-model="drawer"
-      :clipped="clipped"
-      fixed
-      app
-      :width="325"
-    >
+    <v-navigation-drawer v-if="this.$auth.loggedIn" v-model="drawer" :clipped="clipped" fixed app :width="325">
       <v-list-item>
         <v-list-item-content>
           <h4>Gebr. Vroege</h4>
@@ -21,28 +14,16 @@
         <!-- If one item then just an item -->
         <div v-for="item in Items" :key="item.title">
           <div v-if="item.items">
-            <v-list-group
-              :key="item.title"
-              v-model="item.active"
-              :prepend-icon="item.action"
-              no-action
-            >
+            <v-list-group :key="item.title" v-model="item.active" :prepend-icon="item.action" no-action>
               <template v-slot:activator>
                 <v-list-item-content>
                   <v-list-item-title v-text="item.title"></v-list-item-title>
                 </v-list-item-content>
               </template>
 
-              <v-list-item
-                v-for="child in item.items"
-                :key="child.title"
-                :to="child.route"
-                exact
-              >
+              <v-list-item v-for="child in item.items" :key="child.title" :to="child.route" exact>
                 <v-list-item-content>
-                  <v-list-item-subtitle
-                    v-text="child.title"
-                  ></v-list-item-subtitle>
+                  <v-list-item-subtitle v-text="child.title"></v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-list-group>
@@ -62,25 +43,15 @@
       <v-divider></v-divider>
       <!-- Admin navigation list -->
       <v-list v-if="userIsAdmin">
-        <v-list-group
-          v-for="item in adminItems"
-          :key="item.title"
-          v-model="item.active"
-          :prepend-icon="item.action"
-          no-action
-        >
+        <v-list-group v-for="item in adminItems" :key="item.title" v-model="item.active" :prepend-icon="item.action"
+          no-action>
           <template v-slot:activator>
             <v-list-item-content>
               <v-list-item-title v-text="item.title"></v-list-item-title>
             </v-list-item-content>
           </template>
 
-          <v-list-item
-            v-for="child in item.items"
-            :key="child.title"
-            :to="child.route"
-            exact
-          >
+          <v-list-item v-for="child in item.items" :key="child.title" :to="child.route" exact>
             <v-list-item-content>
               <v-list-item-subtitle v-text="child.title"></v-list-item-subtitle>
             </v-list-item-content>
@@ -92,7 +63,7 @@
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <nuxt-link class="link" style="color: black" to="/">{{
-        title
+          title
       }}</nuxt-link>
       <v-spacer />
 
@@ -183,6 +154,11 @@ export default {
           action: "mdi-sprout-outline",
           items: [{ title: "2022", route: "/bouwplan" }],
         },
+        {
+          title: "Machines",
+          action: "mdi-tractor-variant",
+          items: [{ title: "Machinepark", route: "/machines" }],
+        }
       ],
       adminItems: [
         {
@@ -209,6 +185,11 @@ export default {
           action: "mdi-sprout-outline",
           items: [{ title: "2022", route: "/bouwplan" }],
         },
+        {
+          title: "Machines",
+          action: "mdi-tractor-variant",
+          items: [{ title: "Machinepark", route: "/machines" }],
+        }
       ],
     };
   },
@@ -232,6 +213,7 @@ export default {
 
 <style>
 @use "sass:math";
+
 .link {
   color: black;
   text-decoration: none;
