@@ -4,8 +4,17 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import (allowed_users, auth, general_maintenance, roles,
-                     user_roles, users, working_hours, bouwplan)
+from app.api import (
+    allowed_users,
+    auth,
+    general_maintenance,
+    roles,
+    user_roles,
+    users,
+    working_hours,
+    bouwplan,
+    machines,
+)
 from app.db import init_db
 
 log = logging.getLogger("uvicorn")
@@ -27,10 +36,12 @@ def create_application() -> FastAPI:
         bouwplan.router, prefix="/api/bouwplan", tags=["bouwplan"]
     )
     application.include_router(
-        general_maintenance.router,
-        prefix="/api/general_maintenance",
-        tags=["general_maintenance"],
-    )
+        machines.router, prefix="/api/machines", tags=["machines"])
+    # application.include_router(
+    #     general_maintenance.router,
+    #     prefix="/api/general_maintenance",
+    #     tags=["general_maintenance"],
+    # )
     application.include_router(
         working_hours.router, prefix="/api/working_hours", tags=["working_hours"]
     )
