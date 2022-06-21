@@ -155,7 +155,7 @@ export default {
           items: [{ title: "2022", route: "/bouwplan" }],
         },
         {
-          title: "Machines",
+          title: "Machines (Test)",
           action: "mdi-tractor-variant",
           items: [{ title: "Machinepark", route: "/machines" }],
         }
@@ -186,7 +186,7 @@ export default {
           items: [{ title: "2022", route: "/bouwplan" }],
         },
         {
-          title: "Machines",
+          title: "Machines (Test)",
           action: "mdi-tractor-variant",
           items: [{ title: "Machinepark", route: "/machines" }],
         }
