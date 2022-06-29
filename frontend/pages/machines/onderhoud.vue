@@ -6,8 +6,8 @@
         <ConfirmDlg ref="confirm" />
         <!-- Tabel met de machines en opties om er 1 toe te voegen -->
         <section>
-            <v-data-table :search="search" :headers="userIsAdmin ? headersAdmin : headers" :items="maintenance_issues"
-                class="elevation-1">
+            <v-data-table :search="search" :headers="userIsAdmin ? headersAdmin : headers" :sort-by="['created_at']"
+                :sort-desc="[true]" :items="filteredMaintenanceIssues" class="elevation-1">
                 <!-- Toolbar met titel en knop om een nieuw onderhouds item toe te voegen -->
                 <template v-slot:top>
                     <v-toolbar flat>
@@ -15,7 +15,7 @@
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
                         <!-- Toevoegen en wijzigen dialoog: Only if user is admin -->
-                        <v-btn></v-btn>
+                        <v-btn color="primary" dark class="mb-2" @click="newMaintenanceIssue">Storing / Onderhoud melden</v-btn>
                     </v-toolbar>
                     <!-- Toolbar voor snel zoeken -->
                     <v-toolbar flat>
@@ -24,8 +24,60 @@
                         </v-text-field>
                     </v-toolbar>
                 </template>
-                
-
+                <!-- Header templates voor het toevoegen van zoek filters per kolom -->
+                <template v-slot:header.machine.work_name="{ header }">
+                    {{ header.text }}
+                    <v-menu offset-y :close-on-content-click="false">
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn icon v-bind="attrs" v-on="on">
+                                <v-icon small>
+                                    mdi-filter
+                                </v-icon>
+                            </v-btn>
+                        </template>
+                        <div style="background-color: white; width: 280px">
+                            <v-text-field v-model="werkNaamMachine" class="pa-4" label="Zoekterm...">
+                            </v-text-field>
+                            <v-btn @click="werkNaamMachine = ''" text color="primary" class="ml-2 mb-2">Schonen</v-btn>
+                        </div>
+                    </v-menu>
+                </template>
+                <template v-slot:header.status="{ header }">
+                    {{ header.text }}
+                    <v-menu offset-y :close-on-content-click="false">
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn icon v-bind="attrs" v-on="on">
+                                <v-icon small>
+                                    mdi-filter
+                                </v-icon>
+                            </v-btn>
+                        </template>
+                        <div style="background-color: white; width: 280px">
+                            <v-text-field v-model="statusFilterWaarde" class="pa-4" label="Zoekterm...">
+                            </v-text-field>
+                            <v-btn @click="statusFilterWaarde = ''" text color="primary" class="ml-2 mb-2">Schonen
+                            </v-btn>
+                        </div>
+                    </v-menu>
+                </template>
+                <template v-slot:header.issue_description="{ header }">
+                    {{ header.text }}
+                    <v-menu offset-y :close-on-content-click="false">
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn icon v-bind="attrs" v-on="on">
+                                <v-icon small>
+                                    mdi-filter
+                                </v-icon>
+                            </v-btn>
+                        </template>
+                        <div style="background-color: white; width: 280px">
+                            <v-text-field v-model="descriptionFilter" class="pa-4" label="Zoekterm...">
+                            </v-text-field>
+                            <v-btn @click="descriptionFilter = ''" text color="primary" class="ml-2 mb-2">Schonen
+                            </v-btn>
+                        </div>
+                    </v-menu>
+                </template>
 
                 <!-- Item template om de created_at datum te formatteren -->
                 <template v-slot:item.created_at="{ item }">
@@ -55,6 +107,10 @@
 import { mapGetters, mapActions, store } from "vuex";
 export default {
     data: () => ({
+        // Filterdata
+        werkNaamMachine: '',
+        statusFilterWaarde: '',
+        descriptionFilter: '',
         dialog: false,
         dialogDelete: false,
         machine_edited: false,
@@ -133,9 +189,33 @@ export default {
                 value: "issue_description",
                 sortable: true,
             },
+                        {
+                text: "Status",
+                value: "status",
+                sortable: true,
+            },
         ],
     }),
     methods: {
+        // Filter methodes
+        filterWerkNaamMachine(item) {
+            return item.machine.work_name.toLowerCase().includes(this.werkNaamMachine.toLowerCase());
+        },
+        // Filter methodes
+        filterStatus(item) {
+            this.status_text = ''
+            if (item.status == 0) { this.status_text = 'Nieuw' }
+            else if (item.status == 1) { this.status_text = 'In Behandeling' }
+            else if (item.status == 2) { this.status_text = 'Gesloten' }
+            return this.status_text.toLowerCase().includes(this.statusFilterWaarde.toLowerCase());
+        },
+        filterDescription(item) {
+            if (
+                item.issue_description !== null) {
+                return item.issue_description.toLowerCase().includes(this.descriptionFilter.toLowerCase());
+            }
+
+        },
         ...mapActions({
             getAllMachineMaintenanceIssues: "machine_maintenance/getAllMachineMaintenanceIssues",
             addMachineMaintenanceIssue: "machine_maintenance/addMachineMainetenanceIssue",
@@ -143,7 +223,8 @@ export default {
             deleteMachineMaintenanceIssue: "machine_maintenance/deleteMachineMaintenanceIssue"
         }),
         async newMaintenanceIssue() {
-
+            if (await this.$refs.editMachineMaintenanceIssue.open("Storing / Onderhoud melden", {})) {
+            }
         },
         save(maintenance_issue) {
             this.addMachineMaintenanceIssue(maintenance_issue)
@@ -168,6 +249,28 @@ export default {
         }
     },
     computed: {
+        // Filter de maintenance issues op basis van de filters in de columns
+        filteredMaintenanceIssues() {
+            this.conditions = [];
+            if (this.werkNaamMachine) {
+                this.conditions.push(this.filterWerkNaamMachine);
+            }
+            if (this.statusFilterWaarde) {
+                this.conditions.push(this.filterStatus);
+            }
+            if (this.descriptionFilter) {
+                this.conditions.push(this.filterDescription);
+            }
+
+            if (this.conditions.length > 0) {
+                return this.maintenance_issues.filter((maintenance_issue) => {
+                    return this.conditions.every((condition) => {
+                        return condition(maintenance_issue);
+                    })
+                })
+            }
+            return this.maintenance_issues
+        },
         // Getters from the store
         // mix the getters into computed with object spread operator
         ...mapGetters({

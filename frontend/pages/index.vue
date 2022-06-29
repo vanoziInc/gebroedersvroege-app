@@ -23,7 +23,7 @@
             <v-card-title class="justify-center">Storingen / Onderhoud</v-card-title>
             <v-card-actions class="justify-center">
               <v-btn outlined color="primary" xl-large @click="openEditMachineMaintenanceDlg">Nieuwe Melding</v-btn>
-              <v-btn outlined color="primary" xl-large>Overzicht</v-btn>
+              <v-btn outlined color="primary" xl-large to="/machines/onderhoud/" nuxt>Overzicht</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>

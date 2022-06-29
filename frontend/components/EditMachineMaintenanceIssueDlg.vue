@@ -91,6 +91,7 @@ export default {
             }
             this.$emit("save", this.maintenance_issue);
             this.dialog = false;
+            this.$nuxt.$options.router.push('/machines/onderhoud/');
         },
         agreeEdit() {
             // Emit een event met als data editItem om zo de uren op te slaan
@@ -103,8 +104,10 @@ export default {
             this.dialog = false;
         },
         cancel() {
-            this.maintenance_issue = {},
-                this.edit = !this.edit
+            this.maintenance_issue = {};
+            if(this.edit) {
+                this.edit = false
+            }
             this.dialog = false;
         },
         validate() {
