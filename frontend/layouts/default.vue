@@ -12,33 +12,20 @@
       <!-- Normal Users navigation list -->
       <v-list v-if="!userIsAdmin">
         <!-- If one item then just an item -->
-        <div v-for="item in Items" :key="item.title">
-          <div v-if="item.items">
-            <v-list-group :key="item.title" v-model="item.active" :prepend-icon="item.action" no-action>
-              <template v-slot:activator>
-                <v-list-item-content>
-                  <v-list-item-title v-text="item.title"></v-list-item-title>
-                </v-list-item-content>
-              </template>
+        <v-list-group v-for="item in Items" :key="item.title" v-model="item.active" :prepend-icon="item.action"
+          no-action>
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title"></v-list-item-title>
+            </v-list-item-content>
+          </template>
 
-              <v-list-item v-for="child in item.items" :key="child.title" :to="child.route" exact>
-                <v-list-item-content>
-                  <v-list-item-subtitle v-text="child.title"></v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-group>
-          </div>
-          <div v-else>
-            <v-list-item :to="item.route">
-              <v-list-item-icon>
-                <v-icon v-text="item.action"></v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title v-text="item.title"></v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </div>
-        </div>
+          <v-list-item v-for="child in item.items" :key="child.title" :to="child.route" exact>
+            <v-list-item-content>
+              <v-list-item-subtitle v-text="child.title"></v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-group>
       </v-list>
       <v-divider></v-divider>
       <!-- Admin navigation list -->
@@ -157,7 +144,7 @@ export default {
         {
           title: "Machines (Test)",
           action: "mdi-tractor-variant",
-          items: [{ title: "Machinepark", route: "/machines" }],
+          items: [{ title: "Machinepark", route: "/machines" }, { title: "Onderhoud / Storingen", route: "/machines/onderhoud" },],
         }
       ],
       adminItems: [
@@ -188,7 +175,7 @@ export default {
         {
           title: "Machines (Test)",
           action: "mdi-tractor-variant",
-          items: [{ title: "Machinepark", route: "/machines" }],
+          items: [{ title: "Machinepark", route: "/machines" }, { title: "Onderhoud / Storingen", route: "/machines/onderhoud" },],
         }
       ],
     };

@@ -1,33 +1,29 @@
 <template>
   <div>
+    <!-- Machine maintenance issue dialog -->
+    <EditMachineMaintenanceIssueDlg ref="editMachineMaintenanceIssue"
+      @save="save($event)" />
     <!-- Normal user Homepage -->
     <v-container v-if="!userIsAdmin">
       <v-row class="justify-center">
-        <v-col
-          :cols="$vuetify.breakpoint.mdAndUp ? 8: 12"
-          class="justify-center"
-        >
+        <v-col :cols="$vuetify.breakpoint.mdAndUp ? 8 : 12" class="justify-center">
           <v-card>
-            <v-card-title>Uren registratie</v-card-title>
-            <v-card-text>
-              Je kunt per week de gewerkte uren invoeren, als er
-              bijzonderheden zijn kun je die kwijt bij de omschrijving. <br />
-              Zodra je ze hebt ingedient zijn ze zichtbaar voor de administratie
-              en in principe definitief. <br />
-              Mocht je een foutje hebben gemaakt kan de administratie (Marijke
-              of Marietje) de uren voor die week weer vrijgeven.
-            </v-card-text>
+            <v-card-title class="justify-center">Uren registratie</v-card-title>
             <v-card-actions class="justify-center">
-              <v-btn
-                outlined
-                color="primary"
-                to="/working_hours/"
-              >Invoeren</v-btn>
-              <v-btn
-                outlined
-                color="primary"
-                to="/working_hours/overview"
-              >Overzicht</v-btn>
+              <v-btn outlined color="primary" to="/working_hours/">Invoeren</v-btn>
+              <v-btn outlined color="primary" to="/working_hours/overview">Overzicht</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+
+      </v-row>
+      <v-row class="justify-center">
+        <v-col :cols="$vuetify.breakpoint.mdAndUp ? 8 : 12" class="justify-center">
+          <v-card>
+            <v-card-title class="justify-center">Storingen / Onderhoud</v-card-title>
+            <v-card-actions class="justify-center">
+              <v-btn outlined color="primary" xl-large @click="openEditMachineMaintenanceDlg">Nieuwe Melding</v-btn>
+              <v-btn outlined color="primary" xl-large>Overzicht</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -36,7 +32,7 @@
     <!-- Admin homepage -->
     <v-container v-if="userIsAdmin">
       <v-row class="justify-center">
-        <v-col :cols="$vuetify.breakpoint.mdAndUp ? 6: 12">
+        <v-col :cols="$vuetify.breakpoint.mdAndUp ? 6 : 12">
           <v-card>
             <v-card-subtitle class="font-weight-bold">
               Ontbrekende uren afgelopen week
@@ -44,18 +40,17 @@
             <v-card-text>
               <p>
                 Week {{ lastWeekNumber }}:
-                <span class="font-weight-light font-italic">({{ formatDateforTemplate(beginningOfLastWeek) }} / {{ formatDateforTemplate(endOfLastWeek) }})</span>
+                <span class="font-weight-light font-italic">({{ formatDateforTemplate(beginningOfLastWeek) }} / {{
+                    formatDateforTemplate(endOfLastWeek)
+                }})</span>
               </p>
               <ul>
-                <div
-                  v-for="(item, i) in usersNotSubmittedLastWeek"
-                  :key="i"
-                >
+                <div v-for="(item, i) in usersNotSubmittedLastWeek" :key="i">
 
-                
-                <li v-if="item.submitted ==false">
-                  <a v-bind:href="'/admin/working_hours/user/' + item.user_id">{{ item.name }}</a>
-                </li>
+
+                  <li v-if="item.submitted == false">
+                    <a v-bind:href="'/admin/working_hours/user/' + item.user_id">{{ item.name }}</a>
+                  </li>
                 </div>
               </ul>
             </v-card-text>
@@ -68,15 +63,32 @@
 
 <script>
 import moment from "moment";
+import { mapActions } from "vuex";
 export default {
+
   data: () => ({
     dateformat: "YYYY-MM-DD",
     missingHoursLastWeek: null,
     usersNotSubmittedLastWeek: null,
     sevenDaysAgo: moment().subtract(7, "days"),
+    title: "Home"
   }),
+  head() {
+    return {
+      title: this.title,
+    }
+  },
   methods: {
-        formatDateforTemplate(value) {
+    // Machine maintenace dialog
+    async openEditMachineMaintenanceDlg() {
+      if (await this.$refs.editMachineMaintenanceIssue.open("Storing / Onderhoud melden", {})) {
+      }
+    },
+    save(maintenance_issue) {
+      console.log("hoi");
+      this.add_machine_maintenance_issue(maintenance_issue)
+    },
+    formatDateforTemplate(value) {
       return moment(value).locale("nl").format("DD MMM");
     },
     async notSubmittedLastWeek() {
@@ -104,6 +116,9 @@ export default {
         }
       }
     },
+    ...mapActions({
+      add_machine_maintenance_issue: "machine_maintenance/addMachineMainetenanceIssue",
+    }),
   },
   computed: {
     lastWeekNumber() {

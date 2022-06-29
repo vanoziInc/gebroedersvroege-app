@@ -124,9 +124,9 @@ class MaintenanceMachines(models.Model):
     last_modified_at = fields.DatetimeField(auto_now=True)
     last_modified_by = fields.CharField(null=True, max_length=255)
     issue_description = fields.CharField(null=True, max_length=255)
-    priority = fields.IntField()
+    status = fields.IntField(null=True)
     # Relations
-    fields.ForeignKeyField('models.Machines', related_name='maintenance_issues')
+    machine = fields.ForeignKeyField('models.Machines', related_name='maintenance_issues')
     
     class Meta:
         table = "maintenance_machines"
