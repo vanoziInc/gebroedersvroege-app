@@ -39,11 +39,13 @@ async def post_machine(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Er is een overwachte fout opgetreden, neem contact op met de beheerder",
             )
+        await machine.fetch_related('maintenance_issues')
         return machine
     else:
         # Update existing machine
         await machine.update_from_dict(incoming_machine.dict()).save()
         machine = await Machines.get(work_number=incoming_machine.work_number)
+        await machine.fetch_related('maintenance_issues')
         return machine
 
 
@@ -51,14 +53,14 @@ async def post_machine(
 async def get_machines(
     current_active_user=Depends(get_current_active_user),
 ) -> List[MachineResponseSchema]:
-    return await Machines.all()
+    return await Machines.all().prefetch_related('maintenance_issues')
 
 
 @router.get("/{id}", status_code=200, response_model=MachineResponseSchema)
 async def get_single_machines(
     id: int, current_active_user=Depends(get_current_active_user)
 ) -> MachineResponseSchema:
-    return await Machines.get_or_none(id=id)
+    return await Machines.get_or_none(id=id).prefetch_related('maintenance_issues')
 
 
 @router.delete("/{id}", status_code=200, dependencies=[Depends(RoleChecker(["admin"]))])

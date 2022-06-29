@@ -6,8 +6,11 @@ from app.models.tortoise import (
     Roles,
     Users,
     WorkingHours,
-    Machines
+    Machines,
+    MaintenanceMachines
 )
+
+from app.models.enums import MaintenanceIssueStatus
 
 import pydantic
 import datetime
@@ -183,3 +186,22 @@ class MachineCreateSchema(pydantic.BaseModel):
     licence_number : Optional[str] 
 
 MachineResponseSchema = pydantic_model_creator(Machines)
+
+class MachineMaintenanceCreate(pydantic.BaseModel):
+    issue_description : Optional[str]
+    status : MaintenanceIssueStatus
+    machine_id : Optional[int]
+    
+    class Config:  
+        use_enum_values = True 
+
+class MachineMaintenanceUpdate(pydantic.BaseModel):
+    id : int
+    issue_description : Optional[str]
+    status : MaintenanceIssueStatus
+    machine_id : Optional[int]
+    
+    class Config:  
+        use_enum_values = True 
+
+MachineMaintenanceResponseSchema = pydantic_model_creator(MaintenanceMachines)
