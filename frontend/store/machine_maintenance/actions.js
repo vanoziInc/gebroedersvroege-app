@@ -51,7 +51,7 @@ export default {
       let response = await this.$axios.delete("/machine_maintenance_issues/" + id);
       commit("DELETEMACHINEMAINTENANCEISSUE", id)
       this.$notifier.showMessage({
-        content: "Storing / Onderhoud  succesvol gewijzigd",
+        content: "Storing / Onderhoud  succesvol verwijdert",
         color: "success",
       });
     } catch (err) {

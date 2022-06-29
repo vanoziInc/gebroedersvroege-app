@@ -241,10 +241,10 @@ export default {
             if (
                 await this.$refs.confirm.open(
                     "Bevestig",
-                    "Weet je zeker dat je de machine wilt verwijderen?"
+                    "Weet je zeker dat je dit item wilt verwijderen?"
                 )
             ) {
-                await this.deleteMachine(item.id)
+                await this.deleteMachineMaintenanceIssue(item.id)
             }
         }
     },
